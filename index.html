@@ -1,1170 +1,2899 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Seva Surfers İstanbul">
-    <meta name="theme-color" content="#071324">
-    <title>SEVA SURFERS — İstanbul 3D</title>
-    <link rel="apple-touch-icon" id="dynamic-apple-icon" href="">
-    <link rel="icon" id="dynamic-favicon" href="">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #071324;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            touch-action: none;
-        }
-        #game-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lira: Kristal Yankısı</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-        /* ÜST HUD */
-        #hud {
-            position: absolute;
-            top: max(14px, env(safe-area-inset-top));
-            left: 14px;
-            right: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .hud-col {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .hud-right {
-            align-items: flex-end;
-        }
-        .hud-badge {
-            background: rgba(7, 19, 36, 0.82);
-            backdrop-filter: blur(10px);
-            border: 1.5px solid rgba(56, 189, 248, 0.28);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 14px;
-            font-weight: 800;
-            font-size: 1.05rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
-        }
-        .coin-dot {
-            width: 16px;
-            height: 16px;
-            background: radial-gradient(circle at 30% 30%, #fef08a, #f59e0b);
-            border-radius: 50%;
-            box-shadow: 0 0 10px #fbbf24;
-            flex-shrink: 0;
-        }
-        .mult-pill {
-            background: linear-gradient(135deg, #f97316, #e11d48);
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: 900;
-        }
-        #sound-toggle {
-            pointer-events: auto;
-            cursor: pointer;
-            background: rgba(7, 19, 36, 0.86);
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 7px 13px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
 
-        /* AKTİF GÜÇLENDİRİCİLER */
-        #powerup-hud {
-            position: absolute;
-            bottom: max(20px, env(safe-area-inset-bottom));
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            width: 240px;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .pu-card {
-            background: rgba(7, 19, 36, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 10px;
-            padding: 6px 10px;
-            color: #fff;
-            font-size: 0.78rem;
-            font-weight: 800;
-        }
-        .pu-top {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-        .pu-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.14);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .pu-fill {
-            height: 100%;
-            width: 100%;
-        }
+  html, body {
+    width: 100%;
+    height: 100%;
+    background-color: #121216;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+  }
 
-        /* EKRANLAR */
-        .overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(7, 19, 36, 0.86);
-            backdrop-filter: blur(12px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .logo-box {
-            width: 82px;
-            height: 82px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            box-shadow: 0 10px 28px rgba(56, 189, 248, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.25);
-        }
-        .title-text {
-            font-size: 2.9rem;
-            font-weight: 950;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, #38bdf8, #fbbf24, #f43f5e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-        }
-        .sub-text {
-            color: #94a3b8;
-            font-size: 0.95rem;
-            margin-bottom: 18px;
-            font-weight: 600;
-        }
-        .stats-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .stat-box {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-        .btn-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .btn-main {
-            background: linear-gradient(135deg, #0284c7, #06b6d4);
-            color: #fff;
-            border: none;
-            padding: 14px 36px;
-            border-radius: 999px;
-            font-size: 1.12rem;
-            font-weight: 900;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.45);
-            text-transform: uppercase;
-        }
-        .btn-sec {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1.5px solid rgba(255, 255, 255, 0.25);
-            padding: 14px 26px;
-            border-radius: 999px;
-            font-size: 1.02rem;
-            font-weight: 800;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
+  /* Masaüstünde telefon boyutunda dikey pencere, mobilde tam ekran */
+  #game-shell {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    max-width: 430px;
+    max-height: 860px;
+    background: #f5f2eb;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    --accent: #d99b38;
+    --accent-soft: rgba(217, 155, 56, 0.14);
+  }
 
-        /* SUBWAY TARZI MAĞAZA */
-        .shop-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
-            color: #cbd5e1;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-        .tab-btn.active {
-            background: linear-gradient(135deg, #f59e0b, #ea580c);
-            color: #090d16;
-            border-color: transparent;
-        }
-        .shop-grid {
-            width: 100%;
-            max-width: 720px;
-            max-height: 55vh;
-            overflow-y: auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
-            gap: 12px;
-            margin-bottom: 18px;
-            padding: 4px;
-        }
-        .item-card {
-            background: rgba(15, 29, 51, 0.92);
-            border: 2px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        .item-card.equipped {
-            border-color: #38bdf8;
-            box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
-        }
-        .swatch {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.25);
-        }
-        .item-card h3 { font-size: 0.98rem; font-weight: 800; }
-        .item-card p { font-size: 0.76rem; color: #94a3b8; min-height: 28px; }
-        .action-btn {
-            width: 100%;
-            padding: 8px;
-            border-radius: 10px;
-            border: none;
-            font-weight: 800;
-            font-size: 0.84rem;
-            cursor: pointer;
-            background: #0284c7;
-            color: #fff;
-        }
-        .action-btn.owned { background: #334155; }
-        .action-btn.active { background: #10b981; color: #06281e; }
-        .action-btn.box-btn { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; }
+  #game-shell.palette-navy {
+    --accent: #2563eb;
+    --accent-soft: rgba(37, 99, 235, 0.14);
+  }
+  #game-shell.palette-emerald {
+    --accent: #059669;
+    --accent-soft: rgba(5, 150, 105, 0.14);
+  }
+  #game-shell.palette-violet {
+    --accent: #7c3aed;
+    --accent-soft: rgba(124, 58, 237, 0.14);
+  }
 
-        .tip-foot {
-            margin-top: 16px;
-            font-size: 0.82rem;
-            color: #94a3b8;
-            line-height: 1.5;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  @media (min-width: 480px) {
+    #game-shell {
+      height: 94vh;
+      border-radius: 32px;
+    }
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+
+  /* Arayüz Katmanları */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 24px 20px;
+    z-index: 10;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.98);
+  }
+
+  /* Oyun içi HUD üst kontrolleri */
+  #hud-controls {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    display: flex;
+    gap: 8px;
+    z-index: 8;
+  }
+
+  #hud-controls.hidden {
+    display: none;
+  }
+
+  .hud-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(30, 32, 43, 0.12);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(6px);
+    color: #1e202b;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .hud-btn:active {
+    transform: scale(0.92);
+  }
+
+  /* Üst Bar (Menü) */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    font-weight: 700;
+    font-size: 14px;
+    color: #1f2029;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    color: #1f2029;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .icon-btn:active {
+    transform: scale(0.92);
+  }
+
+  /* Başlık Bölümü */
+  .hero-section {
+    text-align: center;
+    margin-top: 6px;
+  }
+
+  .subtitle-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+
+  .game-title {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #181922;
+    line-height: 1.05;
+  }
+
+  .game-title span {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #5c5f70;
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+  }
+
+  .best-score-line {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #787b8c;
+  }
+
+  .creator-signature {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #787b8c;
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+
+  .creator-signature strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Görev Kartları */
+  .quests-box {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(10px);
+    border-radius: 22px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .quests-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6a6d7e;
+    margin-bottom: 10px;
+  }
+
+  .quest-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .quest-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .quest-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #232530;
+  }
+
+  .quest-reward {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .quest-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.07);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .quest-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+
+  /* Ana Butonlar */
+  .actions-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #1e202b 0%, #323546 100%);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow: 0 12px 26px rgba(30, 32, 43, 0.25);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  .secondary-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .btn-secondary {
+    padding: 13px 14px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    color: #1f2029;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.96);
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #f7e4bc 0%, #f1d293 100%);
+    border-color: rgba(197, 130, 29, 0.25);
+    color: #5c3a06;
+  }
+
+  /* Atölye & Modallar */
+  .modal-panel {
+    background: rgba(249, 247, 242, 0.96);
+    backdrop-filter: blur(16px);
+    justify-content: flex-start;
+    gap: 14px;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  .modal-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #181922;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7c7f91;
+    margin-top: 4px;
+  }
+
+  .shop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .theme-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 12px;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .theme-card.selected {
+    border-color: var(--accent);
+    background: #fffdf9;
+  }
+
+  .theme-swatch {
+    height: 8px;
+    border-radius: 999px;
+    width: 100%;
+  }
+
+  .theme-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e202b;
+  }
+
+  .theme-desc {
+    font-size: 11px;
+    color: #737687;
+  }
+
+  .theme-price {
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .upgrade-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .upgrade-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .upgrade-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .upgrade-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e202b;
+  }
+
+  .upgrade-sub {
+    font-size: 11px;
+    color: #737687;
+  }
+
+  .level-dots {
+    display: flex;
+    gap: 4px;
+    margin-top: 3px;
+  }
+
+  .dot {
+    width: 16px;
+    height: 4px;
+    border-radius: 999px;
+    background: #e2e4ec;
+  }
+
+  .dot.active {
+    background: var(--accent);
+  }
+
+  .upgrade-btn {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: none;
+    background: #1e202b;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .upgrade-btn:disabled {
+    background: #d8dbe4;
+    color: #7e8294;
+    cursor: default;
+  }
+
+  /* Kişiselleştirme Kartı */
+  .personalize-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .custom-input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .custom-input {
+    flex: 1;
+    padding: 9px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e202b;
+    background: #f9f8f5;
+    outline: none;
+  }
+
+  .custom-input:focus {
+    border-color: var(--accent);
+  }
+
+  .palette-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .palette-chip {
+    padding: 8px 6px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    background: #f5f4f0;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1e202b;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .palette-chip.active {
+    border-color: var(--accent);
+    background: #ffffff;
+  }
+
+  .palette-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+  }
+
+  /* Duraklatma & Oyun Sonu Kutusu */
+  .center-card {
+    margin: auto;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    border-radius: 26px;
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 4px 0;
+  }
+
+  .stat-box {
+    background: #f5f4f0;
+    border-radius: 14px;
+    padding: 10px;
+  }
+
+  .stat-val {
+    font-size: 20px;
+    font-weight: 800;
+    color: #181922;
+  }
+
+  .stat-lbl {
+    font-size: 11px;
+    font-weight: 600;
+    color: #707384;
+    margin-top: 2px;
+  }
+
+  /* Bildirim (Toast) */
+  #toast {
+    position: absolute;
+    top: 66px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: #1e202b;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 30;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="hud">
-            <div class="hud-col">
-                <div class="hud-badge">
-                    <span>SKOR: <span id="score-val">0</span></span>
-                    <span id="mult-badge" class="mult-pill">1x</span>
-                </div>
-                <div class="hud-badge" style="font-size: 0.85rem; padding: 5px 12px; color: #cbd5e1;">
-                    REKOR: <span id="hud-best" style="color: #38bdf8;">0</span>
-                </div>
-            </div>
-            <div class="hud-col hud-right">
-                <div class="hud-badge">
-                    <span class="coin-dot"></span>
-                    <span id="coins-val">0</span>
-                </div>
-                <button id="sound-toggle">🔊 Ses Açık</button>
-            </div>
-        </div>
 
-        <div id="powerup-hud"></div>
+<div id="game-shell">
+  <canvas id="gameCanvas"></canvas>
+  <div id="toast">Bildirim</div>
 
-        <!-- ANA MENÜ -->
-        <div id="start-screen" class="overlay">
-            <img id="menu-logo" class="logo-box" alt="Seva Surfers İstanbul">
-            <div class="title-text">SEVA SURFERS</div>
-            <div class="sub-text">İstanbul Boğaz Hattı • Katmanlı 3D Karakter</div>
-            <div class="stats-row">
-                <div class="stat-box">🏆 Rekor: <span id="menu-best" style="color:#38bdf8;">0</span></div>
-                <div class="stat-box"><span class="coin-dot"></span> Kasa: <span id="menu-bank" style="color:#fbbf24;">0</span></div>
-            </div>
-            <div class="btn-row">
-                <button id="start-btn" class="btn-main">KOŞUYA BAŞLA</button>
-                <button id="open-shop-btn" class="btn-sec">🛍️ MAĞAZA</button>
-            </div>
-            <div class="tip-foot">
-                Ok Tuşları veya Kaydırma: Hareket • Çift Tık / Space: Kaykay Kalkanı
-            </div>
-        </div>
+  <!-- OYUN İÇİ ÜST BUTONLAR -->
+  <div id="hud-controls" class="hidden">
+    <button class="hud-btn" id="btn-hud-mute" title="Sesi Aç/Kapat">🔊</button>
+    <button class="hud-btn" id="btn-hud-pause" title="Duraklat">❚❚</button>
+  </div>
 
-        <!-- SUBWAY TARZI MAĞAZA -->
-        <div id="shop-screen" class="overlay hidden">
-            <div class="title-text" style="font-size: 2.2rem;">SUBWAY MAĞAZA</div>
-            <div class="stats-row" style="margin-bottom: 12px;">
-                <div class="stat-box"><span class="coin-dot"></span> Altın: <span id="shop-bank" style="color:#fbbf24;">0</span></div>
-            </div>
-            <div class="shop-tabs">
-                <button class="tab-btn active" data-tab="surfers">Karakterler</button>
-                <button class="tab-btn" data-tab="boards">Kaykaylar</button>
-                <button class="tab-btn" data-tab="boosts">Boost & Kutu</button>
-            </div>
-            <div class="shop-grid" id="shop-grid"></div>
-            <button id="close-shop-btn" class="btn-sec">GERİ DÖN</button>
-        </div>
-
-        <!-- GAME OVER -->
-        <div id="gameover-screen" class="overlay hidden">
-            <div class="title-text" style="font-size: 2.5rem;">TUR BİTTİ!</div>
-            <div class="sub-text" id="new-best-msg" style="color:#fbbf24; display:none;">⭐ YENİ İSTANBUL REKORU! ⭐</div>
-            <div class="stats-row" style="flex-direction: column; min-width: 240px;">
-                <div class="stat-box" style="justify-content: space-between;"><span>Skor:</span> <span id="final-score" style="color:#38bdf8;">0</span></div>
-                <div class="stat-box" style="justify-content: space-between;"><span>Altın:</span> <span id="final-coins" style="color:#fbbf24;">0</span></div>
-                <div class="stat-box" style="justify-content: space-between;"><span>Toplam Kasa:</span> <span id="final-bank" style="color:#10b981;">0</span></div>
-            </div>
-            <div class="btn-row">
-                <button id="restart-btn" class="btn-main">Yeniden Başlat</button>
-                <button id="go-shop-btn" class="btn-sec">🛍️ Mağaza</button>
-            </div>
-        </div>
+  <!-- ANA MENÜ -->
+  <div id="menu-overlay" class="overlay">
+    <div class="top-bar">
+      <div class="pill-badge">
+        <span>★</span>
+        <span id="menu-stars">0</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="icon-btn" id="btn-personalize" title="Kişiselleştir">✎</button>
+        <button class="icon-btn" id="btn-help" title="Nasıl Oynanır">?</button>
+        <button class="icon-btn" id="btn-mute" title="Ses">🔊</button>
+      </div>
     </div>
 
-    <script>
-        // ==========================================
-        // 0. İKON ÜRETİCİ (IPHONE ANA EKRAN)
-        // ==========================================
-        function buildAppIcon() {
-            const svg = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <defs>
-                    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#071324"/>
-                        <stop offset="65%" stop-color="#0f294a"/>
-                        <stop offset="100%" stop-color="#0284c7"/>
-                    </linearGradient>
-                </defs>
-                <rect width="512" height="512" rx="112" fill="url(#sky)"/>
-                <!-- Boğaz Köprüsü Silüeti -->
-                <path d="M40 270 Q155 150 256 270 Q357 150 472 270" fill="none" stroke="#38bdf8" stroke-width="10"/>
-                <line x1="155" y1="160" x2="155" y2="340" stroke="#e2e8f0" stroke-width="12"/>
-                <line x1="357" y1="160" x2="357" y2="340" stroke="#e2e8f0" stroke-width="12"/>
-                <!-- Ön Plan S & Gözlük -->
-                <rect x="174" y="210" width="66" height="40" rx="8" fill="#090d16" stroke="#fbbf24" stroke-width="8"/>
-                <rect x="272" y="210" width="66" height="40" rx="8" fill="#090d16" stroke="#fbbf24" stroke-width="8"/>
-                <line x1="240" y1="228" x2="272" y2="228" stroke="#fbbf24" stroke-width="8"/>
-                <text x="256" y="405" font-family="Arial, sans-serif" font-size="112" font-weight="900" fill="#ffffff" text-anchor="middle">SEVA</text>
-            </svg>`;
-            const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const img = new Image();
-            img.onload = () => {
-                const c = document.createElement('canvas');
-                c.width = 512; c.height = 512;
-                c.getContext('2d').drawImage(img, 0, 0, 512, 512);
-                const dataUrl = c.toDataURL('image/png');
-                document.getElementById('dynamic-apple-icon').href = dataUrl;
-                document.getElementById('dynamic-favicon').href = dataUrl;
-                document.getElementById('menu-logo').src = dataUrl;
-                URL.revokeObjectURL(url);
-            };
-            img.src = url;
-        }
-        buildAppIcon();
+    <div class="hero-section">
+      <div class="subtitle-tag">Senfonik Arcade</div>
+      <h1 class="game-title">LİRA<span>KRİSTAL YANKISI</span></h1>
+      <div class="best-score-line" id="menu-best">En Yüksek Skor: 0</div>
+    </div>
 
-        // ==========================================
-        // 1. SES MOTORU
-        // ==========================================
-        class SoundFX {
-            constructor() { this.ctx = null; this.enabled = true; }
-            init() {
-                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                if (this.ctx.state === 'suspended') this.ctx.resume();
+    <div class="quests-box">
+      <div class="quests-header">
+        <span>Aktif Görevler</span>
+        <span>Ödül</span>
+      </div>
+      <div id="quests-container"></div>
+    </div>
+
+    <div class="actions-stack">
+      <button class="btn-primary" id="btn-play-normal">
+        <span>▶</span>
+        <span>SONSUZ TUR BAŞLAT</span>
+      </button>
+      <div class="secondary-row">
+        <button class="btn-secondary btn-gold" id="btn-play-daily">
+          <span>☀</span>
+          <span>GÜNLÜK (60s)</span>
+        </button>
+        <button class="btn-secondary" id="btn-open-shop">
+          <span>✦</span>
+          <span>ATÖLYE</span>
+        </button>
+      </div>
+      <div class="creator-signature" id="creator-signature">Tasarım: <strong>Senin Stüdyon</strong></div>
+    </div>
+  </div>
+
+  <!-- KİŞİSELLEŞTİRME MODAL -->
+  <div id="personalize-overlay" class="overlay modal-panel hidden">
+    <div class="modal-header">
+      <div class="modal-title">Oyunu Kişiselleştir</div>
+      <button class="icon-btn" id="btn-close-personalize">✕</button>
+    </div>
+
+    <div class="section-label">Yapımcı İmzası</div>
+    <div class="personalize-card">
+      <div class="upgrade-sub">Ana menünün altında görünecek adını veya stüdyo ismini yaz:</div>
+      <div class="custom-input-row">
+        <input type="text" id="input-creator-name" class="custom-input" maxlength="24" placeholder="Örn: Ahmet veya Nova Studio">
+        <button class="upgrade-btn" id="btn-save-creator">Kaydet</button>
+      </div>
+    </div>
+
+    <div class="section-label">Özel Tema Rengi</div>
+    <div class="personalize-card">
+      <div class="upgrade-sub">Oyunun vurgu rengini ve arayüz atmosferini seç:</div>
+      <div class="palette-row" id="palette-grid"></div>
+    </div>
+  </div>
+
+  <!-- ATÖLYE / MAĞAZA -->
+  <div id="shop-overlay" class="overlay modal-panel hidden">
+    <div class="modal-header">
+      <div class="modal-title">Atölye</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="pill-badge"><span>★</span><span id="shop-stars">0</span></div>
+        <button class="icon-btn" id="btn-close-shop">✕</button>
+      </div>
+    </div>
+
+    <div class="section-label">Tel Tınıları & Temalar</div>
+    <div class="shop-grid" id="themes-grid"></div>
+
+    <div class="section-label">Akustik Geliştirmeler</div>
+    <div class="upgrade-list" id="upgrades-list"></div>
+  </div>
+
+  <!-- YARDIM / NASIL OYNANIR -->
+  <div id="help-overlay" class="overlay modal-panel hidden">
+    <div class="modal-header">
+      <div class="modal-title">Nasıl Oynanır?</div>
+      <button class="icon-btn" id="btn-close-help">✕</button>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; font-size:13px; line-height:1.5; color:#2b2e3b;">
+      <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
+        <div class="upgrade-title">1. Teli Ger & Fırlat</div>
+        <div class="upgrade-sub">Ekrana dokunup aşağı çek (veya Space/S basılı tut). Zaman yavaşlar ve nişan çizgisi belirir. Odak barı bitmeden veya 2 saniye dolmadan bırak!</div>
+      </div>
+      <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
+        <div class="upgrade-title">2. Tam Akor & Yankı Teli</div>
+        <div class="upgrade-sub">Teli altın renkli aralıkta bırakırsan <b>Tam Akor</b> oluşur: kıvılcımlar kristalleri delip geçer ve altta bir süre topları geri sektiren bir <b>Yankı Teli</b> belirir.</div>
+      </div>
+      <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
+        <div class="upgrade-title">3. Nota Küreleri & Kreşendo</div>
+        <div class="upgrade-sub">Düşen nota kürelerini ve dönen kıvılcımları tele yaklaştırarak tek atışta 5 kıvılcıma kadar biriktir. Kristal kırdıkça Kreşendo barı dolar ve 2x puan verir.</div>
+      </div>
+      <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
+        <div class="upgrade-title">4. Kristal Türleri & Büyük Rezonatör</div>
+        <div class="upgrade-sub">Düz, Zırhlı (2 vuruş), Bölünen, Kırmızı Nova (zincirleme patlama) ve Siyah Gölge Dikeni (gergin teli koparır!). Belli aralıklarla gelen Büyük Rezonatör'ü yenerek +1 kalkan kazan.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DURAKLATMA -->
+  <div id="pause-overlay" class="overlay hidden" style="background:rgba(18,19,26,0.45); backdrop-filter:blur(6px);">
+    <div class="center-card">
+      <div class="modal-title">Oyun Duraklatıldı</div>
+      <div style="font-size:13px; color:#6c6f82;">Müzik ve akış beklemede.</div>
+      <button class="btn-primary" id="btn-resume">DEVAM ET</button>
+      <button class="btn-secondary" id="btn-pause-menu">ANA MENÜYE DÖN</button>
+    </div>
+  </div>
+
+  <!-- TUR SONU -->
+  <div id="gameover-overlay" class="overlay hidden" style="background:rgba(18,19,26,0.5); backdrop-filter:blur(8px);">
+    <div class="center-card">
+      <div class="subtitle-tag" id="go-mode-tag" style="margin:0 auto;">TUR TAMAMLANDI</div>
+      <div class="modal-title" id="go-title">Yankı Sona Erdi</div>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val" id="go-score">0</div>
+          <div class="stat-lbl">Toplam Puan</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" style="color:var(--accent);" id="go-stars">+0 ★</div>
+          <div class="stat-lbl">Kazanılan Yıldız</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="go-crystals">0</div>
+          <div class="stat-lbl">Kırılan Kristal</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="go-perfect">0</div>
+          <div class="stat-lbl">Tam Akor</div>
+        </div>
+      </div>
+
+      <div id="go-quest-summary" style="font-size:12px; font-weight:600; color:#2e7d32;"></div>
+
+      <button class="btn-primary" id="btn-retry">TEKRAR OYNA</button>
+      <button class="btn-secondary" id="btn-go-menu">ANA MENÜ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/**
+ * LİRA: KRİSTAL YANKISI
+ * Tek dosyalık dikey senfonik arcade oyunu.
+ * Tüm görseller Canvas 2D ile çizilir, tüm sesler ve dinamik müzik Web Audio API ile gerçek zamanlı sentezlenir.
+ */
+
+(function() {
+  'use strict';
+
+  // ============================================================================
+  // 1. KAYIT, TEMALAR & VERİ YÖNETİMİ (LocalStorage)
+  // ============================================================================
+  const STORAGE_KEY = 'lira_kristal_yankisi_save_v1';
+
+  const UI_PALETTES = [
+    { id: 'gold', name: 'Klasik Altın', color: '#d99b38', className: '' },
+    { id: 'navy', name: 'Gece Mavisi', color: '#2563eb', className: 'palette-navy' },
+    { id: 'emerald', name: 'Zümrüt Yeşili', color: '#059669', className: 'palette-emerald' },
+    { id: 'violet', name: 'Neon Mor', color: '#7c3aed', className: 'palette-violet' }
+  ];
+
+  // 5 Tel Tınısı & Görsel Teması (Varsayılan Klasik Arp + 4 Atölye Teması)
+  const THEMES = [
+    {
+      id: 'harp',
+      name: 'Klasik Arp',
+      desc: 'Sıcak üçgen dalga tınısı',
+      price: 0,
+      color: '#d99b38',
+      spark: '#1e202b',
+      glow: 'rgba(217, 155, 56, 0.5)',
+      wave: 'triangle'
+    },
+    {
+      id: 'synth',
+      name: 'Synth Yay',
+      desc: 'Yumuşak filtreli armoni',
+      price: 30,
+      color: '#2563eb',
+      spark: '#1d4ed8',
+      glow: 'rgba(37, 99, 235, 0.5)',
+      wave: 'synth'
+    },
+    {
+      id: 'marimba',
+      name: 'Ahşap Marimba',
+      desc: 'Vurmalı ahşap rezonans',
+      price: 45,
+      color: '#059669',
+      spark: '#047857',
+      glow: 'rgba(5, 150, 105, 0.5)',
+      wave: 'sine'
+    },
+    {
+      id: 'celesta',
+      name: 'Gümüş Çelesta',
+      desc: 'İnce ve parlak çan tınısı',
+      price: 60,
+      color: '#7c3aed',
+      spark: '#6d28d9',
+      glow: 'rgba(124, 58, 237, 0.5)',
+      wave: 'celesta'
+    },
+    {
+      id: 'fm',
+      name: 'FM Kristal',
+      desc: 'Camsı yüksek frekans modülasyonu',
+      price: 80,
+      color: '#e11d48',
+      spark: '#be123c',
+      glow: 'rgba(225, 29, 72, 0.5)',
+      wave: 'fm'
+    }
+  ];
+
+  const UPGRADES = [
+    {
+      id: 'echoDuration',
+      name: 'Yankı Teli Süresi',
+      desc: 'Tam Akor sonrası koruyucu telin kalma süresi',
+      baseCost: 25,
+      stepCost: 25,
+      maxLevel: 3
+    },
+    {
+      id: 'magnetRadius',
+      name: 'Küre Yakalama Alanı',
+      desc: 'Nota kürelerinin ve kıvılcımların tele çekim mesafesi',
+      baseCost: 25,
+      stepCost: 25,
+      maxLevel: 3
+    },
+    {
+      id: 'crescendoSpeed',
+      name: 'Kreşendo Hızı',
+      desc: '2x puan barının dolma hızı ve süresi',
+      baseCost: 30,
+      stepCost: 30,
+      maxLevel: 3
+    }
+  ];
+
+  const QUEST_POOL = [
+    { id: 'q_break', type: 'break', label: '{target} kristal kır', targets: [25, 45, 70], reward: [12, 20, 30] },
+    { id: 'q_perfect', type: 'perfect', label: '{target} kez Tam Akor yap', targets: [3, 6, 10], reward: [15, 25, 35] },
+    { id: 'q_nova', type: 'nova', label: '{target} Nova patlat', targets: [2, 4, 7], reward: [14, 22, 32] },
+    { id: 'q_multi', type: 'multi', label: 'Tek atışta 4+ kıvılcım fırlat ({target} kez)', targets: [2, 4, 6], reward: [15, 24, 34] },
+    { id: 'q_crescendo', type: 'crescendo', label: '{target} kez Kreşendo başlat', targets: [1, 2, 3], reward: [16, 26, 36] },
+    { id: 'q_boss', type: 'boss', label: 'Büyük Rezonatör yen', targets: [1], reward: [35] }
+  ];
+
+  function createRandomQuest(existingTypes) {
+    const candidates = QUEST_POOL.filter(q => !existingTypes.includes(q.type));
+    const pool = candidates.length > 0 ? candidates : QUEST_POOL;
+    const tpl = pool[Math.floor(Math.random() * pool.length)];
+    const tier = Math.floor(Math.random() * tpl.targets.length);
+    const target = tpl.targets[tier];
+    return {
+      uid: Math.random().toString(36).slice(2, 9),
+      type: tpl.type,
+      label: tpl.label.replace('{target}', target),
+      target: target,
+      progress: 0,
+      reward: tpl.reward[tier]
+    };
+  }
+
+  let saveData = {
+    stars: 20,
+    bestScore: 0,
+    bestDaily: 0,
+    creatorName: 'Senin Stüdyon',
+    uiPalette: 'gold',
+    selectedTheme: 'harp',
+    unlockedThemes: ['harp'],
+    upgrades: {
+      echoDuration: 0,
+      magnetRadius: 0,
+      crescendoSpeed: 0
+    },
+    quests: []
+  };
+
+  function loadSave() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        saveData = Object.assign({}, saveData, parsed);
+        saveData.upgrades = Object.assign({ echoDuration: 0, magnetRadius: 0, crescendoSpeed: 0 }, parsed.upgrades || {});
+      }
+    } catch (e) {}
+    while (saveData.quests.length < 3) {
+      const types = saveData.quests.map(q => q.type);
+      saveData.quests.push(createRandomQuest(types));
+    }
+    persistSave();
+  }
+
+  function persistSave() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+    } catch (e) {}
+  }
+
+  // ============================================================================
+  // 2. SENTEZLENMİŞ SES MOTORU (Web Audio API - Dış Dosya Yok)
+  // ============================================================================
+  const SoundEngine = {
+    ctx: null,
+    muted: false,
+    bgmTimer: null,
+    step: 0,
+    scale: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00],
+
+    init() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          this.ctx = new AudioCtx();
+        }
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    },
+
+    toggleMute() {
+      this.muted = !this.muted;
+      return this.muted;
+    },
+
+    getThemeWave() {
+      const t = THEMES.find(th => th.id === saveData.selectedTheme);
+      return t ? t.wave : 'triangle';
+    },
+
+    playStretchTick(ratio) {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220 + ratio * 380, now);
+      gain.gain.setValueAtTime(0.03, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.045);
+    },
+
+    playRelease(sparkCount, isPerfect) {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+
+      const now = this.ctx.currentTime;
+      const wave = this.getThemeWave();
+      const chordIndices = isPerfect ? [0, 2, 4, 5, 7] : [0, 2, 4];
+      const count = Math.min(chordIndices.length, Math.max(2, sparkCount + 1));
+
+      for (let i = 0; i < count; i++) {
+        const freq = this.scale[chordIndices[i]] * (isPerfect ? 1 : 0.75);
+        const start = now + i * 0.025;
+        this.triggerNote(freq, start, isPerfect ? 0.65 : 0.38, isPerfect ? 0.11 : 0.08, wave);
+      }
+    },
+
+    triggerNote(freq, startTime, duration, volume, waveType) {
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      if (waveType === 'fm') {
+        const mod = this.ctx.createOscillator();
+        const modGain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+        mod.type = 'sine';
+        mod.frequency.setValueAtTime(freq * 2.5, startTime);
+        modGain.gain.setValueAtTime(freq * 1.2, startTime);
+        modGain.gain.exponentialRampToValueAtTime(1, startTime + duration * 0.6);
+        mod.connect(modGain);
+        modGain.connect(osc.frequency);
+        mod.start(startTime);
+        mod.stop(startTime + duration);
+      } else if (waveType === 'celesta') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq * 2, startTime);
+      } else if (waveType === 'synth') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, startTime);
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1100, startTime);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.linearRampToValueAtTime(volume * 0.85, startTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0008, startTime + duration);
+        osc.start(startTime);
+        osc.stop(startTime + duration + 0.02);
+        return;
+      } else {
+        osc.type = waveType || 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime);
+      }
+
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(volume, startTime + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0008, startTime + duration);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.02);
+    },
+
+    playHit(combo, isBreak, isNova) {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+
+      const now = this.ctx.currentTime;
+      const idx = combo % this.scale.length;
+      const octave = combo >= this.scale.length ? 1.5 : 1;
+      const freq = this.scale[idx] * octave;
+
+      this.triggerNote(freq, now, isBreak ? 0.32 : 0.16, isBreak ? 0.09 : 0.05, this.getThemeWave());
+
+      if (isNova) {
+        const sub = this.ctx.createOscillator();
+        const subGain = this.ctx.createGain();
+        sub.type = 'sine';
+        sub.frequency.setValueAtTime(140, now);
+        sub.frequency.exponentialRampToValueAtTime(36, now + 0.35);
+        subGain.gain.setValueAtTime(0.22, now);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+        sub.connect(subGain);
+        subGain.connect(this.ctx.destination);
+        sub.start(now);
+        sub.stop(now + 0.38);
+      }
+    },
+
+    playCatchOrb(count) {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const freq = this.scale[Math.min(this.scale.length - 1, count + 3)];
+      this.triggerNote(freq, now, 0.22, 0.07, 'sine');
+    },
+
+    playDamage() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(135, now);
+      osc.frequency.linearRampToValueAtTime(68, now + 0.28);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.32);
+    },
+
+    startMusic() {
+      if (this.bgmTimer) return;
+      this.step = 0;
+      this.bgmTimer = setInterval(() => {
+        if (this.muted || !game.running || game.paused) return;
+        this.init();
+        if (!this.ctx) return;
+        const pattern = [0, 2, 4, 7, 4, 2, 1, 4];
+        const noteIdx = pattern[this.step % pattern.length];
+        const bassShift = Math.floor(this.step / 16) % 2 === 1 ? 0.8909 : 1;
+        const freq = this.scale[noteIdx] * 0.5 * bassShift;
+        this.triggerNote(freq, this.ctx.currentTime, 0.55, 0.025, 'sine');
+        this.step++;
+      }, 420);
+    },
+
+    stopMusic() {
+      if (this.bgmTimer) {
+        clearInterval(this.bgmTimer);
+        this.bgmTimer = null;
+      }
+    }
+  };
+
+  // ============================================================================
+  // 3. TOHUM TABANLI RASTGELE SAYI ÜRETECİ (Günlük Mod İçin Deterministik)
+  // ============================================================================
+  function createRNG(seed) {
+    let s = seed >>> 0;
+    return function() {
+      s = (s + 0x6D2B79F5) | 0;
+      let t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function getTodaySeed() {
+    const d = new Date();
+    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  }
+
+  // ============================================================================
+  // 4. OYUN MOTORU VE FİZİK DURUMU
+  // ============================================================================
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const shell = document.getElementById('game-shell');
+
+  let W = 390;
+  let H = 780;
+  let DPR = 1;
+
+  function resizeCanvas() {
+    const rect = shell.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = W * DPR;
+    canvas.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Arka Plan Evreleri: Kağıt -> Sis -> Kum -> İnci
+  const BG_PHASES = [
+    { name: 'Kağıt', top: [246, 243, 235], bot: [233, 228, 216], ink: '#1e202b', line: 'rgba(30,32,43,0.06)' },
+    { name: 'Sis',   top: [223, 232, 238], bot: [199, 213, 224], ink: '#17232e', line: 'rgba(23,35,46,0.07)' },
+    { name: 'Kum',   top: [243, 229, 206], bot: [227, 205, 173], ink: '#2c2114', line: 'rgba(44,33,20,0.07)' },
+    { name: 'İnci',  top: [236, 229, 244], bot: [215, 205, 232], ink: '#241b35', line: 'rgba(36,27,53,0.07)' }
+  ];
+
+  const game = {
+    running: false,
+    paused: false,
+    mode: 'normal',
+    rng: Math.random,
+    time: 0,
+    dailyTimeLeft: 60,
+
+    score: 0,
+    shields: 3,
+    maxShields: 3,
+    combo: 0,
+    comboTimer: 0,
+
+    focus: 1.0,
+    string: {
+      pulling: false,
+      pullX: 0,
+      pullY: 0,
+      holdTime: 0,
+      brokenTimer: 0,
+      vibAmp: 0,
+      vibPhase: 0,
+      loadedSparks: 1,
+      lastTickStep: 0
+    },
+
+    echoString: {
+      active: false,
+      timer: 0,
+      maxTimer: 4.5
+    },
+
+    crescendo: {
+      charge: 0,
+      active: false,
+      timer: 0
+    },
+
+    stats: {
+      crystalsBroken: 0,
+      perfectChords: 0,
+      novasTriggered: 0,
+      multiShots: 0,
+      crescendos: 0,
+      bossesDefeated: 0
+    },
+
+    phaseIndex: 0,
+    spawnTimer: 0,
+    waveCount: 0,
+    bossSpawnedCount: 0,
+    nextBossScore: 450,
+
+    sparks: [],
+    crystals: [],
+    orbs: [],
+    particles: [],
+    floatingTexts: [],
+    shockwaves: [],
+    boss: null,
+
+    shake: 0
+  };
+
+  // ============================================================================
+  // 5. YARDIMCI FONKSİYONLAR & GÖREV GÜNCELLEME
+  // ============================================================================
+  function getTheme() {
+    return THEMES.find(t => t.id === saveData.selectedTheme) || THEMES[0];
+  }
+
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  function addFloatingText(x, y, text, color, size = 15) {
+    game.floatingTexts.push({
+      x, y, text, color, size,
+      vy: -38,
+      life: 1.0
+    });
+  }
+
+  function spawnParticles(x, y, color, count = 12, speed = 150) {
+    for (let i = 0; i < count; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const spd = (0.3 + Math.random() * 0.7) * speed;
+      game.particles.push({
+        x, y,
+        vx: Math.cos(ang) * spd,
+        vy: Math.sin(ang) * spd,
+        r: 2 + Math.random() * 3.5,
+        color,
+        life: 0.5 + Math.random() * 0.35,
+        maxLife: 0.85
+      });
+    }
+  }
+
+  function addShockwave(x, y, maxR, color) {
+    game.shockwaves.push({
+      x, y, r: 8, maxR, color, life: 1.0
+    });
+  }
+
+  function recordQuestProgress(type, amount = 1) {
+    saveData.quests.forEach(q => {
+      if (q.type === type && q.progress < q.target) {
+        q.progress = Math.min(q.target, q.progress + amount);
+      }
+    });
+  }
+
+  // ============================================================================
+  // 6. VARLIK OLUŞTURMA (KRİSTALLER, NOTA KÜRELERİ, BÜYÜK REZONATÖR)
+  // ============================================================================
+  function spawnCrystal(type, x, y, customSpeed) {
+    const r = type === 'mini' ? 13 : (type === 'shadow' ? 16 : (type === 'nova' ? 21 : 22));
+    const hp = type === 'armored' ? 2 : 1;
+    const baseSpeed = customSpeed || (46 + Math.min(55, game.score * 0.022));
+    const speed = type === 'shadow' ? baseSpeed * 1.65 : (type === 'mini' ? baseSpeed * 1.15 : baseSpeed);
+
+    game.crystals.push({
+      type,
+      x,
+      y,
+      r,
+      hp,
+      maxHp: hp,
+      vx: type === 'mini' ? (game.rng() - 0.5) * 65 : 0,
+      vy: speed,
+      rot: game.rng() * Math.PI * 2,
+      vRot: (game.rng() - 0.5) * 1.4,
+      hitFlash: 0
+    });
+  }
+
+  function spawnWave() {
+    game.waveCount++;
+    const rng = game.rng;
+    const margin = 44;
+    const usableW = W - margin * 2;
+    const count = Math.min(5, 2 + Math.floor(game.waveCount / 4) + (rng() > 0.55 ? 1 : 0));
+    const slots = [];
+
+    for (let i = 0; i < count; i++) {
+      let x = margin + rng() * usableW;
+      for (let attempt = 0; attempt < 8; attempt++) {
+        if (slots.every(sx => Math.abs(sx - x) > 54)) break;
+        x = margin + rng() * usableW;
+      }
+      slots.push(x);
+
+      const roll = rng();
+      let type = 'prism';
+      if (game.waveCount >= 2 && roll < 0.14) {
+        type = 'nova';
+      } else if (game.waveCount >= 3 && roll < 0.30) {
+        type = 'armored';
+      } else if (game.waveCount >= 4 && roll < 0.44) {
+        type = 'splitter';
+      } else if (game.waveCount >= 5 && roll < 0.56) {
+        type = 'shadow';
+      }
+
+      spawnCrystal(type, x, -30 - rng() * 35);
+    }
+
+    if (game.waveCount % 2 === 1 || rng() < 0.45) {
+      game.orbs.push({
+        x: margin + rng() * usableW,
+        y: -20,
+        r: 10,
+        vy: 68 + rng() * 25,
+        phase: rng() * Math.PI * 2
+      });
+    }
+  }
+
+  function spawnBoss() {
+    game.bossSpawnedCount++;
+    const petalCount = Math.min(8, 4 + game.bossSpawnedCount);
+    const petals = [];
+    for (let i = 0; i < petalCount; i++) {
+      petals.push({
+        angle: (i / petalCount) * Math.PI * 2,
+        alive: true,
+        hp: 1
+      });
+    }
+    game.boss = {
+      x: W * 0.5,
+      y: -70,
+      r: 36,
+      hp: 4 + game.bossSpawnedCount * 2,
+      maxHp: 4 + game.bossSpawnedCount * 2,
+      vy: 20 + Math.min(14, game.bossSpawnedCount * 2),
+      rot: 0,
+      petals,
+      hitFlash: 0
+    };
+    addFloatingText(W * 0.5, H * 0.28, 'BÜYÜK REZONATÖR!', '#c5821d', 18);
+  }
+
+  // ============================================================================
+  // 7. TEL FİZİĞİ, NİŞAN ALMA VE KIVILCIM FIRLATMA
+  // ============================================================================
+  function getStringAnchorY() {
+    return H - 135;
+  }
+
+  function getShieldLineY() {
+    return H - 52;
+  }
+
+  function getEchoLineY() {
+    return H - 88;
+  }
+
+  function getStringControlPoint() {
+    const ay = getStringAnchorY();
+    const maxPullX = W * 0.34;
+    const maxPullY = 92;
+    return {
+      x: W * 0.5 + game.string.pullX * maxPullX,
+      y: ay + game.string.pullY * maxPullY
+    };
+  }
+
+  function isPerfectRange(pullY) {
+    return pullY >= 0.68 && pullY <= 0.84;
+  }
+
+  function computeLaunchVelocity() {
+    const cp = getStringControlPoint();
+    const targetX = W * 0.5 - game.string.pullX * (W * 0.42);
+    const targetY = getStringAnchorY() - 220;
+    let dx = targetX - cp.x;
+    let dy = targetY - cp.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const speed = 560 + game.string.pullY * 340;
+    return {
+      vx: (dx / len) * speed,
+      vy: (dy / len) * speed
+    };
+  }
+
+  function releaseString() {
+    if (!game.string.pulling) return;
+    const pullY = game.string.pullY;
+    game.string.pulling = false;
+    game.string.holdTime = 0;
+
+    if (pullY < 0.16) {
+      game.string.pullX = 0;
+      game.string.pullY = 0;
+      return;
+    }
+
+    const perfect = isPerfectRange(pullY);
+    const count = game.string.loadedSparks;
+    const cp = getStringControlPoint();
+    const vel = computeLaunchVelocity();
+    const baseAngle = Math.atan2(vel.vy, vel.vx);
+    const speed = Math.hypot(vel.vx, vel.vy);
+
+    const spread = count > 1 ? 0.085 : 0;
+    for (let i = 0; i < count; i++) {
+      const offset = (i - (count - 1) / 2) * spread;
+      const ang = baseAngle + offset;
+      game.sparks.push({
+        x: cp.x,
+        y: cp.y,
+        vx: Math.cos(ang) * speed,
+        vy: Math.sin(ang) * speed,
+        r: perfect ? 7.5 : 6,
+        piercing: perfect,
+        bouncesLeft: perfect ? 9 : 6,
+        trail: []
+      });
+    }
+
+    if (count >= 4) {
+      game.stats.multiShots++;
+      recordQuestProgress('multi', 1);
+    }
+
+    if (perfect) {
+      game.stats.perfectChords++;
+      recordQuestProgress('perfect', 1);
+
+      const echoBonus = saveData.upgrades.echoDuration * 1.3;
+      game.echoString.active = true;
+      game.echoString.maxTimer = 4.2 + echoBonus;
+      game.echoString.timer = game.echoString.maxTimer;
+
+      addFloatingText(cp.x, cp.y - 24, 'TAM AKOR! • DELİCİ + YANKI', '#d99b38', 14);
+      addShockwave(cp.x, cp.y, 120, 'rgba(217, 155, 56, 0.6)');
+      game.shake = 6;
+    }
+
+    SoundEngine.playRelease(count, perfect);
+
+    game.string.vibAmp = 18 * pullY;
+    game.string.vibPhase = 0;
+    game.string.pullX = 0;
+    game.string.pullY = 0;
+    game.string.loadedSparks = 1;
+  }
+
+  function breakString() {
+    game.string.pulling = false;
+    game.string.pullX = 0;
+    game.string.pullY = 0;
+    game.string.holdTime = 0;
+    game.string.brokenTimer = 1.65;
+    game.string.loadedSparks = 1;
+    game.shake = 10;
+    SoundEngine.playDamage();
+    addFloatingText(W * 0.5, getStringAnchorY() - 10, 'TEL KOPTU!', '#e11d48', 16);
+    spawnParticles(W * 0.5, getStringAnchorY(), '#1e202b', 18, 180);
+  }
+
+  // ============================================================================
+  // 8. KONTROLLER (Dokunmatik, Fare ve Klavye)
+  // ============================================================================
+  let pointerId = null;
+  let dragStartX = 0;
+  let dragStartY = 0;
+
+  function onPointerDown(e) {
+    if (!game.running || game.paused) return;
+    if (game.string.brokenTimer > 0) return;
+    SoundEngine.init();
+
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left);
+    const y = (e.clientY - rect.top);
+
+    pointerId = e.pointerId;
+    dragStartX = x;
+    dragStartY = y;
+    game.string.pulling = true;
+    game.string.holdTime = 0;
+    game.string.pullX = 0;
+    game.string.pullY = 0.18;
+  }
+
+  function onPointerMove(e) {
+    if (!game.string.pulling || e.pointerId !== pointerId) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left);
+    const y = (e.clientY - rect.top);
+
+    const dx = x - dragStartX;
+    const dy = y - dragStartY;
+
+    game.string.pullX = Math.max(-1, Math.min(1, dx / (W * 0.34)));
+    game.string.pullY = Math.max(0.1, Math.min(1, (dy + 22) / 145));
+
+    const step = Math.floor(game.string.pullY * 10);
+    if (step !== game.string.lastTickStep) {
+      game.string.lastTickStep = step;
+      SoundEngine.playStretchTick(game.string.pullY);
+    }
+  }
+
+  function onPointerUp(e) {
+    if (e.pointerId !== pointerId) return;
+    pointerId = null;
+    if (game.string.pulling) {
+      releaseString();
+    }
+  }
+
+  canvas.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
+
+  const keys = {};
+  window.addEventListener('keydown', (e) => {
+    keys[e.code] = true;
+
+    if (e.code === 'KeyM') {
+      toggleMuteUI();
+    }
+    if (e.code === 'KeyP' || e.code === 'Escape') {
+      if (game.running) togglePause();
+    }
+    if (e.code === 'Enter') {
+      if (!game.running && document.getElementById('personalize-overlay').classList.contains('hidden')) {
+        startGame('normal');
+      }
+    }
+    if ((e.code === 'Space' || e.code === 'ArrowDown' || e.code === 'KeyS') && game.running && !game.paused) {
+      e.preventDefault();
+      if (!game.string.pulling && game.string.brokenTimer <= 0) {
+        SoundEngine.init();
+        game.string.pulling = true;
+        game.string.holdTime = 0;
+        game.string.pullX = 0;
+        game.string.pullY = 0.2;
+      }
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    keys[e.code] = false;
+    if ((e.code === 'Space' || e.code === 'ArrowDown' || e.code === 'KeyS') && game.string.pulling) {
+      releaseString();
+    }
+  });
+
+  // ============================================================================
+  // 9. ÇARPIŞMA, PATLAMA VE PUANLAMA MANTIĞI
+  // ============================================================================
+  function addScore(basePoints, x, y) {
+    const mult = (1 + Math.floor(game.combo / 3)) * (game.crescendo.active ? 2 : 1);
+    const total = Math.round(basePoints * mult);
+    game.score += total;
+
+    const targetPhase = Math.floor(game.score / 500) % BG_PHASES.length;
+    if (targetPhase !== game.phaseIndex) {
+      game.phaseIndex = targetPhase;
+    }
+
+    if (x !== undefined && y !== undefined) {
+      addFloatingText(x, y, `+${total}`, game.crescendo.active ? '#d99b38' : '#1e202b', total >= 50 ? 16 : 13);
+    }
+  }
+
+  function chargeCrescendo(amount) {
+    if (game.crescendo.active) return;
+    const speedMult = 1 + saveData.upgrades.crescendoSpeed * 0.25;
+    game.crescendo.charge = Math.min(1, game.crescendo.charge + amount * speedMult);
+    if (game.crescendo.charge >= 1) {
+      game.crescendo.active = true;
+      game.crescendo.timer = 6.5 + saveData.upgrades.crescendoSpeed * 1.2;
+      game.stats.crescendos++;
+      recordQuestProgress('crescendo', 1);
+      addFloatingText(W * 0.5, H * 0.35, 'KREŞENDO! 2X PUAN', '#d99b38', 18);
+      addShockwave(W * 0.5, H * 0.35, 160, 'rgba(217, 155, 56, 0.5)');
+    }
+  }
+
+  function triggerNovaExplosion(x, y, depth = 0) {
+    game.stats.novasTriggered++;
+    recordQuestProgress('nova', 1);
+    addShockwave(x, y, 115, 'rgba(239, 68, 68, 0.65)');
+    spawnParticles(x, y, '#ef4444', 22, 220);
+    game.shake = Math.max(game.shake, 8);
+    SoundEngine.playHit(game.combo + 3, true, true);
+
+    const blastR = 112;
+    for (let i = game.crystals.length - 1; i >= 0; i--) {
+      const c = game.crystals[i];
+      if (Math.hypot(c.x - x, c.y - y) <= blastR + c.r) {
+        destroyCrystal(i, true, depth + 1);
+      }
+    }
+
+    if (game.boss && Math.hypot(game.boss.x - x, game.boss.y - y) <= blastR + game.boss.r) {
+      damageBoss(2);
+    }
+  }
+
+  function destroyCrystal(index, fromExplosion = false, depth = 0) {
+    const c = game.crystals[index];
+    if (!c) return;
+    game.crystals.splice(index, 1);
+
+    game.combo++;
+    game.comboTimer = 2.6;
+    game.stats.crystalsBroken++;
+    recordQuestProgress('break', 1);
+    chargeCrescendo(0.11);
+
+    const colors = {
+      prism: '#3b82f6',
+      armored: '#64748b',
+      splitter: '#10b981',
+      nova: '#ef4444',
+      shadow: '#1e202b',
+      mini: '#34d399'
+    };
+    const col = colors[c.type] || '#3b82f6';
+    spawnParticles(c.x, c.y, col, 14, 170);
+
+    const pts = c.type === 'armored' ? 30 : (c.type === 'nova' ? 35 : (c.type === 'shadow' ? 40 : 20));
+    addScore(pts, c.x, c.y);
+
+    if (!fromExplosion) {
+      SoundEngine.playHit(game.combo, true, false);
+    }
+
+    if (c.type === 'splitter') {
+      spawnCrystal('mini', c.x - 16, c.y, c.vy);
+      spawnCrystal('mini', c.x + 16, c.y, c.vy);
+    }
+
+    if (c.type === 'nova' && depth < 5) {
+      triggerNovaExplosion(c.x, c.y, depth);
+    }
+  }
+
+  function damageBoss(dmg) {
+    const b = game.boss;
+    if (!b) return;
+    b.hp -= dmg;
+    b.hitFlash = 1.0;
+    game.combo++;
+    game.comboTimer = 2.6;
+    SoundEngine.playHit(game.combo, false, false);
+    spawnParticles(b.x, b.y, '#d99b38', 10, 140);
+
+    if (b.hp <= 0) {
+      addShockwave(b.x, b.y, 180, 'rgba(217, 155, 56, 0.75)');
+      spawnParticles(b.x, b.y, '#d99b38', 36, 260);
+      addScore(250, b.x, b.y);
+      game.stats.bossesDefeated++;
+      recordQuestProgress('boss', 1);
+
+      if (game.shields < game.maxShields) {
+        game.shields++;
+        addFloatingText(b.x, b.y - 30, '+1 KALKAN YENİLENDİ!', '#10b981', 16);
+      } else {
+        addScore(150, b.x, b.y - 30);
+      }
+
+      game.phaseIndex = (game.phaseIndex + 1) % BG_PHASES.length;
+      game.nextBossScore = game.score + 650 + game.bossSpawnedCount * 200;
+      game.boss = null;
+      game.shake = 12;
+      SoundEngine.playRelease(5, true);
+    }
+  }
+
+  // ============================================================================
+  // 10. ANA GÜNCELLEME DÖNGÜSÜ (UPDATE)
+  // ============================================================================
+  function update(rawDt) {
+    const dt = Math.min(0.05, rawDt);
+    game.time += dt;
+
+    if (!game.running || game.paused) return;
+
+    if (keys['ArrowLeft'] || keys['KeyA']) {
+      if (game.string.pulling) game.string.pullX = Math.max(-1, game.string.pullX - dt * 1.8);
+    }
+    if (keys['ArrowRight'] || keys['KeyD']) {
+      if (game.string.pulling) game.string.pullX = Math.min(1, game.string.pullX + dt * 1.8);
+    }
+    if ((keys['Space'] || keys['ArrowDown'] || keys['KeyS']) && game.string.pulling) {
+      game.string.pullY = Math.min(1, game.string.pullY + dt * 0.95);
+    }
+
+    if (game.mode === 'daily') {
+      game.dailyTimeLeft -= dt;
+      if (game.dailyTimeLeft <= 0) {
+        game.dailyTimeLeft = 0;
+        endGame(true);
+        return;
+      }
+    }
+
+    let timeScale = 1.0;
+    if (game.string.pulling) {
+      game.string.holdTime += dt;
+      if (game.string.holdTime >= 2.0) {
+        releaseString();
+      } else if (game.focus > 0) {
+        timeScale = 0.28;
+        game.focus = Math.max(0, game.focus - dt * 0.48);
+      }
+    } else {
+      game.focus = Math.min(1, game.focus + dt * 0.32);
+    }
+
+    const worldDt = dt * timeScale;
+
+    if (game.string.brokenTimer > 0) {
+      game.string.brokenTimer = Math.max(0, game.string.brokenTimer - dt);
+    }
+    if (game.string.vibAmp > 0.1) {
+      game.string.vibPhase += dt * 42;
+      game.string.vibAmp *= Math.pow(0.04, dt);
+    } else {
+      game.string.vibAmp = 0;
+    }
+
+    if (game.echoString.active) {
+      game.echoString.timer -= dt;
+      if (game.echoString.timer <= 0) {
+        game.echoString.active = false;
+      }
+    }
+
+    if (game.crescendo.active) {
+      game.crescendo.timer -= dt;
+      game.crescendo.charge = Math.max(0, game.crescendo.timer / 6.5);
+      if (game.crescendo.timer <= 0) {
+        game.crescendo.active = false;
+        game.crescendo.charge = 0;
+      }
+    }
+
+    if (game.comboTimer > 0) {
+      game.comboTimer -= dt;
+      if (game.comboTimer <= 0) {
+        game.combo = 0;
+      }
+    }
+
+    if (game.shake > 0) {
+      game.shake = Math.max(0, game.shake - dt * 28);
+    }
+
+    if (!game.boss) {
+      if (game.mode === 'normal' && game.score >= game.nextBossScore) {
+        spawnBoss();
+      } else {
+        game.spawnTimer -= worldDt;
+        if (game.spawnTimer <= 0) {
+          spawnWave();
+          game.spawnTimer = Math.max(1.55, 2.9 - game.waveCount * 0.04);
+        }
+      }
+    }
+
+    const stringY = getStringAnchorY();
+    const shieldY = getShieldLineY();
+    const echoY = getEchoLineY();
+    const magnetRange = 46 + saveData.upgrades.magnetRadius * 18;
+
+    // 1. Nota Kürelerini Güncelle
+    for (let i = game.orbs.length - 1; i >= 0; i--) {
+      const orb = game.orbs[i];
+      orb.y += orb.vy * worldDt;
+      orb.phase += dt * 4;
+
+      const distToString = Math.abs(orb.y - stringY);
+      if (game.string.brokenTimer <= 0 && distToString < magnetRange && game.string.loadedSparks < 5) {
+        orb.y += (stringY - orb.y) * Math.min(1, dt * 14);
+        if (Math.abs(orb.y - stringY) < 14) {
+          game.string.loadedSparks++;
+          SoundEngine.playCatchOrb(game.string.loadedSparks);
+          spawnParticles(orb.x, stringY, getTheme().color, 8, 90);
+          addFloatingText(orb.x, stringY - 16, `${game.string.loadedSparks}x KIVILCIM`, getTheme().color, 12);
+          game.orbs.splice(i, 1);
+          continue;
+        }
+      }
+
+      if (orb.y > H + 20) {
+        game.orbs.splice(i, 1);
+      }
+    }
+
+    // 2. Kıvılcımları Güncelle
+    for (let i = game.sparks.length - 1; i >= 0; i--) {
+      const sp = game.sparks[i];
+      sp.trail.push({ x: sp.x, y: sp.y });
+      if (sp.trail.length > 9) sp.trail.shift();
+
+      sp.x += sp.vx * dt;
+      sp.y += sp.vy * dt;
+
+      if (sp.x - sp.r < 12) {
+        sp.x = 12 + sp.r;
+        sp.vx = Math.abs(sp.vx);
+        sp.bouncesLeft--;
+        SoundEngine.playHit(game.combo, false, false);
+      } else if (sp.x + sp.r > W - 12) {
+        sp.x = W - 12 - sp.r;
+        sp.vx = -Math.abs(sp.vx);
+        sp.bouncesLeft--;
+        SoundEngine.playHit(game.combo, false, false);
+      }
+
+      if (sp.y - sp.r < 48) {
+        sp.y = 48 + sp.r;
+        sp.vy = Math.abs(sp.vy);
+        sp.bouncesLeft--;
+      }
+
+      if (game.echoString.active && sp.vy > 0 && Math.abs(sp.y - echoY) < 12) {
+        sp.y = echoY - 12;
+        sp.vy = -Math.abs(sp.vy) * 0.96;
+        sp.bouncesLeft--;
+        SoundEngine.playHit(game.combo + 1, false, false);
+        spawnParticles(sp.x, echoY, '#d99b38', 6, 80);
+      }
+
+      if (sp.vy > 0 && game.string.pulling && game.string.brokenTimer <= 0 && game.string.loadedSparks < 5) {
+        const cp = getStringControlPoint();
+        if (Math.hypot(sp.x - cp.x, sp.y - cp.y) < magnetRange) {
+          game.string.loadedSparks++;
+          SoundEngine.playCatchOrb(game.string.loadedSparks);
+          spawnParticles(cp.x, cp.y, getTheme().spark, 7, 80);
+          game.sparks.splice(i, 1);
+          continue;
+        }
+      }
+
+      // Kristallerle Çarpışma
+      for (let j = game.crystals.length - 1; j >= 0; j--) {
+        const c = game.crystals[j];
+        const dx = sp.x - c.x;
+        const dy = sp.y - c.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < sp.r + c.r) {
+          c.hp--;
+          c.hitFlash = 1.0;
+
+          if (!sp.piercing) {
+            const nx = dx / (dist || 1);
+            const ny = dy / (dist || 1);
+            const dot = sp.vx * nx + sp.vy * ny;
+            sp.vx -= 2 * dot * nx;
+            sp.vy -= 2 * dot * ny;
+            sp.x = c.x + nx * (sp.r + c.r + 2);
+            sp.y = c.y + ny * (sp.r + c.r + 2);
+            sp.bouncesLeft--;
+          }
+
+          if (c.hp <= 0) {
+            destroyCrystal(j, false, 0);
+          } else {
+            SoundEngine.playHit(game.combo, false, false);
+            spawnParticles(c.x, c.y, '#94a3b8', 8, 120);
+            addFloatingText(c.x, c.y - 12, 'ZIRH ÇATLADI', '#475569', 11);
+          }
+
+          if (!sp.piercing) break;
+        }
+      }
+
+      // Büyük Rezonatör (Boss) ile Çarpışma
+      if (game.boss) {
+        const b = game.boss;
+        let hitPetal = false;
+        for (let p of b.petals) {
+          if (!p.alive) continue;
+          const px = b.x + Math.cos(b.rot + p.angle) * (b.r + 24);
+          const py = b.y + Math.sin(b.rot + p.angle) * (b.r + 24);
+          if (Math.hypot(sp.x - px, sp.y - py) < sp.r + 12) {
+            p.alive = false;
+            hitPetal = true;
+            spawnParticles(px, py, '#f59e0b', 10, 140);
+            SoundEngine.playHit(game.combo, true, false);
+            if (!sp.piercing) {
+              sp.vy = -sp.vy;
+              sp.bouncesLeft--;
             }
-            tone(freq, type, dur, vol = 0.14, slide = null) {
-                if (!this.enabled) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                if (slide) osc.frequency.exponentialRampToValueAtTime(slide, this.ctx.currentTime + dur);
-                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + dur);
-            }
-            swipe() { this.tone(330, 'sine', 0.1, 0.12, 540); }
-            jump() { this.tone(270, 'triangle', 0.18, 0.16, 620); }
-            roll() { this.tone(210, 'sawtooth', 0.15, 0.1, 95); }
-            coin() {
-                this.tone(988, 'sine', 0.08, 0.11);
-                setTimeout(() => this.tone(1318, 'sine', 0.13, 0.11), 50);
-            }
-            powerup() { [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this.tone(f, 'triangle', 0.14, 0.14), i * 55)); }
-            crash() { this.tone(140, 'sawtooth', 0.4, 0.25, 38); }
-        }
-        const sfx = new SoundFX();
-
-        // ==========================================
-        // 2. SUBWAY MAĞAZA VERİLERİ & KAYIT
-        // ==========================================
-        const SURFERS = [
-            { id: 'sevaastian', name: 'Sevaastian', desc: 'Siyah kombin & kemik gözlük', price: 0, main: '#111827', accent: '#38bdf8', glasses: true },
-            { id: 'bosphorus_pro', name: 'Boğaz Runner', desc: 'Turkuaz-lacivert sahil stili', price: 150, main: '#0284c7', accent: '#fbbf24', glasses: true },
-            { id: 'galata_red', name: 'Galata Red', desc: 'Kırmızı ceket & yüksek tempo', price: 320, main: '#dc2626', accent: '#f8fafc', glasses: false }
-        ];
-
-        const BOARDS = [
-            { id: 'standard', name: 'Metro Board', desc: 'Standart kaykay (12sn kalkan)', price: 0, color: '#06b6d4', duration: 12 },
-            { id: 'bogaz_wave', name: 'Boğaz Dalgası', desc: 'Geniş hız kaykayı (15sn kalkan)', price: 200, color: '#38bdf8', duration: 15 },
-            { id: 'altin_star', name: 'Altın Yıldız', desc: 'VIP uzun kalkan (18sn kalkan)', price: 450, color: '#fbbf24', duration: 18 }
-        ];
-
-        let saveData = JSON.parse(localStorage.getItem('seva_istanbul_save')) || {
-            bestScore: 0,
-            bankCoins: 0,
-            unlockedSurfers: ['sevaastian'],
-            equippedSurfer: 'sevaastian',
-            unlockedBoards: ['standard'],
-            equippedBoard: 'standard',
-            headstartCount: 1,
-            scoreBoostCount: 1
-        };
-
-        function saveState() {
-            localStorage.setItem('seva_istanbul_save', JSON.stringify(saveData));
-            syncWalletUI();
+            break;
+          }
         }
 
-        // ==========================================
-        // 3. THREE.JS SAHNE, İSTANBUL HARİTASI & KATMANLI KARAKTER
-        // ==========================================
-        const LANE_WIDTH = 3.3;
-        const LANES = [-LANE_WIDTH, 0, LANE_WIDTH];
-
-        let scene, camera, renderer;
-        let segments = [];
-        let obstacles = [];
-        let coins = [];
-        let powerups = [];
-        let particles = [];
-
-        // Katmanlı 3D Karakter Düzlemleri (Back -> Mid -> Front Katmanlar)
-        let playerRoot, layeredCharGroup, backLayerMesh, bodyLayerMesh, headLayerMesh, frontLayerMesh, boardPlaneMesh;
-        let currentTab = 'surfers';
-
-        let isRunning = false;
-        let gameSpeed = 26;
-        const maxSpeed = 66;
-        let score = 0;
-        let runCoins = 0;
-        let scoreMult = 1;
-
-        let currentLane = 1;
-        let targetX = 0;
-        let playerY = 0;
-        let velocityY = 0;
-        let isJumping = false;
-        let isRolling = false;
-        let rollTimer = 0;
-        let animPhase = 0;
-
-        let activePU = { magnet: 0, jetpack: 0, sneakers: 0, multiplier: 0, shield: 0 };
-        let clock = new THREE.Clock();
-        let spawnTimer = 0;
-
-        // Dinamik Katmanlı Karakter Dokusu Üretici (CanvasTexture -> Katmanlı 3D Düzlemler)
-        function createLayeredSurferTextures(surfer) {
-            // 1. Arka Katman (Sırt Çantası / Gölge Katmanı)
-            const backCanvas = document.createElement('canvas');
-            backCanvas.width = 256; backCanvas.height = 256;
-            const bctx = backCanvas.getContext('2d');
-            bctx.fillStyle = '#0f172a';
-            bctx.beginPath();
-            bctx.roundRect(84, 88, 88, 92, 18);
-            bctx.fill();
-            bctx.strokeStyle = surfer.accent;
-            bctx.lineWidth = 6;
-            bctx.stroke();
-
-            // 2. Gövde & Bacak Katmanı
-            const bodyCanvas = document.createElement('canvas');
-            bodyCanvas.width = 256; bodyCanvas.height = 256;
-            const ctx = bodyCanvas.getContext('2d');
-            ctx.fillStyle = surfer.main;
-            ctx.beginPath();
-            ctx.roundRect(78, 82, 100, 96, 16);
-            ctx.fill();
-            ctx.strokeStyle = surfer.accent;
-            ctx.lineWidth = 5;
-            ctx.beginPath();
-            ctx.moveTo(88, 125); ctx.lineTo(168, 125);
-            ctx.stroke();
-
-            // Bacaklar
-            ctx.fillStyle = '#090d16';
-            ctx.beginPath();
-            ctx.roundRect(88, 174, 32, 64, 10);
-            ctx.roundRect(136, 174, 32, 64, 10);
-            ctx.fill();
-
-            // 3. Baş & Kemik Gözlük Katmanı
-            const headCanvas = document.createElement('canvas');
-            headCanvas.width = 256; headCanvas.height = 256;
-            const hctx = headCanvas.getContext('2d');
-            hctx.fillStyle = '#fcd34d';
-            hctx.beginPath();
-            hctx.roundRect(84, 16, 88, 76, 20);
-            hctx.fill();
-            // Saç
-            hctx.fillStyle = '#090d16';
-            hctx.beginPath();
-            hctx.roundRect(80, 10, 96, 28, 12);
-            hctx.fill();
-            // Kemik Gözlük
-            if (surfer.glasses) {
-                hctx.fillStyle = '#050811';
-                hctx.fillRect(92, 42, 30, 20);
-                hctx.fillRect(134, 42, 30, 20);
-                hctx.fillRect(122, 49, 12, 6);
-                hctx.fillStyle = surfer.accent;
-                hctx.fillRect(97, 46, 20, 10);
-                hctx.fillRect(139, 46, 20, 10);
-            }
-
-            // 4. Ön Katman (Ön Kol & Vurgu Şeridi)
-            const frontCanvas = document.createElement('canvas');
-            frontCanvas.width = 256; frontCanvas.height = 256;
-            const fctx = frontCanvas.getContext('2d');
-            fctx.fillStyle = surfer.accent;
-            fctx.beginPath();
-            fctx.roundRect(168, 96, 24, 72, 10);
-            fctx.fill();
-
-            return {
-                back: new THREE.CanvasTexture(backCanvas),
-                body: new THREE.CanvasTexture(bodyCanvas),
-                head: new THREE.CanvasTexture(headCanvas),
-                front: new THREE.CanvasTexture(frontCanvas)
-            };
+        if (!hitPetal && Math.hypot(sp.x - b.x, sp.y - b.y) < sp.r + b.r) {
+          damageBoss(sp.piercing ? 2 : 1);
+          if (!sp.piercing) {
+            const nx = (sp.x - b.x) / (Math.hypot(sp.x - b.x, sp.y - b.y) || 1);
+            const ny = (sp.y - b.y) / (Math.hypot(sp.x - b.x, sp.y - b.y) || 1);
+            sp.vx = nx * Math.hypot(sp.vx, sp.vy);
+            sp.vy = ny * Math.hypot(sp.vx, sp.vy);
+            sp.bouncesLeft--;
+          }
         }
+      }
 
-        function init() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x071324);
-            scene.fog = new THREE.FogExp2(0x071324, 0.0105);
+      if (sp.y > H + 30 || sp.bouncesLeft < 0) {
+        game.sparks.splice(i, 1);
+      }
+    }
 
-            camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 220);
-            camera.position.set(0, 6.2, 10.8);
-            camera.lookAt(0, 2, -12);
+    // 3. Kristalleri Güncelle
+    for (let i = game.crystals.length - 1; i >= 0; i--) {
+      const c = game.crystals[i];
+      c.x += c.vx * worldDt;
+      c.y += c.vy * worldDt;
+      c.rot += c.vRot * worldDt;
+      if (c.hitFlash > 0) c.hitFlash = Math.max(0, c.hitFlash - dt * 5);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            document.getElementById('game-container').appendChild(renderer.domElement);
+      if (c.x - c.r < 16) {
+        c.x = 16 + c.r;
+        c.vx = Math.abs(c.vx);
+      } else if (c.x + c.r > W - 16) {
+        c.x = W - 16 - c.r;
+        c.vx = -Math.abs(c.vx);
+      }
 
-            const hemi = new THREE.HemisphereLight(0xbae6fd, 0x0f172a, 1.0);
-            scene.add(hemi);
-            const dir = new THREE.DirectionalLight(0xffffff, 0.95);
-            dir.position.set(16, 32, 20);
-            scene.add(dir);
-
-            buildIstanbulTrack();
-            buildLayeredCharacter();
-            applyLoadout();
-            syncWalletUI();
-            renderShop();
-            setupEvents();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            renderer.render(scene, camera);
+      if (c.type === 'shadow' && game.string.pulling && game.string.brokenTimer <= 0) {
+        const cp = getStringControlPoint();
+        if (Math.abs(c.y - cp.y) < c.r + 14 && Math.abs(c.x - cp.x) < W * 0.42) {
+          breakString();
         }
+      }
 
-        // İSTANBUL HARİTASI: Boğaz Suyu, Sahil Hattı, Köprü Kemerleri & Kız Kulesi Silüeti
-        function buildIstanbulTrack() {
-            const segLen = 22;
-            const count = 12;
+      if (c.y + c.r >= shieldY) {
+        game.crystals.splice(i, 1);
+        game.shields--;
+        game.combo = 0;
+        game.shake = 11;
+        SoundEngine.playDamage();
+        spawnParticles(c.x, shieldY, '#ef4444', 18, 180);
+        addFloatingText(c.x, shieldY - 18, '-1 KALKAN', '#ef4444', 14);
 
-            const roadGeo = new THREE.BoxGeometry(12.6, 0.6, segLen);
-            const roadMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
-
-            // Sağ tarafta İstanbul Boğazı su şeridi
-            const bosphorusGeo = new THREE.BoxGeometry(16, 0.4, segLen);
-            const bosphorusMat = new THREE.MeshStandardMaterial({ color: 0x0369a1, roughness: 0.25, metalness: 0.3 });
-
-            // Sol tarafta İstanbul kıyı yapıları ve kule/köprü silüetleri
-            const railGeo = new THREE.BoxGeometry(0.16, 0.14, segLen);
-            const railMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7 });
-
-            for (let i = 0; i < count; i++) {
-                const grp = new THREE.Group();
-                grp.position.z = -i * segLen + 20;
-
-                const road = new THREE.Mesh(roadGeo, roadMat);
-                road.position.y = -0.3;
-                grp.add(road);
-
-                // Boğaz suyu (sağ taraf)
-                const sea = new THREE.Mesh(bosphorusGeo, bosphorusMat);
-                sea.position.set(14.5, -0.55, 0);
-                grp.add(sea);
-
-                // Kıyı korkuluğu
-                const shoreBar = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.35, 1.1, segLen),
-                    new THREE.MeshStandardMaterial({ color: 0xe2e8f0 })
-                );
-                shoreBar.position.set(6.5, 0.4, 0);
-                grp.add(shoreBar);
-
-                // 3 Şerit rayları
-                LANES.forEach(lx => {
-                    const r1 = new THREE.Mesh(railGeo, railMat); r1.position.set(lx - 0.72, 0.08, 0);
-                    const r2 = new THREE.Mesh(railGeo, railMat); r2.position.set(lx + 0.72, 0.08, 0);
-                    grp.add(r1, r2);
-                });
-
-                // Sol kıyı binaları ve belirli segmentlerde Kız Kulesi / Boğaz Kemeri
-                const bH = 8 + ((i * 5) % 8);
-                const bldg = new THREE.Mesh(
-                    new THREE.BoxGeometry(4.2, bH, segLen - 1.5),
-                    new THREE.MeshStandardMaterial({ color: i % 2 === 0 ? 0x172554 : 0x1e293b })
-                );
-                bldg.position.set(-8.6, bH / 2 - 0.3, 0);
-                grp.add(bldg);
-
-                if (i % 4 === 2) {
-                    // Boğaz hattında Kız Kulesi minyatür silüeti
-                    const towerGrp = new THREE.Group();
-                    const base = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.3, 4.5, 12), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
-                    base.position.y = 2.25;
-                    const dome = new THREE.Mesh(new THREE.ConeGeometry(1.15, 2.0, 12), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
-                    dome.position.y = 5.5;
-                    towerGrp.add(base, dome);
-                    towerGrp.position.set(9.8, -0.3, 0);
-                    grp.add(towerGrp);
-                }
-
-                scene.add(grp);
-                segments.push(grp);
-            }
+        if (game.shields <= 0) {
+          endGame(false);
+          return;
         }
+      }
+    }
 
-        // KATMANLI 3D KARAKTER (Arka, Gövde, Baş, Ön Katman + Kaykay)
-        function buildLayeredCharacter() {
-            playerRoot = new THREE.Group();
-            layeredCharGroup = new THREE.Group();
-            playerRoot.add(layeredCharGroup);
+    // 4. Büyük Rezonatör (Boss) Güncelle
+    if (game.boss) {
+      const b = game.boss;
+      b.y += b.vy * worldDt;
+      b.rot += 0.85 * worldDt;
+      if (b.hitFlash > 0) b.hitFlash = Math.max(0, b.hitFlash - dt * 4);
 
-            const planeGeo = new THREE.PlaneGeometry(2.1, 2.2);
+      if (b.y + b.r >= shieldY) {
+        game.boss = null;
+        game.shields -= 2;
+        game.combo = 0;
+        game.shake = 15;
+        SoundEngine.playDamage();
+        spawnParticles(b.x, shieldY, '#ef4444', 30, 220);
+        addFloatingText(b.x, shieldY - 24, '-2 KALKAN!', '#ef4444', 16);
 
-            backLayerMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.1, side: THREE.DoubleSide }));
-            backLayerMesh.position.set(0, 1.15, 0.14);
-            backLayerMesh.renderOrder = 1;
-
-            bodyLayerMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.1, side: THREE.DoubleSide }));
-            bodyLayerMesh.position.set(0, 1.15, 0.04);
-            bodyLayerMesh.renderOrder = 2;
-
-            headLayerMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.1, side: THREE.DoubleSide }));
-            headLayerMesh.position.set(0, 1.32, -0.06);
-            headLayerMesh.renderOrder = 3;
-
-            frontLayerMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.1, side: THREE.DoubleSide }));
-            frontLayerMesh.position.set(0, 1.15, -0.14);
-            frontLayerMesh.renderOrder = 4;
-
-            boardPlaneMesh = new THREE.Mesh(
-                new THREE.BoxGeometry(1.1, 0.15, 2.1),
-                new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x0284c7, emissiveIntensity: 0.5 })
-            );
-            boardPlaneMesh.position.set(0, 0.08, 0);
-            boardPlaneMesh.visible = false;
-            playerRoot.add(boardPlaneMesh);
-
-            layeredCharGroup.add(backLayerMesh, bodyLayerMesh, headLayerMesh, frontLayerMesh);
-            scene.add(playerRoot);
+        if (game.shields <= 0) {
+          endGame(false);
+          return;
         }
+      }
+    }
 
-        function applyLoadout() {
-            const surfer = SURFERS.find(s => s.id === saveData.equippedSurfer) || SURFERS[0];
-            const board = BOARDS.find(b => b.id === saveData.equippedBoard) || BOARDS[0];
-            const tex = createLayeredSurferTextures(surfer);
+    // 5. Parçacıklar, Şok Dalgaları ve Uçan Yazılar
+    for (let i = game.particles.length - 1; i >= 0; i--) {
+      const p = game.particles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vx *= 0.94;
+      p.vy *= 0.94;
+      p.life -= dt;
+      if (p.life <= 0) game.particles.splice(i, 1);
+    }
 
-            backLayerMesh.material.map = tex.back; backLayerMesh.material.needsUpdate = true;
-            bodyLayerMesh.material.map = tex.body; bodyLayerMesh.material.needsUpdate = true;
-            headLayerMesh.material.map = tex.head; headLayerMesh.material.needsUpdate = true;
-            frontLayerMesh.material.map = tex.front; frontLayerMesh.material.needsUpdate = true;
+    for (let i = game.shockwaves.length - 1; i >= 0; i--) {
+      const sw = game.shockwaves[i];
+      sw.life -= dt * 2.2;
+      sw.r += (sw.maxR - sw.r) * Math.min(1, dt * 8);
+      if (sw.life <= 0) game.shockwaves.splice(i, 1);
+    }
 
-            boardPlaneMesh.material.color.set(board.color);
+    for (let i = game.floatingTexts.length - 1; i >= 0; i--) {
+      const ft = game.floatingTexts[i];
+      ft.y += ft.vy * dt;
+      ft.life -= dt * 1.15;
+      if (ft.life <= 0) game.floatingTexts.splice(i, 1);
+    }
+  }
+
+  // ============================================================================
+  // 11. ÇİZİM MOTORU (CANVAS RENDER)
+  // ============================================================================
+  function render() {
+    ctx.save();
+
+    if (game.shake > 0) {
+      const sx = (Math.random() - 0.5) * game.shake;
+      const sy = (Math.random() - 0.5) * game.shake;
+      ctx.translate(sx, sy);
+    }
+
+    const phase = BG_PHASES[game.phaseIndex];
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, `rgb(${phase.top.join(',')})`);
+    grad.addColorStop(1, `rgb(${phase.bot.join(',')})`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = phase.line;
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 5; i++) {
+      const lx = (W / 6) * i;
+      ctx.beginPath();
+      ctx.moveTo(lx, 0);
+      ctx.lineTo(lx, H);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = 'rgba(30, 32, 43, 0.12)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(12, 48);
+    ctx.lineTo(12, getShieldLineY());
+    ctx.moveTo(W - 12, 48);
+    ctx.lineTo(W - 12, getShieldLineY());
+    ctx.stroke();
+
+    if (!game.running) {
+      drawDecorativeMenuString();
+      ctx.restore();
+      return;
+    }
+
+    const theme = getTheme();
+    const shieldY = getShieldLineY();
+    const stringY = getStringAnchorY();
+
+    ctx.save();
+    ctx.strokeStyle = game.shields === 1 ? 'rgba(239, 68, 68, 0.55)' : 'rgba(30, 32, 43, 0.22)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(16, shieldY);
+    ctx.lineTo(W - 16, shieldY);
+    ctx.stroke();
+    ctx.restore();
+
+    for (let i = 0; i < game.maxShields; i++) {
+      const sx = W * 0.5 + (i - 1) * 28;
+      const sy = shieldY + 24;
+      const active = i < game.shields;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 8, 0, Math.PI * 2);
+      ctx.fillStyle = active ? '#1e202b' : 'rgba(30, 32, 43, 0.14)';
+      ctx.fill();
+      if (active) {
+        ctx.beginPath();
+        ctx.arc(sx, sy, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#f4c462';
+        ctx.fill();
+      }
+    }
+
+    if (game.echoString.active) {
+      const echoY = getEchoLineY();
+      const alpha = Math.min(1, game.echoString.timer / 1.0);
+      ctx.save();
+      ctx.strokeStyle = `rgba(217, 155, 56, ${0.85 * alpha})`;
+      ctx.lineWidth = 3;
+      ctx.shadowColor = 'rgba(217, 155, 56, 0.7)';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(16, echoY);
+      ctx.lineTo(W - 16, echoY);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    if (game.string.pulling && game.string.pullY >= 0.16) {
+      drawAimTrajectory();
+    }
+
+    drawMainString(theme, stringY);
+
+    for (const orb of game.orbs) {
+      const pulse = 1 + Math.sin(orb.phase) * 0.14;
+      ctx.save();
+      ctx.translate(orb.x, orb.y);
+      ctx.beginPath();
+      ctx.arc(0, 0, orb.r * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = theme.color;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(0, 0, orb.r * 0.45, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    for (const c of game.crystals) {
+      drawCrystal(c);
+    }
+
+    if (game.boss) {
+      drawBoss(game.boss);
+    }
+
+    for (const sp of game.sparks) {
+      for (let t = 0; t < sp.trail.length; t++) {
+        const pt = sp.trail[t];
+        const ratio = (t + 1) / sp.trail.length;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, sp.r * ratio * 0.85, 0, Math.PI * 2);
+        ctx.fillStyle = sp.piercing ? `rgba(217, 155, 56, ${ratio * 0.4})` : `rgba(30, 32, 43, ${ratio * 0.25})`;
+        ctx.fill();
+      }
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+      ctx.fillStyle = sp.piercing ? '#d99b38' : theme.spark;
+      ctx.shadowColor = sp.piercing ? '#f59e0b' : theme.glow;
+      ctx.shadowBlur = 12;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(sp.x, sp.y, sp.r * 0.45, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    for (const sw of game.shockwaves) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
+      ctx.strokeStyle = sw.color;
+      ctx.globalAlpha = Math.max(0, sw.life);
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    for (const p of game.particles) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    for (const ft of game.floatingTexts) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, ft.life);
+      ctx.font = `800 ${ft.size}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = ft.color;
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.restore();
+    }
+
+    drawTopHUD(phase, theme);
+
+    ctx.restore();
+  }
+
+  function drawDecorativeMenuString() {
+    const y = H - 150;
+    const wave = Math.sin(game.time * 2.2) * 14;
+    ctx.save();
+    ctx.strokeStyle = getTheme().color;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(20, y);
+    ctx.quadraticCurveTo(W * 0.5, y + wave, W - 20, y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawMainString(theme, stringY) {
+    const leftX = 16;
+    const rightX = W - 16;
+
+    ctx.fillStyle = '#1e202b';
+    ctx.beginPath();
+    ctx.arc(leftX, stringY, 5, 0, Math.PI * 2);
+    ctx.arc(rightX, stringY, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (game.string.brokenTimer > 0) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(225, 29, 72, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(leftX, stringY);
+      ctx.lineTo(W * 0.35, stringY + 18);
+      ctx.moveTo(rightX, stringY);
+      ctx.lineTo(W * 0.65, stringY + 18);
+      ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    const cp = getStringControlPoint();
+    const perfect = game.string.pulling && isPerfectRange(game.string.pullY);
+
+    if (game.string.pulling) {
+      const goldY = stringY + 0.76 * 92;
+      ctx.save();
+      ctx.strokeStyle = perfect ? 'rgba(217, 155, 56, 0.75)' : 'rgba(217, 155, 56, 0.25)';
+      ctx.lineWidth = perfect ? 4 : 2;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.36, goldY);
+      ctx.lineTo(W * 0.64, goldY);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.strokeStyle = perfect ? '#d99b38' : theme.color;
+    ctx.lineWidth = perfect ? 4.5 : 3;
+    ctx.shadowColor = perfect ? 'rgba(217, 155, 56, 0.8)' : theme.glow;
+    ctx.shadowBlur = perfect ? 16 : 8;
+
+    ctx.beginPath();
+    ctx.moveTo(leftX, stringY);
+    if (game.string.pulling) {
+      ctx.quadraticCurveTo(cp.x, cp.y, rightX, stringY);
+    } else {
+      const vibOffset = Math.sin(game.string.vibPhase) * game.string.vibAmp;
+      ctx.quadraticCurveTo(W * 0.5, stringY + vibOffset, rightX, stringY);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    const count = game.string.loadedSparks;
+    const basePoint = game.string.pulling ? {
+      x: 0.25 * leftX + 0.5 * cp.x + 0.25 * rightX,
+      y: 0.25 * stringY + 0.5 * cp.y + 0.25 * stringY
+    } : { x: W * 0.5, y: stringY };
+
+    for (let i = 0; i < count; i++) {
+      const offsetX = (i - (count - 1) / 2) * 16;
+      ctx.beginPath();
+      ctx.arc(basePoint.x + offsetX, basePoint.y, 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = perfect ? '#d99b38' : '#1e202b';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(basePoint.x + offsetX, basePoint.y, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+    }
+  }
+
+  function drawAimTrajectory() {
+    const cp = getStringControlPoint();
+    const vel = computeLaunchVelocity();
+    const perfect = isPerfectRange(game.string.pullY);
+
+    let simX = cp.x;
+    let simY = cp.y;
+    let vx = vel.vx;
+    let vy = vel.vy;
+    const stepDt = 0.022;
+
+    ctx.save();
+    for (let i = 0; i < 24; i++) {
+      simX += vx * stepDt;
+      simY += vy * stepDt;
+
+      if (simX < 18) {
+        simX = 18;
+        vx = Math.abs(vx);
+      } else if (simX > W - 18) {
+        simX = W - 18;
+        vx = -Math.abs(vx);
+      }
+      if (simY < 54) {
+        simY = 54;
+        vy = Math.abs(vy);
+      }
+
+      const alpha = (1 - i / 24) * 0.75;
+      ctx.fillStyle = perfect ? `rgba(217, 155, 56, ${alpha})` : `rgba(30, 32, 43, ${alpha * 0.65})`;
+      ctx.beginPath();
+      ctx.arc(simX, simY, perfect ? 3.2 : 2.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawCrystal(c) {
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    ctx.rotate(c.rot);
+
+    if (c.type === 'prism' || c.type === 'mini') {
+      const sides = 4;
+      ctx.beginPath();
+      for (let i = 0; i < sides; i++) {
+        const a = (i / sides) * Math.PI * 2;
+        const px = Math.cos(a) * c.r;
+        const py = Math.sin(a) * c.r;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = c.type === 'mini' ? '#34d399' : '#3b82f6';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else if (c.type === 'armored') {
+      const sides = 6;
+      ctx.beginPath();
+      for (let i = 0; i < sides; i++) {
+        const a = (i / sides) * Math.PI * 2;
+        const px = Math.cos(a) * c.r;
+        const py = Math.sin(a) * c.r;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = c.hp === 2 ? '#475569' : '#94a3b8';
+      ctx.fill();
+      ctx.strokeStyle = c.hp === 2 ? '#1e293b' : '#ffffff';
+      ctx.lineWidth = c.hp === 2 ? 4 : 2;
+      ctx.stroke();
+    } else if (c.type === 'splitter') {
+      ctx.beginPath();
+      for (let i = 0; i < 3; i++) {
+        const a = (i / 3) * Math.PI * 2 - Math.PI / 2;
+        const px = Math.cos(a) * (c.r + 2);
+        const py = Math.sin(a) * (c.r + 2);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = '#10b981';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else if (c.type === 'nova') {
+      const spikes = 8;
+      ctx.beginPath();
+      for (let i = 0; i < spikes * 2; i++) {
+        const rad = i % 2 === 0 ? c.r + 2 : c.r * 0.55;
+        const a = (i / (spikes * 2)) * Math.PI * 2;
+        const px = Math.cos(a) * rad;
+        const py = Math.sin(a) * rad;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = '#ef4444';
+      ctx.shadowColor = 'rgba(239, 68, 68, 0.6)';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+    } else if (c.type === 'shadow') {
+      ctx.rotate(-c.rot);
+      ctx.beginPath();
+      ctx.moveTo(0, c.r + 5);
+      ctx.lineTo(c.r * 0.72, -c.r * 0.7);
+      ctx.lineTo(0, -c.r * 0.35);
+      ctx.lineTo(-c.r * 0.72, -c.r * 0.7);
+      ctx.closePath();
+      ctx.fillStyle = '#14151c';
+      ctx.fill();
+      ctx.strokeStyle = '#e11d48';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function drawBoss(b) {
+    ctx.save();
+    ctx.translate(b.x, b.y);
+
+    for (const p of b.petals) {
+      if (!p.alive) continue;
+      const px = Math.cos(b.rot + p.angle) * (b.r + 24);
+      const py = Math.sin(b.rot + p.angle) * (b.r + 24);
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(b.rot + p.angle);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 11, 6, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    ctx.beginPath();
+    ctx.arc(0, 0, b.r, 0, Math.PI * 2);
+    ctx.fillStyle = b.hitFlash > 0 ? '#ffffff' : '#1e202b';
+    ctx.fill();
+    ctx.strokeStyle = '#d99b38';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    ctx.fillStyle = b.hitFlash > 0 ? '#1e202b' : '#ffffff';
+    ctx.font = '800 16px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.hp, 0, 1);
+
+    ctx.restore();
+  }
+
+  function drawTopHUD(phase, theme) {
+    ctx.fillStyle = phase.ink;
+    ctx.font = '800 24px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(game.score, 18, 34);
+
+    const mult = (1 + Math.floor(game.combo / 3)) * (game.crescendo.active ? 2 : 1);
+    ctx.font = '700 11px Inter, sans-serif';
+    ctx.fillStyle = mult > 1 ? '#c5821d' : 'rgba(30, 32, 43, 0.55)';
+    const subLabel = mult > 1 ? `${phase.name.toUpperCase()} • ${mult}X ÇARPAN` : `${phase.name.toUpperCase()} EVRESİ`;
+    ctx.fillText(subLabel, 18, 50);
+
+    if (game.mode === 'daily') {
+      ctx.textAlign = 'center';
+      ctx.font = '800 18px Inter, sans-serif';
+      ctx.fillStyle = game.dailyTimeLeft <= 10 ? '#ef4444' : phase.ink;
+      ctx.fillText(`${Math.ceil(game.dailyTimeLeft)}s`, W * 0.5, 34);
+    }
+
+    const barH = 90;
+    const barY = getStringAnchorY() - barH - 16;
+    ctx.fillStyle = 'rgba(30, 32, 43, 0.12)';
+    ctx.fillRect(16, barY, 4, barH);
+    ctx.fillStyle = game.focus < 0.25 ? '#ef4444' : '#3b82f6';
+    const fH = barH * game.focus;
+    ctx.fillRect(16, barY + (barH - fH), 4, fH);
+
+    ctx.fillStyle = 'rgba(30, 32, 43, 0.12)';
+    ctx.fillRect(W - 20, barY, 4, barH);
+    ctx.fillStyle = game.crescendo.active ? '#f59e0b' : theme.color;
+    const cH = barH * game.crescendo.charge;
+    ctx.fillRect(W - 20, barY + (barH - cH), 4, cH);
+  }
+
+  // ============================================================================
+  // 12. OYUN AKIŞI (BAŞLATMA, BİTİRME, ARAYÜZ SENKRONİZASYONU)
+  // ============================================================================
+  function startGame(mode) {
+    SoundEngine.init();
+    SoundEngine.startMusic();
+
+    game.mode = mode;
+    game.rng = mode === 'daily' ? createRNG(getTodaySeed()) : Math.random;
+    game.running = true;
+    game.paused = false;
+    game.dailyTimeLeft = 60;
+
+    game.score = 0;
+    game.shields = 3;
+    game.combo = 0;
+    game.comboTimer = 0;
+    game.focus = 1.0;
+
+    game.string.pulling = false;
+    game.string.pullX = 0;
+    game.string.pullY = 0;
+    game.string.holdTime = 0;
+    game.string.brokenTimer = 0;
+    game.string.loadedSparks = 1;
+
+    game.echoString.active = false;
+    game.crescendo.charge = 0;
+    game.crescendo.active = false;
+
+    game.stats = {
+      crystalsBroken: 0,
+      perfectChords: 0,
+      novasTriggered: 0,
+      multiShots: 0,
+      crescendos: 0,
+      bossesDefeated: 0
+    };
+
+    game.phaseIndex = 0;
+    game.spawnTimer = 0.3;
+    game.waveCount = 0;
+    game.bossSpawnedCount = 0;
+    game.nextBossScore = 450;
+
+    game.sparks = [];
+    game.crystals = [];
+    game.orbs = [];
+    game.particles = [];
+    game.floatingTexts = [];
+    game.shockwaves = [];
+    game.boss = null;
+
+    document.getElementById('menu-overlay').classList.add('hidden');
+    document.getElementById('gameover-overlay').classList.add('hidden');
+    document.getElementById('pause-overlay').classList.add('hidden');
+    document.getElementById('hud-controls').classList.remove('hidden');
+  }
+
+  function endGame(dailyCompleted) {
+    game.running = false;
+    game.paused = false;
+    document.getElementById('hud-controls').classList.add('hidden');
+
+    let earnedStars = Math.max(3, Math.floor(game.score / 45));
+    if (dailyCompleted) earnedStars += 15;
+
+    let completedQuestsCount = 0;
+    for (let i = 0; i < saveData.quests.length; i++) {
+      const q = saveData.quests[i];
+      if (q.progress >= q.target) {
+        earnedStars += q.reward;
+        completedQuestsCount++;
+        const otherTypes = saveData.quests.map(item => item.type);
+        saveData.quests[i] = createRandomQuest(otherTypes);
+      }
+    }
+
+    saveData.stars += earnedStars;
+    if (game.mode === 'normal' && game.score > saveData.bestScore) {
+      saveData.bestScore = game.score;
+    }
+    if (game.mode === 'daily' && game.score > saveData.bestDaily) {
+      saveData.bestDaily = game.score;
+    }
+    persistSave();
+
+    document.getElementById('go-mode-tag').textContent = game.mode === 'daily' ? 'GÜNLÜK TUR (60s)' : 'SONSUZ TUR';
+    document.getElementById('go-title').textContent = dailyCompleted ? 'Süre Doldu — Harika Yankı!' : 'Kalkanlar Tükenince Tur Bitti';
+    document.getElementById('go-score').textContent = game.score;
+    document.getElementById('go-stars').textContent = `+${earnedStars} ★`;
+    document.getElementById('go-crystals').textContent = game.stats.crystalsBroken;
+    document.getElementById('go-perfect').textContent = game.stats.perfectChords;
+
+    const qSum = document.getElementById('go-quest-summary');
+    qSum.textContent = completedQuestsCount > 0
+      ? `${completedQuestsCount} görev tamamlandı ve yenilendi!`
+      : '';
+
+    document.getElementById('gameover-overlay').classList.remove('hidden');
+    refreshMenuUI();
+  }
+
+  function togglePause() {
+    if (!game.running) return;
+    game.paused = !game.paused;
+    document.getElementById('pause-overlay').classList.toggle('hidden', !game.paused);
+  }
+
+  function toggleMuteUI() {
+    const muted = SoundEngine.toggleMute();
+    const icon = muted ? '🔇' : '🔊';
+    document.getElementById('btn-mute').textContent = icon;
+    document.getElementById('btn-hud-mute').textContent = icon;
+    showToast(muted ? 'Ses kapatıldı' : 'Ses açıldı');
+  }
+
+  // ============================================================================
+  // 13. MENÜ, KİŞİSELLEŞTİRME VE ATÖLYE ARAYÜZÜNÜ GÜNCELLEME
+  // ============================================================================
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, s => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[s]));
+  }
+
+  function applyPersonalization() {
+    const pal = UI_PALETTES.find(p => p.id === saveData.uiPalette) || UI_PALETTES[0];
+    shell.className = pal.className;
+    const sig = document.getElementById('creator-signature');
+    if (sig) {
+      sig.innerHTML = `Tasarım: <strong>${escapeHtml(saveData.creatorName || 'Senin Stüdyon')}</strong>`;
+    }
+    const inp = document.getElementById('input-creator-name');
+    if (inp && document.activeElement !== inp) {
+      inp.value = saveData.creatorName || '';
+    }
+  }
+
+  function refreshMenuUI() {
+    applyPersonalization();
+    document.getElementById('menu-stars').textContent = saveData.stars;
+    document.getElementById('shop-stars').textContent = saveData.stars;
+    document.getElementById('menu-best').textContent = `En Yüksek Skor: ${saveData.bestScore}  •  Günlük: ${saveData.bestDaily}`;
+
+    // Görev Listesi
+    const qContainer = document.getElementById('quests-container');
+    qContainer.innerHTML = '';
+    saveData.quests.forEach(q => {
+      const pct = Math.min(100, Math.round((q.progress / q.target) * 100));
+      const div = document.createElement('div');
+      div.className = 'quest-item';
+      div.innerHTML = `
+        <div class="quest-top">
+          <span>${q.label} (${q.progress}/${q.target})</span>
+          <span class="quest-reward">+${q.reward} ★</span>
+        </div>
+        <div class="quest-bar-bg">
+          <div class="quest-bar-fill" style="width:${pct}%"></div>
+        </div>
+      `;
+      qContainer.appendChild(div);
+    });
+
+    // Kişiselleştirme Renk Paletleri
+    const palGrid = document.getElementById('palette-grid');
+    if (palGrid) {
+      palGrid.innerHTML = '';
+      UI_PALETTES.forEach(p => {
+        const chip = document.createElement('button');
+        chip.className = `palette-chip ${saveData.uiPalette === p.id ? 'active' : ''}`;
+        chip.innerHTML = `
+          <span class="palette-dot" style="background:${p.color}"></span>
+          <span>${p.name}</span>
+        `;
+        chip.addEventListener('click', () => {
+          saveData.uiPalette = p.id;
+          persistSave();
+          refreshMenuUI();
+          showToast(`Tema: ${p.name}`);
+        });
+        palGrid.appendChild(chip);
+      });
+    }
+
+    // Atölye: Tel Tınıları & Temalar
+    const tGrid = document.getElementById('themes-grid');
+    if (tGrid) {
+      tGrid.innerHTML = '';
+      THEMES.forEach(th => {
+        const unlocked = saveData.unlockedThemes.includes(th.id);
+        const selected = saveData.selectedTheme === th.id;
+        const card = document.createElement('div');
+        card.className = `theme-card ${selected ? 'selected' : ''}`;
+        card.innerHTML = `
+          <div class="theme-swatch" style="background:${th.color}"></div>
+          <div class="theme-name">${th.name}</div>
+          <div class="theme-desc">${th.desc}</div>
+          <div class="theme-price">${selected ? '✓ Seçili' : (unlocked ? 'Seç' : `${th.price} ★`)}</div>
+        `;
+        card.addEventListener('click', () => {
+          if (unlocked) {
+            saveData.selectedTheme = th.id;
+            persistSave();
+            refreshMenuUI();
+            SoundEngine.playRelease(3, true);
+            showToast(`${th.name} seçildi`);
+          } else if (saveData.stars >= th.price) {
+            saveData.stars -= th.price;
+            saveData.unlockedThemes.push(th.id);
+            saveData.selectedTheme = th.id;
+            persistSave();
+            refreshMenuUI();
+            SoundEngine.playRelease(5, true);
+            showToast(`${th.name} kilidi açıldı!`);
+          } else {
+            showToast('Yeterli yıldız yok!');
+          }
+        });
+        tGrid.appendChild(card);
+      });
+    }
+
+    // Atölye: Akustik Geliştirmeler
+    const uList = document.getElementById('upgrades-list');
+    if (uList) {
+      uList.innerHTML = '';
+      UPGRADES.forEach(up => {
+        const lvl = saveData.upgrades[up.id] || 0;
+        const maxed = lvl >= up.maxLevel;
+        const cost = up.baseCost + lvl * up.stepCost;
+
+        let dotsHtml = '<div class="level-dots">';
+        for (let i = 0; i < up.maxLevel; i++) {
+          dotsHtml += `<span class="dot ${i < lvl ? 'active' : ''}"></span>`;
         }
+        dotsHtml += '</div>';
 
-        // ==========================================
-        // 4. ENGELLER, ALTINLAR & GÜÇLENDİRİCİLER
-        // ==========================================
-        function spawnWave() {
-            const zPos = -145;
-            const order = [0, 1, 2].sort(() => Math.random() - 0.5);
-            let trains = 0;
+        const card = document.createElement('div');
+        card.className = 'upgrade-card';
+        card.innerHTML = `
+          <div class="upgrade-info">
+            <div class="upgrade-title">${up.name}</div>
+            <div class="upgrade-sub">${up.desc}</div>
+            ${dotsHtml}
+          </div>
+          <button class="upgrade-btn" ${maxed ? 'disabled' : ''}>
+            ${maxed ? 'MAKS' : `${cost} ★`}
+          </button>
+        `;
 
-            order.forEach(idx => {
-                const lx = LANES[idx];
-                const r = Math.random();
-                if (r < 0.34 && trains < 2) {
-                    trains++;
-                    const train = new THREE.Mesh(
-                        new THREE.BoxGeometry(2.3, 3.2, 14),
-                        new THREE.MeshStandardMaterial({ color: [0xef4444, 0x8b5cf6, 0x10b981][trains % 3] })
-                    );
-                    train.position.set(lx, 1.6, zPos - 7);
-                    scene.add(train);
-                    obstacles.push({ mesh: train, speedAdd: 10, box: { w: 2.0, minY: 0, maxY: 3.2, l: 14 } });
-                } else if (r < 0.56) {
-                    const bar = new THREE.Mesh(
-                        new THREE.BoxGeometry(2.4, 1.15, 0.5),
-                        new THREE.MeshStandardMaterial({ color: 0xf59e0b })
-                    );
-                    bar.position.set(lx, 0.58, zPos);
-                    scene.add(bar);
-                    obstacles.push({ mesh: bar, speedAdd: 0, box: { w: 2.1, minY: 0, maxY: 1.15, l: 0.5 } });
-                    addCoin(lx, 2.35, zPos);
-                } else if (r < 0.74) {
-                    const high = new THREE.Mesh(
-                        new THREE.BoxGeometry(2.5, 1.85, 0.5),
-                        new THREE.MeshStandardMaterial({ color: 0xf43f5e })
-                    );
-                    high.position.set(lx, 2.1, zPos);
-                    scene.add(high);
-                    obstacles.push({ mesh: high, speedAdd: 0, box: { w: 2.1, minY: 1.18, maxY: 3.1, l: 0.5 } });
-                    addCoin(lx, 0.65, zPos);
-                } else {
-                    for (let c = 0; c < 4; c++) addCoin(lx, 0.9, zPos - c * 3.2);
-                    if (Math.random() < 0.2) addPowerup(lx, 1.1, zPos - 13);
-                }
-            });
-        }
+        const btn = card.querySelector('button');
+        btn.addEventListener('click', () => {
+          if (maxed) return;
+          if (saveData.stars >= cost) {
+            saveData.stars -= cost;
+            saveData.upgrades[up.id] = lvl + 1;
+            persistSave();
+            refreshMenuUI();
+            SoundEngine.playRelease(4, true);
+            showToast(`${up.name} Seviye ${lvl + 1}!`);
+          } else {
+            showToast('Yeterli yıldız yok!');
+          }
+        });
 
-        function addCoin(x, y, z) {
-            const c = new THREE.Mesh(
-                new THREE.CylinderGeometry(0.4, 0.4, 0.15, 14),
-                new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xd97706, emissiveIntensity: 0.35 })
-            );
-            c.rotation.x = Math.PI / 2;
-            c.position.set(x, y, z);
-            scene.add(c);
-            coins.push(c);
-        }
+        uList.appendChild(card);
+      });
+    }
+  }
 
-        function addPowerup(x, y, z) {
-            const list = [
-                { key: 'magnet', color: 0xef4444, label: '🧲 Mıknatıs' },
-                { key: 'jetpack', color: 0x38bdf8, label: '🚀 Jetpack' },
-                { key: 'sneakers', color: 0x10b981, label: '👟 Süper Zıplama' },
-                { key: 'multiplier', color: 0xa855f7, label: '⚡ 2x Skor' }
-            ];
-            const pick = list[Math.floor(Math.random() * list.length)];
-            const m = new THREE.Mesh(
-                new THREE.OctahedronGeometry(0.55, 0),
-                new THREE.MeshStandardMaterial({ color: pick.color, emissive: pick.color, emissiveIntensity: 0.5 })
-            );
-            m.position.set(x, y, z);
-            scene.add(m);
-            powerups.push({ mesh: m, ...pick });
-        }
+  // ============================================================================
+  // 14. BUTON BAĞLANTILARI VE ANA DÖNGÜ BAŞLATMA
+  // ============================================================================
+  document.getElementById('btn-play-normal').addEventListener('click', () => startGame('normal'));
+  document.getElementById('btn-play-daily').addEventListener('click', () => startGame('daily'));
+  document.getElementById('btn-retry').addEventListener('click', () => startGame(game.mode));
 
-        // ==========================================
-        // 5. KONTROLLER & OYUN DÖNGÜSÜ
-        // ==========================================
-        function setupEvents() {
-            let lastTap = 0;
-            window.addEventListener('keydown', e => {
-                if (!isRunning) return;
-                if (e.key === 'ArrowLeft' || e.key === 'a') { if (currentLane > 0) { currentLane--; targetX = LANES[currentLane]; sfx.swipe(); } }
-                else if (e.key === 'ArrowRight' || e.key === 'd') { if (currentLane < 2) { currentLane++; targetX = LANES[currentLane]; sfx.swipe(); } }
-                else if (e.key === 'ArrowUp' || e.key === 'w') doJump();
-                else if (e.key === 'ArrowDown' || e.key === 's') doRoll();
-                else if (e.key === ' ') {
-                    const now = Date.now();
-                    if (now - lastTap < 300) activateBoard(); else doJump();
-                    lastTap = now;
-                }
-            });
+  document.getElementById('btn-mute').addEventListener('click', toggleMuteUI);
+  document.getElementById('btn-hud-mute').addEventListener('click', toggleMuteUI);
+  document.getElementById('btn-hud-pause').addEventListener('click', togglePause);
+  document.getElementById('btn-resume').addEventListener('click', togglePause);
 
-            let sx = 0, sy = 0, lastTouchTap = 0;
-            window.addEventListener('touchstart', e => {
-                if (e.touches[0]) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }
-            }, { passive: true });
-            window.addEventListener('touchend', e => {
-                if (!isRunning || !e.changedTouches[0]) return;
-                const dx = e.changedTouches[0].clientX - sx;
-                const dy = e.changedTouches[0].clientY - sy;
-                if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
-                    const now = Date.now();
-                    if (now - lastTouchTap < 300) activateBoard();
-                    lastTouchTap = now;
-                    return;
-                }
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    if (Math.abs(dx) > 26) {
-                        if (dx > 0 && currentLane < 2) { currentLane++; targetX = LANES[currentLane]; sfx.swipe(); }
-                        else if (dx < 0 && currentLane > 0) { currentLane--; targetX = LANES[currentLane]; sfx.swipe(); }
-                    }
-                } else {
-                    if (Math.abs(dy) > 26) dy < 0 ? doJump() : doRoll();
-                }
-            }, { passive: true });
+  document.getElementById('btn-pause-menu').addEventListener('click', () => {
+    game.running = false;
+    game.paused = false;
+    document.getElementById('pause-overlay').classList.add('hidden');
+    document.getElementById('hud-controls').classList.add('hidden');
+    document.getElementById('menu-overlay').classList.remove('hidden');
+    refreshMenuUI();
+  });
 
-            document.getElementById('start-btn').onclick = startGame;
-            document.getElementById('restart-btn').onclick = startGame;
-            document.getElementById('open-shop-btn').onclick = () => openShop('gameover-screen');
-            document.getElementById('go-shop-btn').onclick = () => openShop('gameover-screen');
-            document.getElementById('close-shop-btn').onclick = () => {
-                document.getElementById('shop-screen').classList.add('hidden');
-                document.getElementById('start-screen').classList.remove('hidden');
-            };
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.onclick = () => {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentTab = btn.dataset.tab;
-                    renderShop();
-                };
-            });
-            document.getElementById('sound-toggle').onclick = e => {
-                sfx.enabled = !sfx.enabled;
-                e.target.textContent = sfx.enabled ? '🔊 Ses Açık' : '🔇 Ses Kapalı';
-            };
-        }
+  document.getElementById('btn-go-menu').addEventListener('click', () => {
+    document.getElementById('gameover-overlay').classList.add('hidden');
+    document.getElementById('menu-overlay').classList.remove('hidden');
+    refreshMenuUI();
+  });
 
-        function openShop(hideId) {
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById(hideId).classList.add('hidden');
-            document.getElementById('shop-screen').classList.remove('hidden');
-            renderShop();
-        }
+  document.getElementById('btn-open-shop').addEventListener('click', () => {
+    refreshMenuUI();
+    document.getElementById('shop-overlay').classList.remove('hidden');
+  });
+  document.getElementById('btn-close-shop').addEventListener('click', () => {
+    document.getElementById('shop-overlay').classList.add('hidden');
+  });
 
-        function doJump() {
-            if (!isJumping && activePU.jetpack <= 0) {
-                isJumping = true;
-                velocityY = activePU.sneakers > 0 ? 30 : 22;
-                isRolling = false;
-                layeredCharGroup.scale.set(1, 1, 1);
-                sfx.jump();
-            }
-        }
+  document.getElementById('btn-help').addEventListener('click', () => {
+    document.getElementById('help-overlay').classList.remove('hidden');
+  });
+  document.getElementById('btn-close-help').addEventListener('click', () => {
+    document.getElementById('help-overlay').classList.add('hidden');
+  });
 
-        function doRoll() {
-            if (activePU.jetpack > 0) return;
-            if (isJumping) velocityY = -42;
-            isRolling = true;
-            rollTimer = 0.65;
-            layeredCharGroup.scale.set(1.15, 0.48, 1);
-            sfx.roll();
-        }
+  document.getElementById('btn-personalize').addEventListener('click', () => {
+    refreshMenuUI();
+    document.getElementById('personalize-overlay').classList.remove('hidden');
+  });
+  document.getElementById('btn-close-personalize').addEventListener('click', () => {
+    document.getElementById('personalize-overlay').classList.add('hidden');
+  });
+  document.getElementById('btn-save-creator').addEventListener('click', () => {
+    const val = document.getElementById('input-creator-name').value.trim();
+    saveData.creatorName = val || 'Senin Stüdyon';
+    persistSave();
+    refreshMenuUI();
+    showToast('Yapımcı imzası güncellendi!');
+  });
 
-        function activateBoard() {
-            if (activePU.shield <= 0) {
-                const board = BOARDS.find(b => b.id === saveData.equippedBoard) || BOARDS[0];
-                activePU.shield = board.duration;
-                boardPlaneMesh.visible = true;
-                sfx.powerup();
-            }
-        }
+  let lastFrameTime = performance.now();
+  function mainLoop(now) {
+    const dt = (now - lastFrameTime) / 1000;
+    lastFrameTime = now;
 
-        function startGame() {
-            sfx.init();
-            obstacles.forEach(o => scene.remove(o.mesh)); obstacles = [];
-            coins.forEach(c => scene.remove(c)); coins = [];
-            powerups.forEach(p => scene.remove(p.mesh)); powerups = [];
+    update(dt);
+    render();
+    requestAnimationFrame(mainLoop);
+  }
 
-            applyLoadout();
-            isRunning = true;
-            gameSpeed = 26;
-            score = 0;
-            runCoins = 0;
-            scoreMult = 1;
-            currentLane = 1;
-            targetX = 0;
-            playerY = 0;
-            velocityY = 0;
-            isJumping = false;
-            isRolling = false;
-            layeredCharGroup.scale.set(1, 1, 1);
-            activePU = { magnet: 0, jetpack: 0, sneakers: 0, multiplier: 0, shield: 0 };
-            boardPlaneMesh.visible = false;
-            playerRoot.position.set(0, 0, 0);
-
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('gameover-screen').classList.add('hidden');
-            document.getElementById('new-best-msg').style.display = 'none';
-
-            clock.getDelta();
-            requestAnimationFrame(loop);
-        }
-
-        function gameOver() {
-            isRunning = false;
-            sfx.crash();
-            const finalS = Math.floor(score);
-            saveData.bankCoins += runCoins;
-            if (finalS > saveData.bestScore) {
-                saveData.bestScore = finalS;
-                document.getElementById('new-best-msg').style.display = 'block';
-            }
-            saveState();
-            document.getElementById('final-score').textContent = finalS;
-            document.getElementById('final-coins').textContent = runCoins;
-            document.getElementById('final-bank').textContent = saveData.bankCoins;
-            document.getElementById('gameover-screen').classList.remove('hidden');
-        }
-
-        function renderPUHud() {
-            const el = document.getElementById('powerup-hud');
-            el.innerHTML = '';
-            const map = [
-                { k: 'jetpack', label: '🚀 Jetpack', max: 8, col: '#38bdf8' },
-                { k: 'magnet', label: '🧲 Mıknatıs', max: 12, col: '#ef4444' },
-                { k: 'sneakers', label: '👟 Süper Zıplama', max: 12, col: '#10b981' },
-                { k: 'multiplier', label: '⚡ 2x Skor', max: 12, col: '#a855f7' },
-                { k: 'shield', label: '🛹 Kaykay', max: 18, col: '#f59e0b' }
-            ];
-            map.forEach(item => {
-                if (activePU[item.k] > 0) {
-                    const pct = Math.min(100, (activePU[item.k] / item.max) * 100);
-                    el.innerHTML += `<div class="pu-card"><div class="pu-top"><span>${item.label}</span><span>${activePU[item.k].toFixed(1)}s</span></div><div class="pu-bar"><div class="pu-fill" style="width:${pct}%;background:${item.col}"></div></div></div>`;
-                }
-            });
-        }
-
-        function loop() {
-            if (!isRunning) return;
-            requestAnimationFrame(loop);
-            const dt = Math.min(clock.getDelta(), 0.05);
-
-            if (gameSpeed < maxSpeed) gameSpeed += 0.65 * dt;
-            const spd = activePU.jetpack > 0 ? gameSpeed * 1.4 : gameSpeed;
-
-            Object.keys(activePU).forEach(k => { if (activePU[k] > 0) activePU[k] = Math.max(0, activePU[k] - dt); });
-            boardPlaneMesh.visible = activePU.shield > 0;
-
-            const mult = (activePU.multiplier > 0 ? 2 : 1) * scoreMult;
-            score += spd * dt * 1.5 * mult;
-            document.getElementById('score-val').textContent = Math.floor(score);
-            document.getElementById('coins-val').textContent = runCoins;
-            document.getElementById('mult-badge').textContent = mult + 'x';
-            renderPUHud();
-
-            const segLen = 22, totalL = segments.length * segLen;
-            segments.forEach(s => { s.position.z += spd * dt; if (s.position.z > 30) s.position.z -= totalL; });
-
-            playerRoot.position.x = THREE.MathUtils.lerp(playerRoot.position.x, targetX, 16 * dt);
-            layeredCharGroup.rotation.z = (playerRoot.position.x - targetX) * 0.14;
-
-            if (activePU.jetpack > 0) {
-                playerY = THREE.MathUtils.lerp(playerY, 8.0, 6 * dt);
-                isJumping = false;
-            } else if (isJumping || playerY > 0) {
-                isJumping = true;
-                playerY += velocityY * dt;
-                velocityY -= 60 * dt;
-                if (playerY <= 0) { playerY = 0; velocityY = 0; isJumping = false; }
-            }
-            playerRoot.position.y = playerY;
-
-            if (isRolling) {
-                rollTimer -= dt;
-                if (rollTimer <= 0) { isRolling = false; layeredCharGroup.scale.set(1, 1, 1); }
-            } else if (!isJumping && activePU.jetpack <= 0) {
-                animPhase += dt * spd * 0.65;
-                // Katmanlı 3D derinlik/sekme animasyonu
-                headLayerMesh.position.y = 1.32 + Math.abs(Math.sin(animPhase)) * 0.08;
-                frontLayerMesh.position.z = -0.14 - Math.sin(animPhase) * 0.06;
-                backLayerMesh.position.z = 0.14 + Math.sin(animPhase) * 0.06;
-            }
-
-            spawnTimer -= spd * dt;
-            if (spawnTimer <= 0) { spawnWave(); spawnTimer = 31; }
-
-            const pW = 0.8, pH = isRolling ? 0.85 : 1.75;
-            const pMinX = playerRoot.position.x - pW / 2, pMaxX = playerRoot.position.x + pW / 2;
-            const pMinY = playerY, pMaxY = playerY + pH;
-
-            for (let i = obstacles.length - 1; i >= 0; i--) {
-                const o = obstacles[i];
-                o.mesh.position.z += (spd + o.speedAdd) * dt;
-                const pos = o.mesh.position, b = o.box;
-                const hit = pMaxX > pos.x - b.w / 2 && pMinX < pos.x + b.w / 2 &&
-                            pMaxY > b.minY && pMinY < b.maxY &&
-                            0.45 > pos.z - b.l / 2 && -0.45 < pos.z + b.l / 2;
-                if (hit) {
-                    if (activePU.shield > 0) {
-                        activePU.shield = 0; boardPlaneMesh.visible = false;
-                        scene.remove(o.mesh); obstacles.splice(i, 1); sfx.crash(); continue;
-                    }
-                    gameOver(); return;
-                }
-                if (o.mesh.position.z - b.l / 2 > 18) { scene.remove(o.mesh); obstacles.splice(i, 1); }
-            }
-
-            for (let i = coins.length - 1; i >= 0; i--) {
-                const c = coins[i];
-                c.position.z += spd * dt;
-                c.rotation.z += 4 * dt;
-                if (activePU.magnet > 0 && c.position.z > -38 && c.position.z < 5) {
-                    c.position.lerp(new THREE.Vector3(playerRoot.position.x, playerY + 1, 0), 12 * dt);
-                }
-                if (c.position.distanceTo(new THREE.Vector3(playerRoot.position.x, playerY + 0.9, 0)) < 1.35) {
-                    scene.remove(c); coins.splice(i, 1); runCoins++; score += 50 * mult; sfx.coin(); continue;
-                }
-                if (c.position.z > 18) { scene.remove(c); coins.splice(i, 1); }
-            }
-
-            for (let i = powerups.length - 1; i >= 0; i--) {
-                const p = powerups[i];
-                p.mesh.position.z += spd * dt;
-                p.mesh.rotation.y += 3 * dt;
-                if (p.mesh.position.distanceTo(new THREE.Vector3(playerRoot.position.x, playerY + 0.9, 0)) < 1.5) {
-                    activePU[p.key] = p.key === 'jetpack' ? 8 : 12;
-                    scene.remove(p.mesh); powerups.splice(i, 1); sfx.powerup(); continue;
-                }
-                if (p.mesh.position.z > 18) { scene.remove(p.mesh); powerups.splice(i, 1); }
-            }
-
-            camera.position.x = THREE.MathUtils.lerp(camera.position.x, playerRoot.position.x * 0.45, 8 * dt);
-            camera.position.y = THREE.MathUtils.lerp(camera.position.y, 6.2 + playerY * 0.4, 8 * dt);
-            renderer.render(scene, camera);
-        }
-
-        // ==========================================
-        // 6. SUBWAY MAĞAZA RENDER
-        // ==========================================
-        function syncWalletUI() {
-            document.getElementById('menu-best').textContent = saveData.bestScore;
-            document.getElementById('hud-best').textContent = saveData.bestScore;
-            document.getElementById('menu-bank').textContent = saveData.bankCoins;
-            document.getElementById('shop-bank').textContent = saveData.bankCoins;
-        }
-
-        function renderShop() {
-            const grid = document.getElementById('shop-grid');
-            grid.innerHTML = '';
-
-            if (currentTab === 'surfers') {
-                SURFERS.forEach(s => {
-                    const owned = saveData.unlockedSurfers.includes(s.id);
-                    const eq = saveData.equippedSurfer === s.id;
-                    const card = document.createElement('div');
-                    card.className = 'item-card' + (eq ? ' equipped' : '');
-                    card.innerHTML = `<div class="swatch" style="background:linear-gradient(135deg,${s.main} 65%,${s.accent})"></div><h3>${s.name}</h3><p>${s.desc}</p><button class="action-btn ${eq ? 'active' : owned ? 'owned' : ''}">${eq ? '✓ Seçili' : owned ? 'Kuşan' : '🪙 ' + s.price}</button>`;
-                    card.querySelector('button').onclick = () => {
-                        if (eq) return;
-                        if (owned) { saveData.equippedSurfer = s.id; applyLoadout(); saveState(); renderShop(); sfx.swipe(); }
-                        else if (saveData.bankCoins >= s.price) {
-                            saveData.bankCoins -= s.price; saveData.unlockedSurfers.push(s.id); saveData.equippedSurfer = s.id;
-                            applyLoadout(); saveState(); renderShop(); sfx.powerup();
-                        } else sfx.crash();
-                    };
-                    grid.appendChild(card);
-                });
-            } else if (currentTab === 'boards') {
-                BOARDS.forEach(b => {
-                    const owned = saveData.unlockedBoards.includes(b.id);
-                    const eq = saveData.equippedBoard === b.id;
-                    const card = document.createElement('div');
-                    card.className = 'item-card' + (eq ? ' equipped' : '');
-                    card.innerHTML = `<div class="swatch" style="background:${b.color}"></div><h3>${b.name}</h3><p>${b.desc}</p><button class="action-btn ${eq ? 'active' : owned ? 'owned' : ''}">${eq ? '✓ Seçili' : owned ? 'Kuşan' : '🪙 ' + b.price}</button>`;
-                    card.querySelector('button').onclick = () => {
-                        if (eq) return;
-                        if (owned) { saveData.equippedBoard = b.id; applyLoadout(); saveState(); renderShop(); sfx.swipe(); }
-                        else if (saveData.bankCoins >= b.price) {
-                            saveData.bankCoins -= b.price; saveData.unlockedBoards.push(b.id); saveData.equippedBoard = b.id;
-                            applyLoadout(); saveState(); renderShop(); sfx.powerup();
-                        } else sfx.crash();
-                    };
-                    grid.appendChild(card);
-                });
-            } else {
-                // Mystery Box
-                const boxCard = document.createElement('div');
-                boxCard.className = 'item-card';
-                boxCard.innerHTML = `<div class="swatch" style="background:linear-gradient(135deg,#f59e0b,#ef4444)"></div><h3>Mystery Box</h3><p>Rastgele 40–220 altın kazandırır</p><button class="action-btn box-btn">🎁 Aç (🪙 80)</button>`;
-                boxCard.querySelector('button').onclick = () => {
-                    if (saveData.bankCoins < 80) { sfx.crash(); return; }
-                    saveData.bankCoins -= 80;
-                    const prize = [40, 60, 100, 150, 220][Math.floor(Math.random() * 5)];
-                    saveData.bankCoins += prize;
-                    saveState(); renderShop(); sfx.powerup();
-                    alert(`🎁 Mystery Box içinden ${prize} altın çıktı!`);
-                };
-                grid.appendChild(boxCard);
-
-                // Kalıcı Skor Çarpanı
-                const multCard = document.createElement('div');
-                multCard.className = 'item-card';
-                multCard.innerHTML = `<div class="swatch" style="background:linear-gradient(135deg,#a855f7,#38bdf8)"></div><h3>Kalıcı Çarpan (+1x)</h3><p>Mevcut çarpan: ${scoreMult}x</p><button class="action-btn">⬆️ Yükselt (🪙 250)</button>`;
-                multCard.querySelector('button').onclick = () => {
-                    if (saveData.bankCoins >= 250) {
-                        saveData.bankCoins -= 250; scoreMult++; saveState(); renderShop(); sfx.powerup();
-                    } else sfx.crash();
-                };
-                grid.appendChild(multCard);
-            }
-        }
-
-        init();
-    </script>
+  window.onload = function() {
+    loadSave();
+    refreshMenuUI();
+    resizeCanvas();
+    lastFrameTime = performance.now();
+    requestAnimationFrame(mainLoop);
+  };
+})();
+</script>
 </body>
 </html>
