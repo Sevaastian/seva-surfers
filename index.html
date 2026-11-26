@@ -2,17 +2,28 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lira">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#121216">
+<meta name="theme-color" content="#f5f3ed">
 <title>Lira: Kristal Yankısı — Seva Studio</title>
-<link id="app-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231e202b'/%3E%3Cstop offset='100%25' stop-color='%23121216'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23f6d388'/%3E%3Cstop offset='100%25' stop-color='%23d99b38'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23bg)'/%3E%3Crect x='24' y='24' width='464' height='464' rx='92' fill='none' stroke='url(%23gold)' stroke-opacity='0.35' stroke-width='4'/%3E%3Cpolygon points='256,84 316,164 256,244 196,164' fill='url(%23gold)'/%3E%3Cpolygon points='256,108 292,164 256,220 220,164' fill='%23fff8e7' fill-opacity='0.45'/%3E%3Cpath d='M146,168 C118,248 144,352 256,396 C368,352 394,248 366,168' fill='none' stroke='url(%23gold)' stroke-width='20' stroke-linecap='round'/%3E%3Cpath d='M132,164 L164,174 M380,164 L348,174' stroke='url(%23gold)' stroke-width='16' stroke-linecap='round'/%3E%3Cline x1='212' y1='195' x2='212' y2='376' stroke='%23ffffff' stroke-opacity='0.75' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='256' y1='244' x2='256' y2='392' stroke='url(%23gold)' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='300' y1='195' x2='300' y2='376' stroke='%23ffffff' stroke-opacity='0.75' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='318' r='16' fill='%23ffffff'/%3E%3C/svg%3E">
-<link id="apple-touch-icon" rel="apple-touch-icon" href="">
+<link id="dynamic-favicon" rel="icon" type="image/png">
+<link id="dynamic-apple-icon" rel="apple-touch-icon">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  :root {
+    --bg-outer: #1a1b22;
+    --phone-bg: #f5f3ed;
+    --ink-dark: #1e202b;
+    --ink-muted: #686b7a;
+    --gold-main: #d99b26;
+    --gold-glow: #ffcf56;
+    --accent-blue: #3b82f6;
+    --accent-red: #e11d48;
+    --card-bg: rgba(255, 255, 255, 0.88);
+    --card-border: rgba(30, 32, 43, 0.1);
+  }
 
   * {
     box-sizing: border-box;
@@ -26,47 +37,31 @@
   html, body {
     width: 100%;
     height: 100%;
-    background-color: #121216;
+    background-color: var(--bg-outer);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    overflow: hidden;
+    color: var(--ink-dark);
   }
 
-  /* Masaüstünde telefon boyutunda dikey pencere, mobilde tam ekran */
-  #game-shell {
+  #app-frame {
     position: relative;
-    width: 100vw;
-    height: 100vh;
-    max-width: 430px;
-    max-height: 860px;
-    background: #f5f2eb;
-    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    width: 100%;
+    height: 100%;
+    max-width: 440px;
+    max-height: 900px;
+    background: var(--phone-bg);
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    --accent: #d99b38;
-    --accent-soft: rgba(217, 155, 56, 0.14);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55);
   }
 
-  #game-shell.palette-navy {
-    --accent: #2563eb;
-    --accent-soft: rgba(37, 99, 235, 0.14);
-  }
-  #game-shell.palette-emerald {
-    --accent: #059669;
-    --accent-soft: rgba(5, 150, 105, 0.14);
-  }
-  #game-shell.palette-violet {
-    --accent: #7c3aed;
-    --accent-soft: rgba(124, 58, 237, 0.14);
-  }
-
-  @media (min-width: 480px) {
-    #game-shell {
+  @media (min-width: 500px) {
+    #app-frame {
       height: 94vh;
-      border-radius: 32px;
+      border-radius: 34px;
+      border: 6px solid #2b2d38;
     }
   }
 
@@ -77,120 +72,191 @@
     touch-action: none;
   }
 
-  /* Arayüz Katmanları */
-  .overlay {
+  .hud-layer {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: max(14px, env(safe-area-inset-top)) 16px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .hud-left {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 24px 20px;
-    z-index: 10;
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    gap: 2px;
   }
 
-  .overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
-    transform: scale(0.98);
+  .hud-score {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.05;
+    color: var(--ink-dark);
   }
 
-  /* Oyun içi HUD üst kontrolleri */
-  #hud-controls {
-    position: absolute;
-    top: 14px;
-    right: 16px;
+  .hud-sub {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--ink-muted);
     display: flex;
-    gap: 8px;
-    z-index: 8;
+    align-items: center;
+    gap: 6px;
   }
 
-  #hud-controls.hidden {
+  .mult-badge {
+    background: var(--ink-dark);
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 99px;
+    font-size: 10px;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+
+  .mult-badge.crescendo {
+    background: var(--gold-main);
+    color: #1a1506;
+    transform: scale(1.1);
+  }
+
+  .hud-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: max(16px, env(safe-area-inset-top));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .daily-timer {
+    background: rgba(30, 32, 43, 0.08);
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink-dark);
     display: none;
   }
 
-  .hud-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid rgba(30, 32, 43, 0.12);
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(6px);
-    color: #1e202b;
-    font-size: 14px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  .daily-timer.urgent {
+    background: rgba(225, 29, 72, 0.15);
+    color: var(--accent-red);
   }
 
-  .hud-btn:active {
-    transform: scale(0.92);
-  }
-
-  /* Üst Bar (Menü) */
-  .top-bar {
+  .hud-right {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     gap: 8px;
-  }
-
-  .pill-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    font-weight: 700;
-    font-size: 14px;
-    color: #1f2029;
+    pointer-events: auto;
   }
 
   .icon-btn {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    border: none;
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-    color: #1f2029;
-    font-size: 16px;
+    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.15s ease, background 0.15s ease;
+    color: var(--ink-dark);
+    font-size: 15px;
+    font-weight: 700;
+    transition: transform 0.12s ease, background 0.15s ease;
   }
 
   .icon-btn:active {
     transform: scale(0.92);
   }
 
-  /* Başlık Bölümü */
-  .hero-section {
-    text-align: center;
-    margin-top: 2px;
+  .overlay-screen {
+    position: absolute;
+    inset: 0;
+    background: rgba(245, 243, 237, 0.92);
+    backdrop-filter: blur(12px);
+    z-index: 20;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    padding: max(20px, env(safe-area-inset-top)) 20px max(22px, env(safe-area-inset-bottom));
+    transition: opacity 0.25s ease;
+    overflow-y: auto;
+  }
+
+  .overlay-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    width: 100%;
+  }
+
+  .star-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    padding: 6px 13px;
+    border-radius: 99px;
+    font-weight: 800;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .star-icon {
+    color: var(--gold-main);
+    font-size: 16px;
+  }
+
+  .title-block {
+    text-align: center;
+    margin: 4px 0 4px;
   }
 
   .brand-emblem {
     width: 58px;
     height: 58px;
+    margin: 0 auto 8px;
     border-radius: 18px;
-    background: linear-gradient(145deg, #1e202b 0%, #2c2f3f 100%);
-    box-shadow: 0 10px 24px rgba(24, 25, 34, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    background: linear-gradient(145deg, #1e202b 0%, #2f3344 100%);
+    box-shadow: 0 10px 24px rgba(30, 32, 43, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 8px;
-    border: 1.5px solid rgba(217, 155, 56, 0.45);
+    position: relative;
+  }
+
+  .brand-emblem svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .subtitle-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-main);
+    background: rgba(217, 155, 38, 0.12);
+    padding: 4px 10px;
+    border-radius: 99px;
+    margin-bottom: 6px;
   }
 
   .rank-pill {
@@ -199,30 +265,29 @@
     gap: 5px;
     font-size: 11px;
     font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: var(--accent-soft);
-    padding: 4px 12px;
-    border-radius: 999px;
+    color: var(--ink-dark);
+    background: rgba(30, 32, 43, 0.06);
+    padding: 3px 10px;
+    border-radius: 99px;
     margin-bottom: 6px;
   }
 
   .game-title {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: #181922;
-    line-height: 1.04;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1.05;
+    color: var(--ink-dark);
   }
 
   .game-title span {
     display: block;
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 600;
-    color: #5c5f70;
-    margin-top: 3px;
-    letter-spacing: 0.08em;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-top: 4px;
   }
 
   .best-score-line {
@@ -232,40 +297,73 @@
     color: #787b8c;
   }
 
+  .duel-banner {
+    margin-top: 8px;
+    padding: 7px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1e202b 0%, #323546 100%);
+    color: #f7d794;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(30, 32, 43, 0.18);
+    display: none;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .duel-banner.active {
+    display: inline-flex;
+  }
+
   .creator-signature {
     text-align: center;
     font-size: 11px;
-    font-weight: 600;
-    color: #787b8c;
-    letter-spacing: 0.05em;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    color: var(--ink-muted);
+    opacity: 0.78;
     margin-top: 2px;
   }
 
-  .creator-signature strong {
-    color: var(--accent);
-    font-weight: 800;
+  .swatch-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 8px 0;
   }
 
-  /* Görev Kartları */
+  .swatch-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  .swatch-btn.active {
+    transform: scale(1.18);
+    outline: 2px solid var(--ink-dark);
+  }
+
   .quests-box {
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(10px);
-    border-radius: 22px;
-    padding: 14px 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 13px 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   }
 
-  .quests-header {
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-muted);
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #6a6d7e;
-    margin-bottom: 10px;
   }
 
   .quest-item {
@@ -285,319 +383,208 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
-    color: #232530;
   }
 
   .quest-reward {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent);
-    background: var(--accent-soft);
-    padding: 2px 8px;
-    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--gold-main);
+    background: rgba(217, 155, 38, 0.14);
+    padding: 2px 7px;
+    border-radius: 99px;
   }
 
   .quest-bar-bg {
     width: 100%;
     height: 6px;
-    background: rgba(0, 0, 0, 0.07);
-    border-radius: 999px;
+    background: rgba(30, 32, 43, 0.08);
+    border-radius: 99px;
     overflow: hidden;
   }
 
   .quest-bar-fill {
     height: 100%;
-    background: var(--accent);
-    border-radius: 999px;
+    background: var(--gold-main);
+    border-radius: 99px;
     transition: width 0.3s ease;
   }
 
-  /* Ana Butonlar */
-  .actions-stack {
+  .menu-actions {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 8px;
   }
 
   .btn-primary {
     width: 100%;
-    padding: 16px 20px;
-    border: none;
+    padding: 16px;
     border-radius: 18px;
-    background: linear-gradient(135deg, #1e202b 0%, #323546 100%);
-    color: #ffffff;
-    font-family: inherit;
+    border: none;
+    background: var(--ink-dark);
+    color: #fff;
     font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    box-shadow: 0 12px 26px rgba(30, 32, 43, 0.25);
+    font-weight: 800;
+    letter-spacing: 0.4px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 10px 24px rgba(30, 32, 43, 0.25);
+    transition: transform 0.12s ease, background 0.2s ease;
   }
 
   .btn-primary:active {
     transform: scale(0.97);
   }
 
-  .secondary-row {
+  .btn-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
 
   .btn-secondary {
-    padding: 13px 14px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 13px 12px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
-    color: #1f2029;
-    font-family: inherit;
-    font-size: 14px;
+    border: 1px solid var(--card-border);
+    background: #fff;
+    color: var(--ink-dark);
+    font-size: 13.5px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
-    transition: transform 0.15s ease, background 0.15s ease;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.12s ease;
   }
 
   .btn-secondary:active {
-    transform: scale(0.96);
-  }
-
-  .btn-gold {
-    background: linear-gradient(135deg, #f7e4bc 0%, #f1d293 100%);
-    border-color: rgba(197, 130, 29, 0.25);
-    color: #5c3a06;
+    transform: scale(0.97);
   }
 
   .btn-share {
-    background: linear-gradient(135deg, var(--accent) 0%, #1e202b 160%);
-    color: #ffffff;
-    border: none;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    width: 100%;
+    padding: 12px;
+    border-radius: 15px;
+    border: 1px solid rgba(217, 155, 38, 0.35);
+    background: rgba(217, 155, 38, 0.12);
+    color: var(--ink-dark);
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: transform 0.12s ease;
   }
 
-  /* Atölye & Modallar */
-  .modal-panel {
-    background: rgba(249, 247, 242, 0.96);
-    backdrop-filter: blur(16px);
-    justify-content: flex-start;
-    gap: 14px;
-    overflow-y: auto;
+  .btn-share:active {
+    transform: scale(0.97);
   }
 
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    margin-bottom: 12px;
   }
 
   .modal-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: #181922;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
   }
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #7c7f91;
-    margin-top: 4px;
-  }
-
-  .shop-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .theme-card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 12px;
-    border: 2px solid transparent;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    cursor: pointer;
+  .shop-scroll {
+    flex: 1;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    transition: transform 0.15s ease, border-color 0.15s ease;
+    gap: 14px;
+    padding-right: 2px;
   }
 
-  .theme-card.selected {
-    border-color: var(--accent);
-    background: #fffdf9;
-  }
-
-  .theme-swatch {
-    height: 8px;
-    border-radius: 999px;
-    width: 100%;
-  }
-
-  .theme-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1e202b;
-  }
-
-  .theme-desc {
-    font-size: 11px;
-    color: #737687;
-  }
-
-  .theme-price {
-    margin-top: 2px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent);
-  }
-
-  .upgrade-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-  }
-
-  .upgrade-card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 12px 14px;
+  .shop-card {
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 13px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   }
 
-  .upgrade-info {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  .shop-info h4 {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 3px;
   }
 
-  .upgrade-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1e202b;
-  }
-
-  .upgrade-sub {
-    font-size: 11px;
-    color: #737687;
+  .shop-info p {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    line-height: 1.3;
   }
 
   .level-dots {
     display: flex;
     gap: 4px;
-    margin-top: 3px;
+    margin-top: 6px;
   }
 
-  .dot {
-    width: 16px;
-    height: 4px;
-    border-radius: 999px;
-    background: #e2e4ec;
+  .lvl-dot {
+    width: 18px;
+    height: 5px;
+    border-radius: 99px;
+    background: rgba(30, 32, 43, 0.12);
   }
 
-  .dot.active {
-    background: var(--accent);
+  .lvl-dot.filled {
+    background: var(--gold-main);
   }
 
-  .upgrade-btn {
-    padding: 8px 12px;
+  .buy-btn {
+    padding: 9px 14px;
     border-radius: 12px;
     border: none;
-    background: #1e202b;
-    color: #ffffff;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
+    background: var(--ink-dark);
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 800;
     cursor: pointer;
     white-space: nowrap;
+    min-width: 78px;
+    text-align: center;
   }
 
-  .upgrade-btn:disabled {
-    background: #d8dbe4;
-    color: #7e8294;
+  .buy-btn.equipped {
+    background: rgba(217, 155, 38, 0.18);
+    color: #966810;
+  }
+
+  .buy-btn.maxed {
+    background: rgba(30, 32, 43, 0.08);
+    color: var(--ink-muted);
     cursor: default;
   }
 
-  /* Tema Rengi Seçici Kartı */
-  .personalize-card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  .buy-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
   }
 
-  .palette-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .palette-chip {
-    padding: 12px 10px;
-    border-radius: 14px;
-    border: 2px solid transparent;
-    background: #f5f4f0;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    color: #1e202b;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: transform 0.15s ease, border-color 0.15s ease;
-  }
-
-  .palette-chip:active {
-    transform: scale(0.96);
-  }
-
-  .palette-chip.active {
-    border-color: var(--accent);
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  }
-
-  .palette-dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  /* Duraklatma & Oyun Sonu Kutusu */
   .center-card {
-    margin: auto;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(14px);
+    margin: auto 0;
+    background: #fff;
     border-radius: 26px;
     padding: 24px 20px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
     text-align: center;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -611,44 +598,57 @@
   }
 
   .stat-box {
-    background: #f5f4f0;
+    background: #f7f6f2;
     border-radius: 14px;
     padding: 10px;
   }
 
   .stat-val {
     font-size: 20px;
-    font-weight: 800;
-    color: #181922;
+    font-weight: 900;
+    color: var(--ink-dark);
   }
 
   .stat-lbl {
     font-size: 11px;
     font-weight: 600;
-    color: #707384;
+    color: var(--ink-muted);
     margin-top: 2px;
   }
 
-  /* Bildirim (Toast) */
-  #toast {
+  .guide-list {
+    text-align: left;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #454857;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .guide-list strong {
+    color: var(--ink-dark);
+  }
+
+  .toast-msg {
     position: absolute;
-    top: 66px;
+    bottom: 92px;
     left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: #1e202b;
-    color: #ffffff;
+    transform: translateX(-50%) translateY(15px);
+    background: var(--ink-dark);
+    color: #fff;
     font-size: 12px;
     font-weight: 700;
     padding: 8px 16px;
-    border-radius: 999px;
+    border-radius: 99px;
     opacity: 0;
     pointer-events: none;
-    z-index: 30;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: all 0.25s ease;
+    z-index: 50;
     white-space: nowrap;
   }
 
-  #toast.show {
+  .toast-msg.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
@@ -656,165 +656,133 @@
 </head>
 <body>
 
-<div id="game-shell">
-  <canvas id="gameCanvas"></canvas>
-  <div id="toast">Bildirim</div>
+<div id="app-frame">
+  <canvas id="game-canvas"></canvas>
 
-  <!-- OYUN İÇİ ÜST BUTONLAR -->
-  <div id="hud-controls" class="hidden">
-    <button class="hud-btn" id="btn-hud-mute" title="Sesi Aç/Kapat">🔊</button>
-    <button class="hud-btn" id="btn-hud-pause" title="Duraklat">❚❚</button>
+  <!-- Oyun İçi Üst Bilgi -->
+  <div class="hud-layer" id="hud" style="display: none;">
+    <div class="hud-left">
+      <div class="hud-score" id="hud-score">0</div>
+      <div class="hud-sub">
+        <span id="hud-phase">KAĞIT</span>
+        <span>•</span>
+        <span class="mult-badge" id="hud-mult">1x ÇARPAN</span>
+      </div>
+    </div>
+
+    <div class="hud-center">
+      <div class="daily-timer" id="hud-timer">60s</div>
+    </div>
+
+    <div class="hud-right">
+      <button class="icon-btn" id="btn-mute" title="Sesi Aç/Kapat (M)">🔊</button>
+      <button class="icon-btn" id="btn-pause" title="Duraklat (P/ESC)">⏸</button>
+    </div>
   </div>
 
-  <!-- ANA MENÜ -->
-  <div id="menu-overlay" class="overlay">
+  <!-- Ana Menü -->
+  <div class="overlay-screen" id="menu-overlay">
     <div class="top-bar">
-      <div class="pill-badge">
-        <span>★</span>
+      <div class="star-pill">
+        <span class="star-icon">★</span>
         <span id="menu-stars">0</span>
       </div>
       <div style="display:flex; gap:8px;">
-        <button class="icon-btn" id="btn-personalize" title="Tema Rengi">🎨</button>
-        <button class="icon-btn" id="btn-help" title="Nasıl Oynanır">?</button>
-        <button class="icon-btn" id="btn-mute" title="Ses">🔊</button>
+        <button class="icon-btn" id="btn-theme-open" title="Tema Rengi">🎨</button>
+        <button class="icon-btn" id="btn-menu-mute" title="Ses">🔊</button>
+        <button class="icon-btn" id="btn-help" title="Nasıl Oynanır?">?</button>
       </div>
     </div>
 
-    <div class="hero-section">
+    <div class="title-block">
       <div class="brand-emblem" aria-hidden="true">
-        <svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="emblemGold" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#f7d794"/>
-              <stop offset="100%" stop-color="#d99b38"/>
+            <linearGradient id="liraGold" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FFE082"/>
+              <stop offset="55%" stop-color="#D99B26"/>
+              <stop offset="100%" stop-color="#A66E10"/>
             </linearGradient>
           </defs>
-          <polygon points="32,7 41,19 32,31 23,19" fill="url(#emblemGold)"/>
-          <polygon points="32,11 37,19 32,27 27,19" fill="#ffffff" fill-opacity="0.45"/>
-          <path d="M17 20C13 31 16 45 32 52C48 45 51 31 47 20" stroke="url(#emblemGold)" stroke-width="3.2" stroke-linecap="round"/>
-          <path d="M14 19L20 21M50 19L44 21" stroke="url(#emblemGold)" stroke-width="2.6" stroke-linecap="round"/>
-          <line x1="26" y1="24" x2="26" y2="49" stroke="#ffffff" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="32" y1="31" x2="32" y2="51" stroke="url(#emblemGold)" stroke-width="2" stroke-linecap="round"/>
-          <line x1="38" y1="24" x2="38" y2="49" stroke="#ffffff" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="32" cy="40" r="3" fill="#ffffff"/>
+          <path d="M18 14C14 23 15 39 24 47C27 50 30 51 32 51C34 51 37 50 40 47C49 39 50 23 46 14" stroke="url(#liraGold)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M15 16H49" stroke="url(#liraGold)" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M22 51H42" stroke="url(#liraGold)" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="26" y1="16" x2="26" y2="49" stroke="#FFE082" stroke-width="1.4" stroke-opacity="0.75"/>
+          <line x1="32" y1="16" x2="32" y2="51" stroke="#FFF8E1" stroke-width="1.8"/>
+          <line x1="38" y1="16" x2="38" y2="49" stroke="#FFE082" stroke-width="1.4" stroke-opacity="0.75"/>
+          <polygon points="32,24 38,32 32,40 26,32" fill="#FFF8E1" stroke="#D99B26" stroke-width="1.8"/>
         </svg>
       </div>
+      <div class="subtitle-tag" id="menu-tagline">SENFONİK ARCADE</div>
+      <br>
       <div class="rank-pill" id="menu-rank">✦ ÇIRAK OZAN</div>
       <h1 class="game-title">LİRA<span>KRİSTAL YANKISI</span></h1>
       <div class="best-score-line" id="menu-best">En Yüksek Skor: 0</div>
+      <div class="duel-banner" id="duel-banner">⚔️ Hedef Skor: 0</div>
     </div>
 
     <div class="quests-box">
-      <div class="quests-header">
+      <div class="section-label">
         <span>Aktif Görevler</span>
-        <span>Ödül</span>
+        <span style="color:var(--gold-main);">★ Ödüllü</span>
       </div>
-      <div id="quests-container"></div>
+      <div id="menu-quests-list"></div>
     </div>
 
-    <div class="actions-stack">
-      <button class="btn-primary" id="btn-play-normal">
-        <span>▶</span>
-        <span>SONSUZ TUR BAŞLAT</span>
-      </button>
-      <div class="secondary-row">
-        <button class="btn-secondary btn-gold" id="btn-play-daily">
-          <span>☀</span>
-          <span>GÜNLÜK (60s)</span>
-        </button>
-        <button class="btn-secondary" id="btn-open-shop">
-          <span>✦</span>
-          <span>ATÖLYE</span>
-        </button>
+    <div class="menu-actions">
+      <button class="btn-primary" id="btn-start-classic">OYUNA BAŞLA</button>
+      <div class="btn-row">
+        <button class="btn-secondary" id="btn-start-daily">☀️ Günlük Mod (60s)</button>
+        <button class="btn-secondary" id="btn-open-shop">✦ Atölye</button>
       </div>
-      <div class="creator-signature">Yapımcı: <strong>Seva Studio</strong></div>
+      <div class="creator-signature" id="menu-creator">Tasarım: Seva Studio</div>
     </div>
   </div>
 
-  <!-- TEMA RENGİ SEÇİCİ MODAL (Oyuncu Sadece Renk Seçebilir) -->
-  <div id="personalize-overlay" class="overlay modal-panel hidden">
+  <!-- Atölye (Mağaza) Ekranı -->
+  <div class="overlay-screen hidden" id="shop-overlay">
     <div class="modal-header">
-      <div class="modal-title">Arayüz Teması</div>
-      <button class="icon-btn" id="btn-close-personalize">✕</button>
-    </div>
-
-    <div class="section-label">Renk Paleti</div>
-    <div class="personalize-card">
-      <div class="upgrade-sub">Oyunun vurgu rengini ve arayüz atmosferini seç:</div>
-      <div class="palette-row" id="palette-grid"></div>
-    </div>
-
-    <div style="margin-top:auto; text-align:center; font-size:11px; color:#787b8c; font-weight:600;">
-      Lira: Kristal Yankısı • <strong>Seva Studio</strong>
-    </div>
-  </div>
-
-  <!-- ATÖLYE / MAĞAZA -->
-  <div id="shop-overlay" class="overlay modal-panel hidden">
-    <div class="modal-header">
-      <div class="modal-title">Atölye</div>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div class="pill-badge"><span>★</span><span id="shop-stars">0</span></div>
+      <div>
+        <div class="modal-title">Atölye</div>
+        <div style="font-size:12px; color:var(--ink-muted);">Tel tınıları ve kalıcı güçlendirmeler</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="star-pill">
+          <span class="star-icon">★</span>
+          <span id="shop-stars">0</span>
+        </div>
         <button class="icon-btn" id="btn-close-shop">✕</button>
       </div>
     </div>
 
-    <div class="section-label">Tel Tınıları & Temalar</div>
-    <div class="shop-grid" id="themes-grid"></div>
-
-    <div class="section-label">Akustik Geliştirmeler</div>
-    <div class="upgrade-list" id="upgrades-list"></div>
+    <div class="shop-scroll" id="shop-content"></div>
   </div>
 
-  <!-- YARDIM / NASIL OYNANIR -->
-  <div id="help-overlay" class="overlay modal-panel hidden">
-    <div class="modal-header">
-      <div class="modal-title">Nasıl Oynanır?</div>
-      <button class="icon-btn" id="btn-close-help">✕</button>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:10px; font-size:13px; line-height:1.5; color:#2b2e3b;">
-      <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
-        <div class="upgrade-title">1. Teli Ger & Fırlat</div>
-        <div class="upgrade-sub">Ekrana dokunup aşağı çek (veya Space/S basılı tut). Zaman yavaşlar ve nişan çizgisi belirir. Odak barı bitmeden veya 2 saniye dolmadan bırak!</div>
-      </div>
-      <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
-        <div class="upgrade-title">2. Tam Akor & Yankı Teli</div>
-        <div class="upgrade-sub">Teli altın renkli aralıkta bırakırsan <b>Tam Akor</b> oluşur: kıvılcımlar kristalleri delip geçer ve altta bir süre topları geri sektiren bir <b>Yankı Teli</b> belirir.</div>
-      </div>
-      <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
-        <div class="upgrade-title">3. Nota Küreleri & Kreşendo</div>
-        <div class="upgrade-sub">Düşen nota kürelerini ve dönen kıvılcımları tele yaklaştırarak tek atışta 5 kıvılcıma kadar biriktir. Kristal kırdıkça Kreşendo barı dolar ve 2x puan verir.</div>
-      </div>
-      <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
-        <div class="upgrade-title">4. Kristal Türleri & Büyük Rezonatör</div>
-        <div class="upgrade-sub">Düz, Zırhlı (2 vuruş), Bölünen, Kırmızı Nova (zincirleme patlama), Gümüş Ayna (sadece Tam Akor kırar, normal vuruşu hızla sektirir) ve Siyah Gölge Dikeni (gergin teli koparır!).</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DURAKLATMA -->
-  <div id="pause-overlay" class="overlay hidden" style="background:rgba(18,19,26,0.45); backdrop-filter:blur(6px);">
+  <!-- Duraklatma Ekranı -->
+  <div class="overlay-screen hidden" id="pause-overlay">
     <div class="center-card">
-      <div class="modal-title">Oyun Duraklatıldı</div>
-      <div style="font-size:13px; color:#6c6f82;">Müzik ve akış beklemede.</div>
+      <div class="subtitle-tag" style="margin:0 auto;">DURAKLATILDI</div>
+      <div class="modal-title">Lira: Kristal Yankısı</div>
+      <p style="font-size:13px; color:var(--ink-muted);">Teli aşağı çekip altın aralıkta bırakarak delici Tam Akor oluşturabilirsin.</p>
       <button class="btn-primary" id="btn-resume">DEVAM ET</button>
-      <button class="btn-secondary" id="btn-pause-menu">ANA MENÜYE DÖN</button>
+      <button class="btn-secondary" id="btn-quit-to-menu" style="width:100%;">Ana Menüye Dön</button>
     </div>
   </div>
 
-  <!-- TUR SONU -->
-  <div id="gameover-overlay" class="overlay hidden" style="background:rgba(18,19,26,0.5); backdrop-filter:blur(8px);">
+  <!-- Tur Sonu Ekranı -->
+  <div class="overlay-screen hidden" id="gameover-overlay">
     <div class="center-card">
       <div class="subtitle-tag" id="go-mode-tag" style="margin:0 auto;">TUR TAMAMLANDI</div>
       <div class="modal-title" id="go-title">Yankı Sona Erdi</div>
+      <div id="go-duel-result" style="font-size:13px; font-weight:800; display:none;"></div>
 
       <div class="stat-grid">
         <div class="stat-box">
           <div class="stat-val" id="go-score">0</div>
-          <div class="stat-lbl">Toplam Puan</div>
+          <div class="stat-lbl">Tur Skoru</div>
         </div>
         <div class="stat-box">
-          <div class="stat-val" style="color:var(--accent);" id="go-stars">+0 ★</div>
+          <div class="stat-val" style="color:var(--gold-main);" id="go-stars">+0 ★</div>
           <div class="stat-lbl">Kazanılan Yıldız</div>
         </div>
         <div class="stat-box">
@@ -827,31 +795,65 @@
         </div>
       </div>
 
-      <div id="go-quest-summary" style="font-size:12px; font-weight:600; color:#2e7d32;"></div>
+      <div id="go-quest-summary" style="font-size:12px; color:#2b7a4b; font-weight:700;"></div>
 
-      <button class="btn-secondary btn-share" id="btn-share-score">
-        <span>↗</span>
-        <span>SKORU PAYLAŞ / MEYDAN OKU</span>
-      </button>
-      <button class="btn-primary" id="btn-retry">TEKRAR OYNA</button>
-      <button class="btn-secondary" id="btn-go-menu">ANA MENÜ</button>
+      <button class="btn-share" id="btn-share-score">📤 Skoru Paylaş / Meydan Oku</button>
+      <button class="btn-primary" id="btn-restart">TEKRAR OYNA</button>
+      <button class="btn-secondary" id="btn-go-menu" style="width:100%;">Ana Menü</button>
     </div>
   </div>
+
+  <!-- Yardım / Kontroller Ekranı -->
+  <div class="overlay-screen hidden" id="help-overlay">
+    <div class="center-card">
+      <div class="modal-header" style="margin-bottom:0;">
+        <div class="modal-title">Nasıl Oynanır?</div>
+        <button class="icon-btn" id="btn-close-help">✕</button>
+      </div>
+      <div class="guide-list">
+        <div><strong>🎯 Sapan & Odak:</strong> Ekrana dokunup aşağı çektiğinde zaman yavaşlar. Odak barın bitmeden veya 2 saniyelik otomatik bırakma dolmadan teli bırak.</div>
+        <div><strong>✨ Tam Akor:</strong> Teli <b>altın renkli</b> aralıkta bırakırsan kıvılcımlar kristalleri delip geçer ve altta geçici bir <b>Yankı Teli</b> belirir.</div>
+        <div><strong>🎵 Nota Küreleri:</strong> Düşen altın küreleri ve dönen kıvılcımları gergin tele yaklaştırarak tek atışta <b>5 kıvılcıma</b> kadar biriktir.</div>
+        <div><strong>💎 Kristal Türleri:</strong> Mavi (1 vuruş), Mor Zırhlı (2 vuruş), Turkuaz Bölünen, Gümüş Ayna (sadece Tam Akor kırar), Kırmızı Nova (zincirleme patlama), Siyah Gölge Dikeni (gergin teli koparır!).</div>
+        <div><strong>👑 Büyük Rezonatör:</strong> Dönen taç yapraklarını temizleyip çekirdeğini kırarak büyük puan ve <b>+1 Kalkan</b> kazan.</div>
+        <div><strong>⌨️ Klavye:</strong> Space / ↓ / S ile ger-bırak, ← → / A D ile açı ver.</div>
+      </div>
+      <button class="btn-primary" id="btn-help-ok">ANLADIM</button>
+    </div>
+  </div>
+
+  <!-- Tema Rengi Seçim Ekranı -->
+  <div class="overlay-screen hidden" id="theme-overlay">
+    <div class="center-card">
+      <div class="modal-header" style="margin-bottom:0;">
+        <div class="modal-title">Tema Rengi</div>
+        <button class="icon-btn" id="btn-close-theme">✕</button>
+      </div>
+
+      <div style="text-align:center;">
+        <div style="font-size:12px; font-weight:700; color:var(--ink-muted); margin-bottom:10px;">Oyun arayüzü vurgu rengini seç</div>
+        <div class="swatch-row" id="theme-swatches">
+          <button class="swatch-btn" data-color="#d99b26" style="background:#d99b26;" title="Klasik Altın"></button>
+          <button class="swatch-btn" data-color="#2563eb" style="background:#2563eb;" title="Gece Mavisi"></button>
+          <button class="swatch-btn" data-color="#059669" style="background:#059669;" title="Zümrüt Yeşili"></button>
+          <button class="swatch-btn" data-color="#9333ea" style="background:#9333ea;" title="Neon Mor"></button>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-save-theme">TAMAM</button>
+    </div>
+  </div>
+
+  <div class="toast-msg" id="toast"></div>
 </div>
 
 <script>
-/**
- * LİRA: KRİSTAL YANKISI — Seva Studio
- * Tek dosyalık dikey senfonik arcade oyunu.
- * Tüm görseller Canvas 2D ile çizilir, tüm sesler ve dinamik müzik Web Audio API ile gerçek zamanlı sentezlenir.
- */
-
-(function() {
+(() => {
   'use strict';
 
-  // ============================================================================
-  // 0. ANA EKRAN UYGULAMA İKONU (PWA / APPLE TOUCH ICON OLUŞTURUCU) & TİTREŞİM
-  // ============================================================================
+  /* =========================================================================
+     1. DİNAMİK UYGULAMA İKONU OLUŞTURUCU (ANA EKRANA EKLE / PWA DESTEĞİ)
+     ========================================================================= */
   function generateAppIcons() {
     try {
       const iconCanvas = document.createElement('canvas');
@@ -859,257 +861,120 @@
       iconCanvas.height = 512;
       const ictx = iconCanvas.getContext('2d');
 
-      // Koyu lüks arka plan
       const bgGrad = ictx.createLinearGradient(0, 0, 512, 512);
       bgGrad.addColorStop(0, '#1e202b');
-      bgGrad.addColorStop(1, '#121216');
+      bgGrad.addColorStop(1, '#2f3344');
       ictx.fillStyle = bgGrad;
-      ictx.beginPath();
-      ictx.roundRect(0, 0, 512, 512, 112);
-      ictx.fill();
+      ictx.fillRect(0, 0, 512, 512);
 
-      // Altın çerçeve
-      const goldGrad = ictx.createLinearGradient(40, 40, 472, 472);
-      goldGrad.addColorStop(0, '#f7d794');
-      goldGrad.addColorStop(1, '#d99b38');
+      const glow = ictx.createRadialGradient(256, 256, 20, 256, 256, 220);
+      glow.addColorStop(0, 'rgba(217, 155, 38, 0.28)');
+      glow.addColorStop(1, 'rgba(217, 155, 38, 0)');
+      ictx.fillStyle = glow;
+      ictx.fillRect(0, 0, 512, 512);
+
+      const goldGrad = ictx.createLinearGradient(110, 90, 400, 420);
+      goldGrad.addColorStop(0, '#FFE082');
+      goldGrad.addColorStop(0.55, '#D99B26');
+      goldGrad.addColorStop(1, '#A66E10');
+
       ictx.strokeStyle = goldGrad;
-      ictx.lineWidth = 6;
-      ictx.beginPath();
-      ictx.roundRect(24, 24, 464, 464, 92);
-      ictx.stroke();
-
-      // Üst kristal elmas
-      ictx.fillStyle = goldGrad;
-      ictx.beginPath();
-      ictx.moveTo(256, 76);
-      ictx.lineTo(318, 160);
-      ictx.lineTo(256, 244);
-      ictx.lineTo(194, 160);
-      ictx.closePath();
-      ictx.fill();
-
-      ictx.fillStyle = 'rgba(255, 255, 255, 0.42)';
-      ictx.beginPath();
-      ictx.moveTo(256, 102);
-      ictx.lineTo(294, 160);
-      ictx.lineTo(256, 218);
-      ictx.lineTo(218, 160);
-      ictx.closePath();
-      ictx.fill();
-
-      // Lira kolları
-      ictx.strokeStyle = goldGrad;
-      ictx.lineWidth = 22;
       ictx.lineCap = 'round';
+      ictx.lineWidth = 26;
+
       ictx.beginPath();
-      ictx.moveTo(142, 166);
-      ictx.bezierCurveTo(112, 252, 140, 360, 256, 406);
-      ictx.bezierCurveTo(372, 360, 400, 252, 370, 166);
+      ictx.moveTo(145, 115);
+      ictx.bezierCurveTo(110, 190, 120, 320, 195, 385);
+      ictx.quadraticCurveTo(256, 425, 317, 385);
+      ictx.bezierCurveTo(392, 320, 402, 190, 367, 115);
       ictx.stroke();
 
-      // Üst boynuz uçları
-      ictx.lineWidth = 16;
+      ictx.lineWidth = 22;
       ictx.beginPath();
-      ictx.moveTo(124, 160);
-      ictx.lineTo(164, 174);
-      ictx.moveTo(388, 160);
-      ictx.lineTo(348, 174);
+      ictx.moveTo(120, 130);
+      ictx.lineTo(392, 130);
+      ictx.moveTo(175, 412);
+      ictx.lineTo(337, 412);
       ictx.stroke();
 
-      // Teller
-      ictx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-      ictx.lineWidth = 7;
-      ictx.beginPath();
-      ictx.moveTo(210, 196);
-      ictx.lineTo(210, 384);
-      ictx.moveTo(302, 196);
-      ictx.lineTo(302, 384);
-      ictx.stroke();
+      ictx.strokeStyle = 'rgba(255, 248, 225, 0.85)';
+      ictx.lineWidth = 8;
+      [212, 256, 300].forEach(x => {
+        ictx.beginPath();
+        ictx.moveTo(x, 130);
+        ictx.lineTo(x, 405);
+        ictx.stroke();
+      });
 
-      ictx.strokeStyle = goldGrad;
-      ictx.lineWidth = 9;
+      ictx.fillStyle = '#FFF8E1';
+      ictx.strokeStyle = '#D99B26';
+      ictx.lineWidth = 12;
       ictx.beginPath();
-      ictx.moveTo(256, 244);
-      ictx.lineTo(256, 402);
-      ictx.stroke();
-
-      // Parlayan kıvılcım noktası
-      ictx.fillStyle = '#ffffff';
-      ictx.beginPath();
-      ictx.arc(256, 322, 18, 0, Math.PI * 2);
+      ictx.moveTo(256, 195);
+      ictx.lineTo(306, 265);
+      ictx.lineTo(256, 335);
+      ictx.lineTo(206, 265);
+      ictx.closePath();
       ictx.fill();
+      ictx.stroke();
 
-      const pngUrl = iconCanvas.toDataURL('image/png');
-      const appleIcon = document.getElementById('apple-touch-icon');
-      if (appleIcon) appleIcon.href = pngUrl;
-
-      // Dinamik Web App Manifest (Android / Chrome Ana Ekrana Ekle için)
-      const manifest = {
-        name: 'Lira: Kristal Yankısı',
-        short_name: 'Lira',
-        start_url: '.',
-        display: 'standalone',
-        background_color: '#121216',
-        theme_color: '#121216',
-        icons: [{ src: pngUrl, sizes: '512x512', type: 'image/png' }]
-      };
-      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-      const manifestLink = document.createElement('link');
-      manifestLink.rel = 'manifest';
-      manifestLink.href = URL.createObjectURL(manifestBlob);
-      document.head.appendChild(manifestLink);
+      const dataUrl = iconCanvas.toDataURL('image/png');
+      const fav = document.getElementById('dynamic-favicon');
+      const apple = document.getElementById('dynamic-apple-icon');
+      if (fav) fav.href = dataUrl;
+      if (apple) apple.href = dataUrl;
     } catch (e) {}
   }
 
+  /* =========================================================================
+     2. DOKUNSAL GERİ BİLDİRİM (TİTREŞİM / HAPTICS)
+     ========================================================================= */
   function triggerHaptic(pattern) {
     try {
-      if (navigator.vibrate) {
+      if (navigator && typeof navigator.vibrate === 'function') {
         navigator.vibrate(pattern);
       }
     } catch (e) {}
   }
 
-  // ============================================================================
-  // 1. KAYIT, TEMALAR, RÜTBELER & VERİ YÖNETİMİ (LocalStorage)
-  // ============================================================================
-  const STORAGE_KEY = 'lira_kristal_yankisi_sevastudio_v1';
+  /* =========================================================================
+     3. KALICI KAYIT, RÜTBE VE EKONOMİ VERİLERİ
+     ========================================================================= */
+  const STORAGE_KEY = 'lira_kristal_yankisi_save_v1';
 
-  const RANKS = [
-    { min: 0, title: 'Çırak Ozan' },
-    { min: 500, title: 'Akort Ustası' },
-    { min: 1500, title: 'Kristal Virtüözü' },
-    { min: 3000, title: 'Senfoni Mimarı' }
-  ];
+  const THEMES = {
+    classic: { name: 'Klasik Arp', desc: 'Sıcak ve dengeli akustik tel tınısı.', cost: 0, color: '#d99b26', oscType: 'triangle', harmonic: 2 },
+    synth:   { name: 'Synth Yay', desc: 'Parlak, uzayan sinematik yaylı dokusu.', cost: 30, color: '#3b82f6', oscType: 'sawtooth', harmonic: 1.5 },
+    marimba: { name: 'Ahşap Marimba', desc: 'Vurmalı, tok ve ritmik ahşap tınısı.', cost: 55, color: '#b45309', oscType: 'sine', harmonic: 4 },
+    celesta: { name: 'Gümüş Çelesta', desc: 'Kristal berraklığında çan melodisi.', cost: 85, color: '#0ea5e9', oscType: 'sine', harmonic: 3 },
+    fm:      { name: 'FM Kristal', desc: 'Metalik harmoniklerle zenginleşen fütüristik tel.', cost: 120, color: '#9333ea', oscType: 'square', harmonic: 2.5 }
+  };
 
-  function getPlayerRank(bestScore) {
-    let current = RANKS[0].title;
-    for (const r of RANKS) {
-      if (bestScore >= r.min) current = r.title;
-    }
-    return current;
-  }
-
-  const UI_PALETTES = [
-    { id: 'gold', name: 'Klasik Altın', color: '#d99b38', className: '' },
-    { id: 'navy', name: 'Gece Mavisi', color: '#2563eb', className: 'palette-navy' },
-    { id: 'emerald', name: 'Zümrüt Yeşili', color: '#059669', className: 'palette-emerald' },
-    { id: 'violet', name: 'Neon Mor', color: '#7c3aed', className: 'palette-violet' }
-  ];
-
-  // 5 Tel Tınısı & Görsel Teması (Varsayılan Klasik Arp + 4 Atölye Teması)
-  const THEMES = [
-    {
-      id: 'harp',
-      name: 'Klasik Arp',
-      desc: 'Sıcak üçgen dalga tınısı',
-      price: 0,
-      color: '#d99b38',
-      spark: '#1e202b',
-      glow: 'rgba(217, 155, 56, 0.5)',
-      wave: 'triangle'
-    },
-    {
-      id: 'synth',
-      name: 'Synth Yay',
-      desc: 'Yumuşak filtreli armoni',
-      price: 30,
-      color: '#2563eb',
-      spark: '#1d4ed8',
-      glow: 'rgba(37, 99, 235, 0.5)',
-      wave: 'synth'
-    },
-    {
-      id: 'marimba',
-      name: 'Ahşap Marimba',
-      desc: 'Vurmalı ahşap rezonans',
-      price: 45,
-      color: '#059669',
-      spark: '#047857',
-      glow: 'rgba(5, 150, 105, 0.5)',
-      wave: 'sine'
-    },
-    {
-      id: 'celesta',
-      name: 'Gümüş Çelesta',
-      desc: 'İnce ve parlak çan tınısı',
-      price: 60,
-      color: '#7c3aed',
-      spark: '#6d28d9',
-      glow: 'rgba(124, 58, 237, 0.5)',
-      wave: 'celesta'
-    },
-    {
-      id: 'fm',
-      name: 'FM Kristal',
-      desc: 'Camsı yüksek frekans modülasyonu',
-      price: 80,
-      color: '#e11d48',
-      spark: '#be123c',
-      glow: 'rgba(225, 29, 72, 0.5)',
-      wave: 'fm'
-    }
-  ];
-
-  const UPGRADES = [
-    {
-      id: 'echoDuration',
-      name: 'Yankı Teli Süresi',
-      desc: 'Tam Akor sonrası koruyucu telin kalma süresi',
-      baseCost: 25,
-      stepCost: 25,
-      maxLevel: 3
-    },
-    {
-      id: 'magnetRadius',
-      name: 'Küre Yakalama Alanı',
-      desc: 'Nota kürelerinin ve kıvılcımların tele çekim mesafesi',
-      baseCost: 25,
-      stepCost: 25,
-      maxLevel: 3
-    },
-    {
-      id: 'crescendoSpeed',
-      name: 'Kreşendo Hızı',
-      desc: '2x puan barının dolma hızı ve süresi',
-      baseCost: 30,
-      stepCost: 30,
-      maxLevel: 3
-    }
-  ];
+  const UPGRADES = {
+    echoDuration: { name: 'Yankı Teli Süresi', desc: 'Tam Akor sonrası altta beliren yankı telinin ömrünü uzatır.', costs: [25, 50, 90] },
+    magnetRadius: { name: 'Küre Yakalama Alanı', desc: 'Düşen nota kürelerinin gergin tele çekilme menzilini artırır.', costs: [25, 50, 90] },
+    crescendoSpeed: { name: 'Kreşendo Akışı', desc: '2x puan modunu daha hızlı doldurur ve süresini uzatır.', costs: [30, 60, 100] }
+  };
 
   const QUEST_POOL = [
-    { id: 'q_break', type: 'break', label: '{target} kristal kır', targets: [25, 45, 70], reward: [12, 20, 30] },
-    { id: 'q_perfect', type: 'perfect', label: '{target} kez Tam Akor yap', targets: [3, 6, 10], reward: [15, 25, 35] },
-    { id: 'q_nova', type: 'nova', label: '{target} Nova patlat', targets: [2, 4, 7], reward: [14, 22, 32] },
-    { id: 'q_multi', type: 'multi', label: 'Tek atışta 4+ kıvılcım fırlat ({target} kez)', targets: [2, 4, 6], reward: [15, 24, 34] },
-    { id: 'q_crescendo', type: 'crescendo', label: '{target} kez Kreşendo başlat', targets: [1, 2, 3], reward: [16, 26, 36] },
-    { id: 'q_boss', type: 'boss', label: 'Büyük Rezonatör yen', targets: [1], reward: [35] }
+    { id: 'break_crystals', text: 'Kristal parçala', target: 35, reward: 15 },
+    { id: 'perfect_chords', text: 'Tam Akor (Altın atış) yap', target: 6, reward: 20 },
+    { id: 'trigger_novas', text: 'Kırmızı Nova patlat', target: 4, reward: 18 },
+    { id: 'multi_shots', text: '3+ kıvılcımlı atış yap', target: 5, reward: 18 },
+    { id: 'crescendos', text: 'Kreşendo moduna gir', target: 2, reward: 22 },
+    { id: 'defeat_boss', text: 'Büyük Rezonatör yen', target: 1, reward: 30 },
+    { id: 'score_points', text: 'Tek turda 800 puana ulaş', target: 800, reward: 25 }
   ];
 
-  function createRandomQuest(existingTypes) {
-    const candidates = QUEST_POOL.filter(q => !existingTypes.includes(q.type));
-    const pool = candidates.length > 0 ? candidates : QUEST_POOL;
-    const tpl = pool[Math.floor(Math.random() * pool.length)];
-    const tier = Math.floor(Math.random() * tpl.targets.length);
-    const target = tpl.targets[tier];
-    return {
-      uid: Math.random().toString(36).slice(2, 9),
-      type: tpl.type,
-      label: tpl.label.replace('{target}', target),
-      target: target,
-      progress: 0,
-      reward: tpl.reward[tier]
-    };
-  }
-
   let saveData = {
-    stars: 20,
+    stars: 0,
     bestScore: 0,
     bestDaily: 0,
+    muted: false,
+    accentColor: '#d99b26',
     tutorialSeen: false,
-    uiPalette: 'gold',
-    selectedTheme: 'harp',
-    unlockedThemes: ['harp'],
+    equippedTheme: 'classic',
+    unlockedThemes: ['classic'],
     upgrades: {
       echoDuration: 0,
       magnetRadius: 0,
@@ -1117,6 +982,19 @@
     },
     quests: []
   };
+
+  function getPlayerRank(best) {
+    if (best >= 3000) return '👑 SENFONİ MİMARI';
+    if (best >= 1500) return '💎 KRİSTAL VİRTÜÖZÜ';
+    if (best >= 500)  return '🎵 AKORT USTASI';
+    return '✦ ÇIRAK OZAN';
+  }
+
+  function applyCustomization() {
+    document.documentElement.style.setProperty('--gold-main', saveData.accentColor || '#d99b26');
+    const creatorEl = document.getElementById('menu-creator');
+    if (creatorEl) creatorEl.textContent = 'Tasarım: Seva Studio';
+  }
 
   function loadSave() {
     try {
@@ -1127,27 +1005,45 @@
         saveData.upgrades = Object.assign({ echoDuration: 0, magnetRadius: 0, crescendoSpeed: 0 }, parsed.upgrades || {});
       }
     } catch (e) {}
-    while (saveData.quests.length < 3) {
-      const types = saveData.quests.map(q => q.type);
-      saveData.quests.push(createRandomQuest(types));
+    if (!Array.isArray(saveData.quests) || saveData.quests.length < 3) {
+      saveData.quests = [];
+      refillQuests();
     }
-    persistSave();
+    applyCustomization();
+    writeSave();
   }
 
-  function persistSave() {
+  function writeSave() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
     } catch (e) {}
   }
 
-  // ============================================================================
-  // 2. SENTEZLENMİŞ SES MOTORU (Web Audio API - Dış Dosya Yok)
-  // ============================================================================
+  function refillQuests() {
+    const activeIds = new Set(saveData.quests.map(q => q.id));
+    while (saveData.quests.length < 3) {
+      const candidates = QUEST_POOL.filter(q => !activeIds.has(q.id));
+      const pick = candidates[Math.floor(Math.random() * candidates.length)] || QUEST_POOL[0];
+      saveData.quests.push({
+        id: pick.id,
+        text: pick.text,
+        target: pick.target,
+        progress: 0,
+        reward: pick.reward
+      });
+      activeIds.add(pick.id);
+    }
+  }
+
+  /* =========================================================================
+     4. WEB AUDIO SENTEZLEYİCİ (KORUMALI SES HAVUZU)
+     ========================================================================= */
   const SoundEngine = {
     ctx: null,
-    muted: false,
     bgmTimer: null,
     step: 0,
+    activeVoices: 0,
+    maxVoices: 18, // iOS Safari ses kilitlenmesini önler
     scale: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00],
 
     init() {
@@ -1158,173 +1054,196 @@
         }
       }
       if (this.ctx && this.ctx.state === 'suspended') {
-        this.ctx.resume();
+        this.ctx.resume().catch(() => {});
       }
     },
 
-    toggleMute() {
-      this.muted = !this.muted;
-      return this.muted;
+    canPlay() {
+      return this.ctx && !saveData.muted && this.activeVoices < this.maxVoices;
     },
 
-    getThemeWave() {
-      const t = THEMES.find(th => th.id === saveData.selectedTheme);
-      return t ? t.wave : 'triangle';
-    },
-
-    playStretchTick(ratio) {
-      if (this.muted) return;
+    playPluck(power = 0.7, isPerfect = false) {
+      if (!this.canPlay()) return;
       this.init();
-      if (!this.ctx) return;
       const now = this.ctx.currentTime;
+      const theme = THEMES[saveData.equippedTheme] || THEMES.classic;
+      const baseFreq = isPerfect ? 523.25 : (196 + power * 220);
+
+      this.activeVoices++;
       const osc = this.ctx.createOscillator();
+      const subOsc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(220 + ratio * 380, now);
-      gain.gain.setValueAtTime(0.03, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+      osc.type = theme.oscType;
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * (isPerfect ? 1.5 : 0.98), now + 0.35);
+
+      subOsc.type = 'sine';
+      subOsc.frequency.setValueAtTime(baseFreq * theme.harmonic, now);
+
+      const subGain = this.ctx.createGain();
+      subGain.gain.setValueAtTime(isPerfect ? 0.14 : 0.06, now);
+      subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(isPerfect ? 0.24 : 0.18, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + (isPerfect ? 0.65 : 0.4));
+
       osc.connect(gain);
+      subOsc.connect(subGain);
+      subGain.connect(gain);
       gain.connect(this.ctx.destination);
+
+      osc.onended = () => { this.activeVoices = Math.max(0, this.activeVoices - 1); };
       osc.start(now);
-      osc.stop(now + 0.045);
+      subOsc.start(now);
+      osc.stop(now + 0.68);
+      subOsc.stop(now + 0.35);
     },
 
-    playRelease(sparkCount, isPerfect) {
-      if (this.muted) return;
+    playCrystalHit(combo = 1, isBreak = true) {
+      if (!this.canPlay()) return;
       this.init();
-      if (!this.ctx) return;
-
       const now = this.ctx.currentTime;
-      const wave = this.getThemeWave();
-      const chordIndices = isPerfect ? [0, 2, 4, 5, 7] : [0, 2, 4];
-      const count = Math.min(chordIndices.length, Math.max(2, sparkCount + 1));
+      const noteFreq = this.scale[combo % this.scale.length] * (combo > 9 ? 1.5 : 1);
 
-      for (let i = 0; i < count; i++) {
-        const freq = this.scale[chordIndices[i]] * (isPerfect ? 1 : 0.75);
-        const start = now + i * 0.025;
-        this.triggerNote(freq, start, isPerfect ? 0.65 : 0.38, isPerfect ? 0.11 : 0.08, wave);
-      }
-    },
-
-    triggerNote(freq, startTime, duration, volume, waveType) {
-      if (!this.ctx) return;
+      this.activeVoices++;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
-      if (waveType === 'fm') {
-        const mod = this.ctx.createOscillator();
-        const modGain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, startTime);
-        mod.type = 'sine';
-        mod.frequency.setValueAtTime(freq * 2.5, startTime);
-        modGain.gain.setValueAtTime(freq * 1.2, startTime);
-        modGain.gain.exponentialRampToValueAtTime(1, startTime + duration * 0.6);
-        mod.connect(modGain);
-        modGain.connect(osc.frequency);
-        mod.start(startTime);
-        mod.stop(startTime + duration);
-      } else if (waveType === 'celesta') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq * 2, startTime);
-      } else if (waveType === 'synth') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(freq, startTime);
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1100, startTime);
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-        gain.gain.setValueAtTime(0.001, startTime);
-        gain.gain.linearRampToValueAtTime(volume * 0.85, startTime + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0008, startTime + duration);
-        osc.start(startTime);
-        osc.stop(startTime + duration + 0.02);
-        return;
-      } else {
-        osc.type = waveType || 'triangle';
-        osc.frequency.setValueAtTime(freq, startTime);
+      osc.type = isBreak ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(noteFreq, now);
+      if (!isBreak) {
+        osc.frequency.exponentialRampToValueAtTime(noteFreq * 0.75, now + 0.12);
       }
 
-      gain.gain.setValueAtTime(0.001, startTime);
-      gain.gain.linearRampToValueAtTime(volume, startTime + 0.012);
-      gain.gain.exponentialRampToValueAtTime(0.0008, startTime + duration);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(isBreak ? 0.16 : 0.11, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + (isBreak ? 0.35 : 0.15));
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
-      osc.start(startTime);
-      osc.stop(startTime + duration + 0.02);
+      osc.onended = () => { this.activeVoices = Math.max(0, this.activeVoices - 1); };
+      osc.start(now);
+      osc.stop(now + 0.38);
     },
 
-    playHit(combo, isBreak, isNova) {
-      if (this.muted) return;
+    playNova() {
+      if (!this.canPlay()) return;
       this.init();
-      if (!this.ctx) return;
-
       const now = this.ctx.currentTime;
-      const idx = combo % this.scale.length;
-      const octave = combo >= this.scale.length ? 1.5 : 1;
-      const freq = this.scale[idx] * octave;
-
-      this.triggerNote(freq, now, isBreak ? 0.32 : 0.16, isBreak ? 0.09 : 0.05, this.getThemeWave());
-
-      if (isNova) {
-        const sub = this.ctx.createOscillator();
-        const subGain = this.ctx.createGain();
-        sub.type = 'sine';
-        sub.frequency.setValueAtTime(140, now);
-        sub.frequency.exponentialRampToValueAtTime(36, now + 0.35);
-        subGain.gain.setValueAtTime(0.22, now);
-        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
-        sub.connect(subGain);
-        subGain.connect(this.ctx.destination);
-        sub.start(now);
-        sub.stop(now + 0.38);
-      }
-    },
-
-    playCatchOrb(count) {
-      if (this.muted) return;
-      this.init();
-      if (!this.ctx) return;
-      const now = this.ctx.currentTime;
-      const freq = this.scale[Math.min(this.scale.length - 1, count + 3)];
-      this.triggerNote(freq, now, 0.22, 0.07, 'sine');
-    },
-
-    playDamage() {
-      if (this.muted) return;
-      this.init();
-      if (!this.ctx) return;
-      const now = this.ctx.currentTime;
+      this.activeVoices++;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
+
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(135, now);
-      osc.frequency.linearRampToValueAtTime(68, now + 0.28);
-      gain.gain.setValueAtTime(0.14, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(38, now + 0.45);
+
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+
       osc.connect(gain);
       gain.connect(this.ctx.destination);
+      osc.onended = () => { this.activeVoices = Math.max(0, this.activeVoices - 1); };
       osc.start(now);
-      osc.stop(now + 0.32);
+      osc.stop(now + 0.5);
+    },
+
+    playSnap() {
+      if (!this.canPlay()) return;
+      this.init();
+      const now = this.ctx.currentTime;
+      this.activeVoices++;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(310, now);
+      osc.frequency.exponentialRampToValueAtTime(65, now + 0.25);
+
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.onended = () => { this.activeVoices = Math.max(0, this.activeVoices - 1); };
+      osc.start(now);
+      osc.stop(now + 0.3);
+    },
+
+    playOrbCollect(count) {
+      if (!this.canPlay()) return;
+      this.init();
+      const now = this.ctx.currentTime;
+      const freq = 440 + count * 110;
+      this.activeVoices++;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.25, now + 0.14);
+
+      gain.gain.setValueAtTime(0.11, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.onended = () => { this.activeVoices = Math.max(0, this.activeVoices - 1); };
+      osc.start(now);
+      osc.stop(now + 0.18);
+    },
+
+    playCrescendo() {
+      if (!this.ctx || saveData.muted) return;
+      this.init();
+      const chord = [523.25, 659.25, 783.99, 1046.5];
+      chord.forEach((f, idx) => {
+        if (this.activeVoices >= this.maxVoices) return;
+        const now = this.ctx.currentTime + idx * 0.05;
+        this.activeVoices++;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, now);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.onended = () => { this.activeVoices = Math.max(0, this.activeVoices - 1); };
+        osc.start(now);
+        osc.stop(now + 0.6);
+      });
     },
 
     startMusic() {
-      if (this.bgmTimer) return;
+      this.stopMusic();
       this.step = 0;
+      const padNotes = [130.81, 164.81, 196.00, 220.00, 174.61, 196.00, 146.83, 196.00];
       this.bgmTimer = setInterval(() => {
-        if (this.muted || !game.running || game.paused) return;
-        this.init();
-        if (!this.ctx) return;
-        const pattern = [0, 2, 4, 7, 4, 2, 1, 4];
-        const noteIdx = pattern[this.step % pattern.length];
-        const bassShift = Math.floor(this.step / 16) % 2 === 1 ? 0.8909 : 1;
-        const freq = this.scale[noteIdx] * 0.5 * bassShift;
-        this.triggerNote(freq, this.ctx.currentTime, 0.55, 0.025, 'sine');
+        if (!this.ctx || saveData.muted || game.state !== 'playing') return;
+        if (this.activeVoices >= this.maxVoices - 4) return;
+        const now = this.ctx.currentTime;
+        const freq = padNotes[this.step % padNotes.length];
         this.step++;
-      }, 420);
+
+        this.activeVoices++;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.032, now + 0.25);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.onended = () => { this.activeVoices = Math.max(0, this.activeVoices - 1); };
+        osc.start(now);
+        osc.stop(now + 1.15);
+      }, 950);
     },
 
     stopMusic() {
@@ -1335,93 +1254,68 @@
     }
   };
 
-  // ============================================================================
-  // 3. TOHUM TABANLI RASTGELE SAYI ÜRETECİ (Günlük Mod İçin Deterministik)
-  // ============================================================================
-  function createRNG(seed) {
-    let s = seed >>> 0;
+  /* =========================================================================
+     5. GÜNLÜK MOD İÇİN TOHUMLU RASTGELE SAYI ÜRETECİ (SEEDED RNG)
+     ========================================================================= */
+  function createSeededRandom(seedStr) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < seedStr.length; i++) {
+      h ^= seedStr.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
     return function() {
-      s = (s + 0x6D2B79F5) | 0;
-      let t = Math.imul(s ^ (s >>> 15), 1 | s);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      h += h << 13; h ^= h >>> 7;
+      h += h << 3;  h ^= h >>> 17;
+      h += h << 5;
+      return (h >>> 0) / 4294967296;
     };
   }
 
-  function getTodaySeed() {
+  function getTodayString() {
     const d = new Date();
-    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
-  // ============================================================================
-  // 4. OYUN MOTORU VE FİZİK DURUMU
-  // ============================================================================
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  const shell = document.getElementById('game-shell');
-
-  let W = 390;
-  let H = 780;
-  let DPR = 1;
-
-  function resizeCanvas() {
-    const rect = shell.getBoundingClientRect();
-    W = rect.width;
-    H = rect.height;
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = W * DPR;
-    canvas.height = H * DPR;
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-
-  // Arka Plan Evreleri: Kağıt -> Sis -> Kum -> İnci
-  const BG_PHASES = [
-    { name: 'Kağıt', top: [246, 243, 235], bot: [233, 228, 216], ink: '#1e202b', line: 'rgba(30,32,43,0.06)' },
-    { name: 'Sis',   top: [223, 232, 238], bot: [199, 213, 224], ink: '#17232e', line: 'rgba(23,35,46,0.07)' },
-    { name: 'Kum',   top: [243, 229, 206], bot: [227, 205, 173], ink: '#2c2114', line: 'rgba(44,33,20,0.07)' },
-    { name: 'İnci',  top: [236, 229, 244], bot: [215, 205, 232], ink: '#241b35', line: 'rgba(36,27,53,0.07)' }
+  /* =========================================================================
+     6. ARKA PLAN EVRELERİ (KAĞIT, SİS, KUM, İNCİ)
+     ========================================================================= */
+  const PHASES = [
+    { name: 'KAĞIT', bg: '#f5f3ed', line: 'rgba(30,32,43,0.04)', string: '#1e202b', shield: '#d99b26' },
+    { name: 'SİS',   bg: '#e5ebf0', line: 'rgba(30,58,82,0.05)', string: '#1e3a52', shield: '#3b82f6' },
+    { name: 'KUM',   bg: '#f2e6d5', line: 'rgba(120,72,32,0.05)', string: '#5c3818', shield: '#d97706' },
+    { name: 'İNCİ',  bg: '#ece8f4', line: 'rgba(76,46,115,0.05)', string: '#3b235a', shield: '#8b5cf6' }
   ];
 
-  const game = {
-    running: false,
-    paused: false,
-    mode: 'normal',
-    rng: Math.random,
-    time: 0,
-    dailyTimeLeft: 60,
+  /* =========================================================================
+     7. OYUN DURUMU VE VARLIKLAR
+     ========================================================================= */
+  const canvas = document.getElementById('game-canvas');
+  const ctx = canvas.getContext('2d');
+  let W = 390;
+  let H = 760;
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
+  const game = {
+    state: 'menu',
+    mode: 'classic',
+    rng: Math.random,
     score: 0,
     shields: 3,
     maxShields: 3,
     combo: 0,
-    comboTimer: 0,
-
-    focus: 1.0,
-    string: {
-      pulling: false,
-      pullX: 0,
-      pullY: 0,
-      holdTime: 0,
-      brokenTimer: 0,
-      vibAmp: 0,
-      vibPhase: 0,
-      loadedSparks: 1,
-      lastTickStep: 0
-    },
-
-    echoString: {
-      active: false,
-      timer: 0,
-      maxTimer: 4.5
-    },
-
-    crescendo: {
-      charge: 0,
-      active: false,
-      timer: 0
-    },
+    multiplier: 1,
+    crescendoMeter: 0,
+    crescendoActive: false,
+    crescendoTimer: 0,
+    dailyTimeLeft: 60,
+    wave: 1,
+    bossCount: 0,
+    spawnTimer: 0,
+    orbTimer: 3.5,
+    tutorialTimer: 0,
+    wasInGoldZone: false,
+    shakeTime: 0,
+    shakeIntensity: 0,
 
     stats: {
       crystalsBroken: 0,
@@ -1432,1421 +1326,81 @@
       bossesDefeated: 0
     },
 
+    duelTarget: null,
     phaseIndex: 0,
-    spawnTimer: 0,
-    waveCount: 0,
-    bossSpawnedCount: 0,
-    nextBossScore: 450,
-    tutorialTimer: 0,
-    wasInPerfectZone: false,
+
+    string: {
+      y: 0,
+      marginX: 28,
+      pullX: 0,
+      pullY: 0,
+      isDragging: false,
+      holdTime: 0,
+      maxHoldTime: 2.0,
+      snappedTimer: 0,
+      vibrateAmp: 0,
+      vibratePhase: 0,
+      loadedSparks: 1,
+      maxSparks: 5
+    },
+
+    focus: 1.0,
+    echoString: {
+      active: false,
+      timer: 0,
+      y: 0
+    },
 
     sparks: [],
     crystals: [],
     orbs: [],
     particles: [],
     floatingTexts: [],
-    shockwaves: [],
-    boss: null,
-
-    shake: 0
+    boss: null
   };
 
-  // ============================================================================
-  // 5. YARDIMCI FONKSİYONLAR & GÖREV GÜNCELLEME
-  // ============================================================================
-  function getTheme() {
-    return THEMES.find(t => t.id === saveData.selectedTheme) || THEMES[0];
-  }
+  function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  function showToast(msg) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
-    clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove('show'), 2200);
-  }
-
-  function addFloatingText(x, y, text, color, size = 15) {
-    game.floatingTexts.push({
-      x, y, text, color, size,
-      vy: -38,
-      life: 1.0
-    });
-  }
-
-  function spawnParticles(x, y, color, count = 12, speed = 150) {
-    for (let i = 0; i < count; i++) {
-      const ang = Math.random() * Math.PI * 2;
-      const spd = (0.3 + Math.random() * 0.7) * speed;
-      game.particles.push({
-        x, y,
-        vx: Math.cos(ang) * spd,
-        vy: Math.sin(ang) * spd,
-        r: 2 + Math.random() * 3.5,
-        color,
-        life: 0.5 + Math.random() * 0.35,
-        maxLife: 0.85
-      });
+    game.string.y = H - 115;
+    game.echoString.y = H - 78;
+    if (!game.string.isDragging) {
+      game.string.pullX = W / 2;
+      game.string.pullY = game.string.y;
     }
   }
-
-  function addShockwave(x, y, maxR, color) {
-    game.shockwaves.push({
-      x, y, r: 8, maxR, color, life: 1.0
-    });
-  }
-
-  function recordQuestProgress(type, amount = 1) {
-    saveData.quests.forEach(q => {
-      if (q.type === type && q.progress < q.target) {
-        q.progress = Math.min(q.target, q.progress + amount);
-      }
-    });
-  }
-
-  // ============================================================================
-  // 6. VARLIK OLUŞTURMA (KRİSTALLER, NOTA KÜRELERİ, BÜYÜK REZONATÖR)
-  // ============================================================================
-  function spawnCrystal(type, x, y, customSpeed) {
-    const r = type === 'mini' ? 13 : (type === 'shadow' ? 16 : (type === 'nova' ? 21 : (type === 'mirror' ? 20 : 22)));
-    const hp = type === 'armored' ? 2 : 1;
-    const baseSpeed = customSpeed || (46 + Math.min(55, game.score * 0.022));
-    const speed = type === 'shadow' ? baseSpeed * 1.65 : (type === 'mini' ? baseSpeed * 1.15 : baseSpeed);
-
-    game.crystals.push({
-      type,
-      x,
-      y,
-      r,
-      hp,
-      maxHp: hp,
-      vx: type === 'mini' ? (game.rng() - 0.5) * 65 : 0,
-      vy: speed,
-      rot: game.rng() * Math.PI * 2,
-      vRot: (game.rng() - 0.5) * 1.4,
-      hitFlash: 0
-    });
-  }
-
-  function spawnWave() {
-    game.waveCount++;
-    const rng = game.rng;
-    const margin = 44;
-    const usableW = W - margin * 2;
-    const count = Math.min(5, 2 + Math.floor(game.waveCount / 4) + (rng() > 0.55 ? 1 : 0));
-    const slots = [];
-
-    for (let i = 0; i < count; i++) {
-      let x = margin + rng() * usableW;
-      for (let attempt = 0; attempt < 8; attempt++) {
-        if (slots.every(sx => Math.abs(sx - x) > 54)) break;
-        x = margin + rng() * usableW;
-      }
-      slots.push(x);
-
-      const roll = rng();
-      let type = 'prism';
-      if (game.waveCount >= 8 && roll < 0.10) {
-        type = 'mirror';
-      } else if (game.waveCount >= 2 && roll < 0.22) {
-        type = 'nova';
-      } else if (game.waveCount >= 3 && roll < 0.36) {
-        type = 'armored';
-      } else if (game.waveCount >= 4 && roll < 0.49) {
-        type = 'splitter';
-      } else if (game.waveCount >= 5 && roll < 0.60) {
-        type = 'shadow';
-      }
-
-      spawnCrystal(type, x, -30 - rng() * 35);
-    }
-
-    if (game.waveCount % 2 === 1 || rng() < 0.45) {
-      game.orbs.push({
-        x: margin + rng() * usableW,
-        y: -20,
-        r: 10,
-        vy: 68 + rng() * 25,
-        phase: rng() * Math.PI * 2
-      });
-    }
-  }
-
-  function spawnBoss() {
-    game.bossSpawnedCount++;
-    const petalCount = Math.min(8, 4 + game.bossSpawnedCount);
-    const petals = [];
-    for (let i = 0; i < petalCount; i++) {
-      petals.push({
-        angle: (i / petalCount) * Math.PI * 2,
-        alive: true,
-        hp: 1
-      });
-    }
-    game.boss = {
-      x: W * 0.5,
-      y: -70,
-      r: 36,
-      hp: 4 + game.bossSpawnedCount * 2,
-      maxHp: 4 + game.bossSpawnedCount * 2,
-      vy: 20 + Math.min(14, game.bossSpawnedCount * 2),
-      rot: 0,
-      petals,
-      hitFlash: 0
-    };
-    addFloatingText(W * 0.5, H * 0.28, 'BÜYÜK REZONATÖR!', '#c5821d', 18);
-  }
-
-  // ============================================================================
-  // 7. TEL FİZİĞİ, NİŞAN ALMA VE KIVILCIM FIRLATMA
-  // ============================================================================
-  function getStringAnchorY() {
-    return H - 135;
-  }
-
-  function getShieldLineY() {
-    return H - 52;
-  }
-
-  function getEchoLineY() {
-    return H - 88;
-  }
-
-  function getStringControlPoint() {
-    const ay = getStringAnchorY();
-    const maxPullX = W * 0.34;
-    const maxPullY = 92;
-    return {
-      x: W * 0.5 + game.string.pullX * maxPullX,
-      y: ay + game.string.pullY * maxPullY
-    };
-  }
-
-  function isPerfectRange(pullY) {
-    return pullY >= 0.68 && pullY <= 0.84;
-  }
-
-  function computeLaunchVelocity() {
-    const cp = getStringControlPoint();
-    const targetX = W * 0.5 - game.string.pullX * (W * 0.42);
-    const targetY = getStringAnchorY() - 220;
-    let dx = targetX - cp.x;
-    let dy = targetY - cp.y;
-    const len = Math.hypot(dx, dy) || 1;
-    const speed = 560 + game.string.pullY * 340;
-    return {
-      vx: (dx / len) * speed,
-      vy: (dy / len) * speed
-    };
-  }
-
-  function releaseString() {
-    if (!game.string.pulling) return;
-    const pullY = game.string.pullY;
-    game.string.pulling = false;
-    game.string.holdTime = 0;
-
-    if (pullY < 0.16) {
-      game.string.pullX = 0;
-      game.string.pullY = 0;
-      return;
-    }
-
-    const perfect = isPerfectRange(pullY);
-    const count = game.string.loadedSparks;
-    const cp = getStringControlPoint();
-    const vel = computeLaunchVelocity();
-    const baseAngle = Math.atan2(vel.vy, vel.vx);
-    const speed = Math.hypot(vel.vx, vel.vy);
-
-    const spread = count > 1 ? 0.085 : 0;
-    for (let i = 0; i < count; i++) {
-      const offset = (i - (count - 1) / 2) * spread;
-      const ang = baseAngle + offset;
-      game.sparks.push({
-        x: cp.x,
-        y: cp.y,
-        vx: Math.cos(ang) * speed,
-        vy: Math.sin(ang) * speed,
-        r: perfect ? 7.5 : 6,
-        piercing: perfect,
-        bouncesLeft: perfect ? 9 : 6,
-        trail: []
-      });
-    }
-
-    if (count >= 4) {
-      game.stats.multiShots++;
-      recordQuestProgress('multi', 1);
-    }
-
-    if (perfect) {
-      game.stats.perfectChords++;
-      recordQuestProgress('perfect', 1);
-
-      const echoBonus = saveData.upgrades.echoDuration * 1.3;
-      game.echoString.active = true;
-      game.echoString.maxTimer = 4.2 + echoBonus;
-      game.echoString.timer = game.echoString.maxTimer;
-
-      addFloatingText(cp.x, cp.y - 24, 'TAM AKOR! • DELİCİ + YANKI', '#d99b38', 14);
-      addShockwave(cp.x, cp.y, 120, 'rgba(217, 155, 56, 0.6)');
-      game.shake = 6;
-      triggerHaptic([14, 24, 18]);
-    } else {
-      triggerHaptic(8);
-    }
-
-    SoundEngine.playRelease(count, perfect);
-
-    game.string.vibAmp = 18 * pullY;
-    game.string.vibPhase = 0;
-    game.string.pullX = 0;
-    game.string.pullY = 0;
-    game.string.loadedSparks = 1;
-  }
-
-  function breakString() {
-    game.string.pulling = false;
-    game.string.pullX = 0;
-    game.string.pullY = 0;
-    game.string.holdTime = 0;
-    game.string.brokenTimer = 1.65;
-    game.string.loadedSparks = 1;
-    game.shake = 10;
-    triggerHaptic([35, 30, 45]);
-    SoundEngine.playDamage();
-    addFloatingText(W * 0.5, getStringAnchorY() - 10, 'TEL KOPTU!', '#e11d48', 16);
-    spawnParticles(W * 0.5, getStringAnchorY(), '#1e202b', 18, 180);
-  }
-
-  // ============================================================================
-  // 8. KONTROLLER (Dokunmatik, Fare ve Klavye)
-  // ============================================================================
-  let pointerId = null;
-  let dragStartX = 0;
-  let dragStartY = 0;
-
-  function onPointerDown(e) {
-    if (!game.running || game.paused) return;
-    if (game.string.brokenTimer > 0) return;
-    SoundEngine.init();
-
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left);
-    const y = (e.clientY - rect.top);
-
-    pointerId = e.pointerId;
-    dragStartX = x;
-    dragStartY = y;
-    game.string.pulling = true;
-    game.string.holdTime = 0;
-    game.string.pullX = 0;
-    game.string.pullY = 0.18;
-    game.wasInPerfectZone = false;
-
-    if (!saveData.tutorialSeen) {
-      saveData.tutorialSeen = true;
-      persistSave();
-    }
-  }
-
-  function onPointerMove(e) {
-    if (!game.string.pulling || e.pointerId !== pointerId) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left);
-    const y = (e.clientY - rect.top);
-
-    const dx = x - dragStartX;
-    const dy = y - dragStartY;
-
-    game.string.pullX = Math.max(-1, Math.min(1, dx / (W * 0.34)));
-    game.string.pullY = Math.max(0.1, Math.min(1, (dy + 22) / 145));
-
-    const inPerf = isPerfectRange(game.string.pullY);
-    if (inPerf && !game.wasInPerfectZone) {
-      triggerHaptic(10);
-    }
-    game.wasInPerfectZone = inPerf;
-
-    const step = Math.floor(game.string.pullY * 10);
-    if (step !== game.string.lastTickStep) {
-      game.string.lastTickStep = step;
-      SoundEngine.playStretchTick(game.string.pullY);
-    }
-  }
-
-  function onPointerUp(e) {
-    if (e.pointerId !== pointerId) return;
-    pointerId = null;
-    if (game.string.pulling) {
-      releaseString();
-    }
-  }
-
-  canvas.addEventListener('pointerdown', onPointerDown);
-  window.addEventListener('pointermove', onPointerMove);
-  window.addEventListener('pointerup', onPointerUp);
-  window.addEventListener('pointercancel', onPointerUp);
-
-  const keys = {};
-  window.addEventListener('keydown', (e) => {
-    keys[e.code] = true;
-
-    if (e.code === 'KeyM') {
-      toggleMuteUI();
-    }
-    if (e.code === 'KeyP' || e.code === 'Escape') {
-      if (game.running) togglePause();
-    }
-    if (e.code === 'Enter') {
-      if (!game.running) {
-        startGame('normal');
-      }
-    }
-    if ((e.code === 'Space' || e.code === 'ArrowDown' || e.code === 'KeyS') && game.running && !game.paused) {
-      e.preventDefault();
-      if (!game.string.pulling && game.string.brokenTimer <= 0) {
-        SoundEngine.init();
-        game.string.pulling = true;
-        game.string.holdTime = 0;
-        game.string.pullX = 0;
-        game.string.pullY = 0.2;
-      }
-    }
-  });
-
-  window.addEventListener('keyup', (e) => {
-    keys[e.code] = false;
-    if ((e.code === 'Space' || e.code === 'ArrowDown' || e.code === 'KeyS') && game.string.pulling) {
-      releaseString();
-    }
-  });
-
-  // ============================================================================
-  // 9. ÇARPIŞMA, PATLAMA VE PUANLAMA MANTIĞI
-  // ============================================================================
-  function addScore(basePoints, x, y) {
-    const mult = (1 + Math.floor(game.combo / 3)) * (game.crescendo.active ? 2 : 1);
-    const total = Math.round(basePoints * mult);
-    game.score += total;
-
-    const targetPhase = Math.floor(game.score / 500) % BG_PHASES.length;
-    if (targetPhase !== game.phaseIndex) {
-      game.phaseIndex = targetPhase;
-    }
-
-    if (x !== undefined && y !== undefined) {
-      addFloatingText(x, y, `+${total}`, game.crescendo.active ? '#d99b38' : '#1e202b', total >= 50 ? 16 : 13);
-    }
-  }
-
-  function chargeCrescendo(amount) {
-    if (game.crescendo.active) return;
-    const speedMult = 1 + saveData.upgrades.crescendoSpeed * 0.25;
-    game.crescendo.charge = Math.min(1, game.crescendo.charge + amount * speedMult);
-    if (game.crescendo.charge >= 1) {
-      game.crescendo.active = true;
-      game.crescendo.timer = 6.5 + saveData.upgrades.crescendoSpeed * 1.2;
-      game.stats.crescendos++;
-      recordQuestProgress('crescendo', 1);
-      addFloatingText(W * 0.5, H * 0.35, 'KREŞENDO! 2X PUAN', '#d99b38', 18);
-      addShockwave(W * 0.5, H * 0.35, 160, 'rgba(217, 155, 56, 0.5)');
-    }
-  }
-
-  function triggerNovaExplosion(x, y, depth = 0) {
-    game.stats.novasTriggered++;
-    recordQuestProgress('nova', 1);
-    addShockwave(x, y, 115, 'rgba(239, 68, 68, 0.65)');
-    spawnParticles(x, y, '#ef4444', 22, 220);
-    game.shake = Math.max(game.shake, 8);
-    triggerHaptic(32);
-    SoundEngine.playHit(game.combo + 3, true, true);
-
-    const blastR = 112;
-    for (let i = game.crystals.length - 1; i >= 0; i--) {
-      const c = game.crystals[i];
-      if (Math.hypot(c.x - x, c.y - y) <= blastR + c.r) {
-        destroyCrystal(i, true, depth + 1);
-      }
-    }
-
-    if (game.boss && Math.hypot(game.boss.x - x, game.boss.y - y) <= blastR + game.boss.r) {
-      damageBoss(2);
-    }
-  }
-
-  function destroyCrystal(index, fromExplosion = false, depth = 0) {
-    const c = game.crystals[index];
-    if (!c) return;
-    game.crystals.splice(index, 1);
-
-    game.combo++;
-    game.comboTimer = 2.6;
-    game.stats.crystalsBroken++;
-    recordQuestProgress('break', 1);
-    chargeCrescendo(0.11);
-
-    const colors = {
-      prism: '#3b82f6',
-      armored: '#64748b',
-      splitter: '#10b981',
-      nova: '#ef4444',
-      shadow: '#1e202b',
-      mini: '#34d399',
-      mirror: '#cbd5e1'
-    };
-    const col = colors[c.type] || '#3b82f6';
-    spawnParticles(c.x, c.y, col, 14, 170);
-
-    const pts = c.type === 'mirror' ? 55 : (c.type === 'armored' ? 30 : (c.type === 'nova' ? 35 : (c.type === 'shadow' ? 40 : 20)));
-    addScore(pts, c.x, c.y);
-
-    if (!fromExplosion) {
-      SoundEngine.playHit(game.combo, true, false);
-    }
-
-    if (c.type === 'splitter') {
-      spawnCrystal('mini', c.x - 16, c.y, c.vy);
-      spawnCrystal('mini', c.x + 16, c.y, c.vy);
-    }
-
-    if (c.type === 'nova' && depth < 5) {
-      triggerNovaExplosion(c.x, c.y, depth);
-    }
-  }
-
-  function damageBoss(dmg) {
-    const b = game.boss;
-    if (!b) return;
-    b.hp -= dmg;
-    b.hitFlash = 1.0;
-    game.combo++;
-    game.comboTimer = 2.6;
-    SoundEngine.playHit(game.combo, false, false);
-    spawnParticles(b.x, b.y, '#d99b38', 10, 140);
-
-    if (b.hp <= 0) {
-      addShockwave(b.x, b.y, 180, 'rgba(217, 155, 56, 0.75)');
-      spawnParticles(b.x, b.y, '#d99b38', 36, 260);
-      addScore(250, b.x, b.y);
-      game.stats.bossesDefeated++;
-      recordQuestProgress('boss', 1);
-
-      if (game.shields < game.maxShields) {
-        game.shields++;
-        addFloatingText(b.x, b.y - 30, '+1 KALKAN YENİLENDİ!', '#10b981', 16);
-      } else {
-        addScore(150, b.x, b.y - 30);
-      }
-
-      game.phaseIndex = (game.phaseIndex + 1) % BG_PHASES.length;
-      game.nextBossScore = game.score + 650 + game.bossSpawnedCount * 200;
-      game.boss = null;
-      game.shake = 12;
-      SoundEngine.playRelease(5, true);
-    }
-  }
-
-  // ============================================================================
-  // 10. ANA GÜNCELLEME DÖNGÜSÜ (UPDATE)
-  // ============================================================================
-  function update(rawDt) {
-    const dt = Math.min(0.05, rawDt);
-    game.time += dt;
-
-    if (!game.running || game.paused) return;
-
-    if (keys['ArrowLeft'] || keys['KeyA']) {
-      if (game.string.pulling) game.string.pullX = Math.max(-1, game.string.pullX - dt * 1.8);
-    }
-    if (keys['ArrowRight'] || keys['KeyD']) {
-      if (game.string.pulling) game.string.pullX = Math.min(1, game.string.pullX + dt * 1.8);
-    }
-    if ((keys['Space'] || keys['ArrowDown'] || keys['KeyS']) && game.string.pulling) {
-      game.string.pullY = Math.min(1, game.string.pullY + dt * 0.95);
-    }
-
-    if (game.mode === 'daily') {
-      game.dailyTimeLeft -= dt;
-      if (game.dailyTimeLeft <= 0) {
-        game.dailyTimeLeft = 0;
-        endGame(true);
-        return;
-      }
-    }
-
-    let timeScale = 1.0;
-    if (game.string.pulling) {
-      game.string.holdTime += dt;
-      if (game.string.holdTime >= 2.0) {
-        releaseString();
-      } else if (game.focus > 0) {
-        timeScale = 0.28;
-        game.focus = Math.max(0, game.focus - dt * 0.48);
-      }
-    } else {
-      game.focus = Math.min(1, game.focus + dt * 0.32);
-    }
-
-    const worldDt = dt * timeScale;
-
-    if (game.string.brokenTimer > 0) {
-      game.string.brokenTimer = Math.max(0, game.string.brokenTimer - dt);
-    }
-    if (game.string.vibAmp > 0.1) {
-      game.string.vibPhase += dt * 42;
-      game.string.vibAmp *= Math.pow(0.04, dt);
-    } else {
-      game.string.vibAmp = 0;
-    }
-
-    if (game.echoString.active) {
-      game.echoString.timer -= dt;
-      if (game.echoString.timer <= 0) {
-        game.echoString.active = false;
-      }
-    }
-
-    if (game.crescendo.active) {
-      game.crescendo.timer -= dt;
-      game.crescendo.charge = Math.max(0, game.crescendo.timer / 6.5);
-      if (game.crescendo.timer <= 0) {
-        game.crescendo.active = false;
-        game.crescendo.charge = 0;
-      }
-    }
-
-    if (game.comboTimer > 0) {
-      game.comboTimer -= dt;
-      if (game.comboTimer <= 0) {
-        game.combo = 0;
-      }
-    }
-
-    if (game.shake > 0) {
-      game.shake = Math.max(0, game.shake - dt * 28);
-    }
-
-    if (!game.boss) {
-      if (game.mode === 'normal' && game.score >= game.nextBossScore) {
-        spawnBoss();
-      } else {
-        game.spawnTimer -= worldDt;
-        if (game.spawnTimer <= 0) {
-          spawnWave();
-          game.spawnTimer = Math.max(1.55, 2.9 - game.waveCount * 0.04);
-        }
-      }
-    }
-
-    const stringY = getStringAnchorY();
-    const shieldY = getShieldLineY();
-    const echoY = getEchoLineY();
-    const magnetRange = 46 + saveData.upgrades.magnetRadius * 18;
-
-    // 1. Nota Kürelerini Güncelle
-    for (let i = game.orbs.length - 1; i >= 0; i--) {
-      const orb = game.orbs[i];
-      orb.y += orb.vy * worldDt;
-      orb.phase += dt * 4;
-
-      const distToString = Math.abs(orb.y - stringY);
-      if (game.string.brokenTimer <= 0 && distToString < magnetRange && game.string.loadedSparks < 5) {
-        orb.y += (stringY - orb.y) * Math.min(1, dt * 14);
-        if (Math.abs(orb.y - stringY) < 14) {
-          game.string.loadedSparks++;
-          SoundEngine.playCatchOrb(game.string.loadedSparks);
-          spawnParticles(orb.x, stringY, getTheme().color, 8, 90);
-          addFloatingText(orb.x, stringY - 16, `${game.string.loadedSparks}x KIVILCIM`, getTheme().color, 12);
-          game.orbs.splice(i, 1);
-          continue;
-        }
-      }
-
-      if (orb.y > H + 20) {
-        game.orbs.splice(i, 1);
-      }
-    }
-
-    // 2. Kıvılcımları Güncelle
-    for (let i = game.sparks.length - 1; i >= 0; i--) {
-      const sp = game.sparks[i];
-      sp.trail.push({ x: sp.x, y: sp.y });
-      if (sp.trail.length > 9) sp.trail.shift();
-
-      sp.x += sp.vx * dt;
-      sp.y += sp.vy * dt;
-
-      if (sp.x - sp.r < 12) {
-        sp.x = 12 + sp.r;
-        sp.vx = Math.abs(sp.vx);
-        sp.bouncesLeft--;
-        SoundEngine.playHit(game.combo, false, false);
-      } else if (sp.x + sp.r > W - 12) {
-        sp.x = W - 12 - sp.r;
-        sp.vx = -Math.abs(sp.vx);
-        sp.bouncesLeft--;
-        SoundEngine.playHit(game.combo, false, false);
-      }
-
-      if (sp.y - sp.r < 48) {
-        sp.y = 48 + sp.r;
-        sp.vy = Math.abs(sp.vy);
-        sp.bouncesLeft--;
-      }
-
-      if (game.echoString.active && sp.vy > 0 && Math.abs(sp.y - echoY) < 12) {
-        sp.y = echoY - 12;
-        sp.vy = -Math.abs(sp.vy) * 0.96;
-        sp.bouncesLeft--;
-        SoundEngine.playHit(game.combo + 1, false, false);
-        spawnParticles(sp.x, echoY, '#d99b38', 6, 80);
-      }
-
-      if (sp.vy > 0 && game.string.pulling && game.string.brokenTimer <= 0 && game.string.loadedSparks < 5) {
-        const cp = getStringControlPoint();
-        if (Math.hypot(sp.x - cp.x, sp.y - cp.y) < magnetRange) {
-          game.string.loadedSparks++;
-          SoundEngine.playCatchOrb(game.string.loadedSparks);
-          spawnParticles(cp.x, cp.y, getTheme().spark, 7, 80);
-          game.sparks.splice(i, 1);
-          continue;
-        }
-      }
-
-      // Kristallerle Çarpışma
-      for (let j = game.crystals.length - 1; j >= 0; j--) {
-        const c = game.crystals[j];
-        const dx = sp.x - c.x;
-        const dy = sp.y - c.y;
-        const dist = Math.hypot(dx, dy);
-
-        if (dist < sp.r + c.r) {
-          // Ayna Kristal: Sadece Tam Akor (piercing) kırabilir; normal atışı hızlandırarak yansıtır
-          if (c.type === 'mirror' && !sp.piercing) {
-            const nx = dx / (dist || 1);
-            const ny = dy / (dist || 1);
-            const dot = sp.vx * nx + sp.vy * ny;
-            sp.vx = (sp.vx - 2 * dot * nx) * 1.12;
-            sp.vy = (sp.vy - 2 * dot * ny) * 1.12;
-            sp.x = c.x + nx * (sp.r + c.r + 3);
-            sp.y = c.y + ny * (sp.r + c.r + 3);
-            c.hitFlash = 1.0;
-            SoundEngine.playHit(game.combo + 4, false, false);
-            spawnParticles(c.x, c.y, '#e2e8f0', 8, 130);
-            addFloatingText(c.x, c.y - 14, 'AYNA YANSITTI!', '#475569', 11);
-            break;
-          }
-
-          c.hp--;
-          c.hitFlash = 1.0;
-
-          if (!sp.piercing) {
-            const nx = dx / (dist || 1);
-            const ny = dy / (dist || 1);
-            const dot = sp.vx * nx + sp.vy * ny;
-            sp.vx -= 2 * dot * nx;
-            sp.vy -= 2 * dot * ny;
-            sp.x = c.x + nx * (sp.r + c.r + 2);
-            sp.y = c.y + ny * (sp.r + c.r + 2);
-            sp.bouncesLeft--;
-          }
-
-          if (c.hp <= 0) {
-            destroyCrystal(j, false, 0);
-          } else {
-            SoundEngine.playHit(game.combo, false, false);
-            spawnParticles(c.x, c.y, '#94a3b8', 8, 120);
-            addFloatingText(c.x, c.y - 12, 'ZIRH ÇATLADI', '#475569', 11);
-          }
-
-          if (!sp.piercing) break;
-        }
-      }
-
-      // Büyük Rezonatör (Boss) ile Çarpışma
-      if (game.boss) {
-        const b = game.boss;
-        let hitPetal = false;
-        for (let p of b.petals) {
-          if (!p.alive) continue;
-          const px = b.x + Math.cos(b.rot + p.angle) * (b.r + 24);
-          const py = b.y + Math.sin(b.rot + p.angle) * (b.r + 24);
-          if (Math.hypot(sp.x - px, sp.y - py) < sp.r + 12) {
-            p.alive = false;
-            hitPetal = true;
-            spawnParticles(px, py, '#f59e0b', 10, 140);
-            SoundEngine.playHit(game.combo, true, false);
-            if (!sp.piercing) {
-              sp.vy = -sp.vy;
-              sp.bouncesLeft--;
-            }
-            break;
-          }
-        }
-
-        if (!hitPetal && Math.hypot(sp.x - b.x, sp.y - b.y) < sp.r + b.r) {
-          damageBoss(sp.piercing ? 2 : 1);
-          if (!sp.piercing) {
-            const nx = (sp.x - b.x) / (Math.hypot(sp.x - b.x, sp.y - b.y) || 1);
-            const ny = (sp.y - b.y) / (Math.hypot(sp.x - b.x, sp.y - b.y) || 1);
-            sp.vx = nx * Math.hypot(sp.vx, sp.vy);
-            sp.vy = ny * Math.hypot(sp.vx, sp.vy);
-            sp.bouncesLeft--;
-          }
-        }
-      }
-
-      if (sp.y > H + 30 || sp.bouncesLeft < 0) {
-        game.sparks.splice(i, 1);
-      }
-    }
-
-    // 3. Kristalleri Güncelle
-    for (let i = game.crystals.length - 1; i >= 0; i--) {
-      const c = game.crystals[i];
-      c.x += c.vx * worldDt;
-      c.y += c.vy * worldDt;
-      c.rot += c.vRot * worldDt;
-      if (c.hitFlash > 0) c.hitFlash = Math.max(0, c.hitFlash - dt * 5);
-
-      if (c.x - c.r < 16) {
-        c.x = 16 + c.r;
-        c.vx = Math.abs(c.vx);
-      } else if (c.x + c.r > W - 16) {
-        c.x = W - 16 - c.r;
-        c.vx = -Math.abs(c.vx);
-      }
-
-      if (c.type === 'shadow' && game.string.pulling && game.string.brokenTimer <= 0) {
-        const cp = getStringControlPoint();
-        if (Math.abs(c.y - cp.y) < c.r + 14 && Math.abs(c.x - cp.x) < W * 0.42) {
-          breakString();
-        }
-      }
-
-      if (c.y + c.r >= shieldY) {
-        game.crystals.splice(i, 1);
-        game.shields--;
-        game.combo = 0;
-        game.shake = 11;
-        triggerHaptic(40);
-        SoundEngine.playDamage();
-        spawnParticles(c.x, shieldY, '#ef4444', 18, 180);
-        addFloatingText(c.x, shieldY - 18, '-1 KALKAN', '#ef4444', 14);
-
-        if (game.shields <= 0) {
-          endGame(false);
-          return;
-        }
-      }
-    }
-
-    // 4. Büyük Rezonatör (Boss) Güncelle
-    if (game.boss) {
-      const b = game.boss;
-      b.y += b.vy * worldDt;
-      b.rot += 0.85 * worldDt;
-      if (b.hitFlash > 0) b.hitFlash = Math.max(0, b.hitFlash - dt * 4);
-
-      if (b.y + b.r >= shieldY) {
-        game.boss = null;
-        game.shields -= 2;
-        game.combo = 0;
-        game.shake = 15;
-        SoundEngine.playDamage();
-        spawnParticles(b.x, shieldY, '#ef4444', 30, 220);
-        addFloatingText(b.x, shieldY - 24, '-2 KALKAN!', '#ef4444', 16);
-
-        if (game.shields <= 0) {
-          endGame(false);
-          return;
-        }
-      }
-    }
-
-    // 5. Parçacıklar, Şok Dalgaları ve Uçan Yazılar
-    for (let i = game.particles.length - 1; i >= 0; i--) {
-      const p = game.particles[i];
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      p.vx *= 0.94;
-      p.vy *= 0.94;
-      p.life -= dt;
-      if (p.life <= 0) game.particles.splice(i, 1);
-    }
-
-    for (let i = game.shockwaves.length - 1; i >= 0; i--) {
-      const sw = game.shockwaves[i];
-      sw.life -= dt * 2.2;
-      sw.r += (sw.maxR - sw.r) * Math.min(1, dt * 8);
-      if (sw.life <= 0) game.shockwaves.splice(i, 1);
-    }
-
-    for (let i = game.floatingTexts.length - 1; i >= 0; i--) {
-      const ft = game.floatingTexts[i];
-      ft.y += ft.vy * dt;
-      ft.life -= dt * 1.15;
-      if (ft.life <= 0) game.floatingTexts.splice(i, 1);
-    }
-  }
-
-  // ============================================================================
-  // 11. ÇİZİM MOTORU (CANVAS RENDER)
-  // ============================================================================
-  function render() {
-    ctx.save();
-
-    if (game.shake > 0) {
-      const sx = (Math.random() - 0.5) * game.shake;
-      const sy = (Math.random() - 0.5) * game.shake;
-      ctx.translate(sx, sy);
-    }
-
-    const phase = BG_PHASES[game.phaseIndex];
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, `rgb(${phase.top.join(',')})`);
-    grad.addColorStop(1, `rgb(${phase.bot.join(',')})`);
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
-
-    ctx.strokeStyle = phase.line;
-    ctx.lineWidth = 1;
-    for (let i = 1; i <= 5; i++) {
-      const lx = (W / 6) * i;
-      ctx.beginPath();
-      ctx.moveTo(lx, 0);
-      ctx.lineTo(lx, H);
-      ctx.stroke();
-    }
-
-    ctx.strokeStyle = 'rgba(30, 32, 43, 0.12)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(12, 48);
-    ctx.lineTo(12, getShieldLineY());
-    ctx.moveTo(W - 12, 48);
-    ctx.lineTo(W - 12, getShieldLineY());
-    ctx.stroke();
-
-    if (!game.running) {
-      drawDecorativeMenuString();
-      ctx.restore();
-      return;
-    }
-
-    const theme = getTheme();
-    const shieldY = getShieldLineY();
-    const stringY = getStringAnchorY();
-
-    ctx.save();
-    ctx.strokeStyle = game.shields === 1 ? 'rgba(239, 68, 68, 0.55)' : 'rgba(30, 32, 43, 0.22)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 6]);
-    ctx.beginPath();
-    ctx.moveTo(16, shieldY);
-    ctx.lineTo(W - 16, shieldY);
-    ctx.stroke();
-    ctx.restore();
-
-    for (let i = 0; i < game.maxShields; i++) {
-      const sx = W * 0.5 + (i - 1) * 28;
-      const sy = shieldY + 24;
-      const active = i < game.shields;
-      ctx.beginPath();
-      ctx.arc(sx, sy, 8, 0, Math.PI * 2);
-      ctx.fillStyle = active ? '#1e202b' : 'rgba(30, 32, 43, 0.14)';
-      ctx.fill();
-      if (active) {
-        ctx.beginPath();
-        ctx.arc(sx, sy, 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = '#f4c462';
-        ctx.fill();
-      }
-    }
-
-    if (game.echoString.active) {
-      const echoY = getEchoLineY();
-      const alpha = Math.min(1, game.echoString.timer / 1.0);
-      ctx.save();
-      ctx.strokeStyle = `rgba(217, 155, 56, ${0.85 * alpha})`;
-      ctx.lineWidth = 3;
-      ctx.shadowColor = 'rgba(217, 155, 56, 0.7)';
-      ctx.shadowBlur = 12;
-      ctx.beginPath();
-      ctx.moveTo(16, echoY);
-      ctx.lineTo(W - 16, echoY);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    if (game.string.pulling && game.string.pullY >= 0.16) {
-      drawAimTrajectory();
-    }
-
-    drawMainString(theme, stringY);
-
-    for (const orb of game.orbs) {
-      const pulse = 1 + Math.sin(orb.phase) * 0.14;
-      ctx.save();
-      ctx.translate(orb.x, orb.y);
-      ctx.beginPath();
-      ctx.arc(0, 0, orb.r * pulse, 0, Math.PI * 2);
-      ctx.fillStyle = theme.color;
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(0, 0, orb.r * 0.45, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-      ctx.restore();
-    }
-
-    for (const c of game.crystals) {
-      drawCrystal(c);
-    }
-
-    if (game.boss) {
-      drawBoss(game.boss);
-    }
-
-    for (const sp of game.sparks) {
-      for (let t = 0; t < sp.trail.length; t++) {
-        const pt = sp.trail[t];
-        const ratio = (t + 1) / sp.trail.length;
-        ctx.beginPath();
-        ctx.arc(pt.x, pt.y, sp.r * ratio * 0.85, 0, Math.PI * 2);
-        ctx.fillStyle = sp.piercing ? `rgba(217, 155, 56, ${ratio * 0.4})` : `rgba(30, 32, 43, ${ratio * 0.25})`;
-        ctx.fill();
-      }
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
-      ctx.fillStyle = sp.piercing ? '#d99b38' : theme.spark;
-      ctx.shadowColor = sp.piercing ? '#f59e0b' : theme.glow;
-      ctx.shadowBlur = 12;
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(sp.x, sp.y, sp.r * 0.45, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-      ctx.restore();
-    }
-
-    for (const sw of game.shockwaves) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
-      ctx.strokeStyle = sw.color;
-      ctx.globalAlpha = Math.max(0, sw.life);
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    for (const p of game.particles) {
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    for (const ft of game.floatingTexts) {
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, ft.life);
-      ctx.font = `800 ${ft.size}px Inter, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillStyle = ft.color;
-      ctx.fillText(ft.text, ft.x, ft.y);
-      ctx.restore();
-    }
-
-    drawTopHUD(phase, theme);
-
-    ctx.restore();
-  }
-
-  function drawDecorativeMenuString() {
-    const y = H - 150;
-    const wave = Math.sin(game.time * 2.2) * 14;
-    ctx.save();
-    ctx.strokeStyle = getTheme().color;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(20, y);
-    ctx.quadraticCurveTo(W * 0.5, y + wave, W - 20, y);
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function drawMainString(theme, stringY) {
-    const leftX = 16;
-    const rightX = W - 16;
-
-    ctx.fillStyle = '#1e202b';
-    ctx.beginPath();
-    ctx.arc(leftX, stringY, 5, 0, Math.PI * 2);
-    ctx.arc(rightX, stringY, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    if (game.string.brokenTimer > 0) {
-      ctx.save();
-      ctx.strokeStyle = 'rgba(225, 29, 72, 0.5)';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(leftX, stringY);
-      ctx.lineTo(W * 0.35, stringY + 18);
-      ctx.moveTo(rightX, stringY);
-      ctx.lineTo(W * 0.65, stringY + 18);
-      ctx.stroke();
-      ctx.restore();
-      return;
-    }
-
-    const cp = getStringControlPoint();
-    const perfect = game.string.pulling && isPerfectRange(game.string.pullY);
-
-    if (game.string.pulling) {
-      const goldY = stringY + 0.76 * 92;
-      ctx.save();
-      ctx.strokeStyle = perfect ? 'rgba(217, 155, 56, 0.75)' : 'rgba(217, 155, 56, 0.25)';
-      ctx.lineWidth = perfect ? 4 : 2;
-      ctx.beginPath();
-      ctx.moveTo(W * 0.36, goldY);
-      ctx.lineTo(W * 0.64, goldY);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    ctx.save();
-    ctx.strokeStyle = perfect ? '#d99b38' : theme.color;
-    ctx.lineWidth = perfect ? 4.5 : 3;
-    ctx.shadowColor = perfect ? 'rgba(217, 155, 56, 0.8)' : theme.glow;
-    ctx.shadowBlur = perfect ? 16 : 8;
-
-    ctx.beginPath();
-    ctx.moveTo(leftX, stringY);
-    if (game.string.pulling) {
-      ctx.quadraticCurveTo(cp.x, cp.y, rightX, stringY);
-    } else {
-      const vibOffset = Math.sin(game.string.vibPhase) * game.string.vibAmp;
-      ctx.quadraticCurveTo(W * 0.5, stringY + vibOffset, rightX, stringY);
-    }
-    ctx.stroke();
-    ctx.restore();
-
-    const count = game.string.loadedSparks;
-    const basePoint = game.string.pulling ? {
-      x: 0.25 * leftX + 0.5 * cp.x + 0.25 * rightX,
-      y: 0.25 * stringY + 0.5 * cp.y + 0.25 * stringY
-    } : { x: W * 0.5, y: stringY };
-
-    for (let i = 0; i < count; i++) {
-      const offsetX = (i - (count - 1) / 2) * 16;
-      ctx.beginPath();
-      ctx.arc(basePoint.x + offsetX, basePoint.y, 5.5, 0, Math.PI * 2);
-      ctx.fillStyle = perfect ? '#d99b38' : '#1e202b';
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(basePoint.x + offsetX, basePoint.y, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-    }
-  }
-
-  function drawAimTrajectory() {
-    const cp = getStringControlPoint();
-    const vel = computeLaunchVelocity();
-    const perfect = isPerfectRange(game.string.pullY);
-
-    let simX = cp.x;
-    let simY = cp.y;
-    let vx = vel.vx;
-    let vy = vel.vy;
-    const stepDt = 0.022;
-
-    ctx.save();
-    for (let i = 0; i < 24; i++) {
-      simX += vx * stepDt;
-      simY += vy * stepDt;
-
-      if (simX < 18) {
-        simX = 18;
-        vx = Math.abs(vx);
-      } else if (simX > W - 18) {
-        simX = W - 18;
-        vx = -Math.abs(vx);
-      }
-      if (simY < 54) {
-        simY = 54;
-        vy = Math.abs(vy);
-      }
-
-      const alpha = (1 - i / 24) * 0.75;
-      ctx.fillStyle = perfect ? `rgba(217, 155, 56, ${alpha})` : `rgba(30, 32, 43, ${alpha * 0.65})`;
-      ctx.beginPath();
-      ctx.arc(simX, simY, perfect ? 3.2 : 2.4, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-  }
-
-  function drawCrystal(c) {
-    ctx.save();
-    ctx.translate(c.x, c.y);
-    ctx.rotate(c.rot);
-
-    if (c.type === 'prism' || c.type === 'mini') {
-      const sides = 4;
-      ctx.beginPath();
-      for (let i = 0; i < sides; i++) {
-        const a = (i / sides) * Math.PI * 2;
-        const px = Math.cos(a) * c.r;
-        const py = Math.sin(a) * c.r;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle = c.type === 'mini' ? '#34d399' : '#3b82f6';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.75)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    } else if (c.type === 'armored') {
-      const sides = 6;
-      ctx.beginPath();
-      for (let i = 0; i < sides; i++) {
-        const a = (i / sides) * Math.PI * 2;
-        const px = Math.cos(a) * c.r;
-        const py = Math.sin(a) * c.r;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle = c.hp === 2 ? '#475569' : '#94a3b8';
-      ctx.fill();
-      ctx.strokeStyle = c.hp === 2 ? '#1e293b' : '#ffffff';
-      ctx.lineWidth = c.hp === 2 ? 4 : 2;
-      ctx.stroke();
-    } else if (c.type === 'splitter') {
-      ctx.beginPath();
-      for (let i = 0; i < 3; i++) {
-        const a = (i / 3) * Math.PI * 2 - Math.PI / 2;
-        const px = Math.cos(a) * (c.r + 2);
-        const py = Math.sin(a) * (c.r + 2);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle = '#10b981';
-      ctx.fill();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    } else if (c.type === 'nova') {
-      const spikes = 8;
-      ctx.beginPath();
-      for (let i = 0; i < spikes * 2; i++) {
-        const rad = i % 2 === 0 ? c.r + 2 : c.r * 0.55;
-        const a = (i / (spikes * 2)) * Math.PI * 2;
-        const px = Math.cos(a) * rad;
-        const py = Math.sin(a) * rad;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle = '#ef4444';
-      ctx.shadowColor = 'rgba(239, 68, 68, 0.6)';
-      ctx.shadowBlur = 10;
-      ctx.fill();
-    } else if (c.type === 'shadow') {
-      ctx.rotate(-c.rot);
-      ctx.beginPath();
-      ctx.moveTo(0, c.r + 5);
-      ctx.lineTo(c.r * 0.72, -c.r * 0.7);
-      ctx.lineTo(0, -c.r * 0.35);
-      ctx.lineTo(-c.r * 0.72, -c.r * 0.7);
-      ctx.closePath();
-      ctx.fillStyle = '#14151c';
-      ctx.fill();
-      ctx.strokeStyle = '#e11d48';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    } else if (c.type === 'mirror') {
-      // Gümüş Ayna Kristali (Sekizgen parlak ayna)
-      const sides = 8;
-      ctx.beginPath();
-      for (let i = 0; i < sides; i++) {
-        const a = (i / sides) * Math.PI * 2;
-        const px = Math.cos(a) * c.r;
-        const py = Math.sin(a) * c.r;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      const mGrad = ctx.createLinearGradient(-c.r, -c.r, c.r, c.r);
-      mGrad.addColorStop(0, '#f8fafc');
-      mGrad.addColorStop(0.5, '#94a3b8');
-      mGrad.addColorStop(1, '#e2e8f0');
-      ctx.fillStyle = mGrad;
-      ctx.fill();
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      // İç ayna parıltısı
-      ctx.beginPath();
-      ctx.moveTo(-c.r * 0.4, -c.r * 0.2);
-      ctx.lineTo(c.r * 0.2, -c.r * 0.4);
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
-    ctx.restore();
-  }
-
-  function drawBoss(b) {
-    ctx.save();
-    ctx.translate(b.x, b.y);
-
-    for (const p of b.petals) {
-      if (!p.alive) continue;
-      const px = Math.cos(b.rot + p.angle) * (b.r + 24);
-      const py = Math.sin(b.rot + p.angle) * (b.r + 24);
-      ctx.save();
-      ctx.translate(px, py);
-      ctx.rotate(b.rot + p.angle);
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 11, 6, 0, 0, Math.PI * 2);
-      ctx.fillStyle = '#f59e0b';
-      ctx.fill();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    ctx.beginPath();
-    ctx.arc(0, 0, b.r, 0, Math.PI * 2);
-    ctx.fillStyle = b.hitFlash > 0 ? '#ffffff' : '#1e202b';
-    ctx.fill();
-    ctx.strokeStyle = '#d99b38';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
-    ctx.fillStyle = b.hitFlash > 0 ? '#1e202b' : '#ffffff';
-    ctx.font = '800 16px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(b.hp, 0, 1);
-
-    ctx.restore();
-  }
-
-  function drawTopHUD(phase, theme) {
-    ctx.fillStyle = phase.ink;
-    ctx.font = '800 24px Inter, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(game.score, 18, 34);
-
-    const mult = (1 + Math.floor(game.combo / 3)) * (game.crescendo.active ? 2 : 1);
-    ctx.font = '700 11px Inter, sans-serif';
-    ctx.fillStyle = mult > 1 ? '#c5821d' : 'rgba(30, 32, 43, 0.55)';
-    const subLabel = mult > 1 ? `${phase.name.toUpperCase()} • ${mult}X ÇARPAN` : `${phase.name.toUpperCase()} EVRESİ`;
-    ctx.fillText(subLabel, 18, 50);
-
-    if (game.mode === 'daily') {
-      ctx.textAlign = 'center';
-      ctx.font = '800 18px Inter, sans-serif';
-      ctx.fillStyle = game.dailyTimeLeft <= 10 ? '#ef4444' : phase.ink;
-      ctx.fillText(`${Math.ceil(game.dailyTimeLeft)}s`, W * 0.5, 34);
-    }
-
-    const barH = 90;
-    const barY = getStringAnchorY() - barH - 16;
-    ctx.fillStyle = 'rgba(30, 32, 43, 0.12)';
-    ctx.fillRect(16, barY, 4, barH);
-    ctx.fillStyle = game.focus < 0.25 ? '#ef4444' : '#3b82f6';
-    const fH = barH * game.focus;
-    ctx.fillRect(16, barY + (barH - fH), 4, fH);
-
-    ctx.fillStyle = 'rgba(30, 32, 43, 0.12)';
-    ctx.fillRect(W - 20, barY, 4, barH);
-    ctx.fillStyle = game.crescendo.active ? '#f59e0b' : theme.color;
-    const cH = barH * game.crescendo.charge;
-    ctx.fillRect(W - 20, barY + (barH - cH), 4, cH);
-
-    // İlk Açılış Dokunmatik Rehber Animasyonu
-    if (!saveData.tutorialSeen && game.time < 6.0 && !game.string.pulling) {
-      const cycle = (game.time % 1.6) / 1.6;
-      const startY = getStringAnchorY() + 14;
-      const pullOffset = Math.sin(cycle * Math.PI) * 54;
-      const alpha = Math.sin(cycle * Math.PI) * 0.85;
-
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.strokeStyle = '#1e202b';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(W * 0.5, startY);
-      ctx.lineTo(W * 0.5, startY + pullOffset);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      ctx.beginPath();
-      ctx.arc(W * 0.5, startY + pullOffset, 13, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(217, 155, 56, 0.35)';
-      ctx.fill();
-      ctx.strokeStyle = '#1e202b';
-      ctx.stroke();
-
-      ctx.font = '700 12px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#1e202b';
-      ctx.fillText('AŞAĞI ÇEK VE BIRAK', W * 0.5, startY + 76);
-      ctx.restore();
-    }
-  }
-
-  // ============================================================================
-  // 12. OYUN AKIŞI (BAŞLATMA, BİTİRME, ARAYÜZ SENKRONİZASYONU)
-  // ============================================================================
+  window.addEventListener('resize', resizeCanvas);
+
+  /* =========================================================================
+     8. OYUN BAŞLATMA VE SIFIRLAMA
+     ========================================================================= */
   function startGame(mode) {
     SoundEngine.init();
-    SoundEngine.startMusic();
-
     game.mode = mode;
-    game.rng = mode === 'daily' ? createRNG(getTodaySeed()) : Math.random;
-    game.running = true;
-    game.paused = false;
-    game.time = 0;
-    game.dailyTimeLeft = 60;
-
+    game.rng = mode === 'daily' ? createSeededRandom('LIRA-' + getTodayString()) : Math.random;
+    game.state = 'playing';
     game.score = 0;
     game.shields = 3;
     game.combo = 0;
-    game.comboTimer = 0;
+    game.multiplier = 1;
+    game.crescendoMeter = 0;
+    game.crescendoActive = false;
+    game.crescendoTimer = 0;
+    game.dailyTimeLeft = 60;
+    game.wave = 1;
+    game.bossCount = 0;
+    game.spawnTimer = 0.6;
+    game.orbTimer = 2.8;
+    game.tutorialTimer = saveData.tutorialSeen ? 0 : 6.0;
+    game.wasInGoldZone = false;
+    game.phaseIndex = 0;
     game.focus = 1.0;
-
-    game.string.pulling = false;
-    game.string.pullX = 0;
-    game.string.pullY = 0;
-    game.string.holdTime = 0;
-    game.string.brokenTimer = 0;
-    game.string.loadedSparks = 1;
-
-    game.echoString.active = false;
-    game.crescendo.charge = 0;
-    game.crescendo.active = false;
 
     game.stats = {
       crystalsBroken: 0,
@@ -2857,60 +1411,1278 @@
       bossesDefeated: 0
     };
 
-    game.phaseIndex = 0;
-    game.spawnTimer = 0.3;
-    game.waveCount = 0;
-    game.bossSpawnedCount = 0;
-    game.nextBossScore = 450;
+    game.string.isDragging = false;
+    game.string.pullX = W / 2;
+    game.string.pullY = game.string.y;
+    game.string.holdTime = 0;
+    game.string.snappedTimer = 0;
+    game.string.vibrateAmp = 0;
+    game.string.loadedSparks = 1;
+
+    game.echoString.active = false;
+    game.echoString.timer = 0;
 
     game.sparks = [];
     game.crystals = [];
     game.orbs = [];
     game.particles = [];
     game.floatingTexts = [];
-    game.shockwaves = [];
     game.boss = null;
 
-    document.getElementById('menu-overlay').classList.add('hidden');
-    document.getElementById('gameover-overlay').classList.add('hidden');
-    document.getElementById('pause-overlay').classList.add('hidden');
-    document.getElementById('hud-controls').classList.remove('hidden');
+    hideAllOverlays();
+    document.getElementById('hud').style.display = 'flex';
+    const timerEl = document.getElementById('hud-timer');
+    timerEl.style.display = mode === 'daily' ? 'block' : 'none';
+    timerEl.classList.remove('urgent');
+
+    updateHUD();
+    spawnWave();
+    SoundEngine.startMusic();
   }
 
-  function endGame(dailyCompleted) {
-    game.running = false;
-    game.paused = false;
-    document.getElementById('hud-controls').classList.add('hidden');
+  function hideAllOverlays() {
+    document.querySelectorAll('.overlay-screen').forEach(el => el.classList.add('hidden'));
+  }
 
-    let earnedStars = Math.max(3, Math.floor(game.score / 45));
-    if (dailyCompleted) earnedStars += 15;
+  /* =========================================================================
+     9. DALGA, KRİSTAL VE BÜYÜK REZONATÖR ÜRETİMİ
+     ========================================================================= */
+  function spawnWave() {
+    if (game.boss) return;
 
-    let completedQuestsCount = 0;
-    for (let i = 0; i < saveData.quests.length; i++) {
-      const q = saveData.quests[i];
-      if (q.progress >= q.target) {
-        earnedStars += q.reward;
-        completedQuestsCount++;
-        const otherTypes = saveData.quests.map(item => item.type);
-        saveData.quests[i] = createRandomQuest(otherTypes);
+    if (game.wave > 1 && game.wave % 5 === 0) {
+      spawnBoss();
+      game.wave++;
+      return;
+    }
+
+    const count = Math.min(5, 2 + Math.floor(game.wave / 3));
+    const margin = 44;
+    const usableW = W - margin * 2;
+    const slots = [];
+    for (let i = 0; i < count; i++) {
+      slots.push(margin + (usableW / count) * (i + 0.5) + (game.rng() - 0.5) * 22);
+    }
+
+    slots.forEach(x => {
+      const r = game.rng();
+      let type = 'prism';
+      if (game.wave >= 8 && r > 0.87) {
+        type = 'mirror';
+      } else if (game.wave >= 4 && r > 0.76) {
+        type = 'shadow';
+      } else if (game.wave >= 3 && r > 0.61) {
+        type = 'nova';
+      } else if (game.wave >= 3 && r > 0.45) {
+        type = 'splitter';
+      } else if (game.wave >= 2 && r > 0.28) {
+        type = 'armored';
+      }
+
+      createCrystal(x, -30 - game.rng() * 45, type);
+    });
+
+    game.wave++;
+  }
+
+  function createCrystal(x, y, type, isMini = false) {
+    const baseSpeed = (34 + Math.min(48, game.wave * 2.1)) * (isMini ? 1.15 : 1);
+    const configs = {
+      prism:    { hp: 1, radius: 19, color: '#3b82f6', stroke: '#1d4ed8', speed: baseSpeed, points: 25 },
+      armored:  { hp: 2, radius: 22, color: '#8b5cf6', stroke: '#5b21b6', speed: baseSpeed * 0.85, points: 55 },
+      splitter: { hp: 1, radius: 21, color: '#10b981', stroke: '#047857', speed: baseSpeed * 0.95, points: 40 },
+      mirror:   { hp: 1, radius: 20, color: '#94a3b8', stroke: '#475569', speed: baseSpeed * 0.9, points: 75 },
+      nova:     { hp: 1, radius: 20, color: '#f43f5e', stroke: '#be123c', speed: baseSpeed * 0.92, points: 50 },
+      shadow:   { hp: 1, radius: 17, color: '#18181b', stroke: '#ef4444', speed: baseSpeed * 1.48, points: 65 }
+    };
+
+    const cfg = configs[type] || configs.prism;
+    game.crystals.push({
+      x,
+      y,
+      vx: isMini ? (game.rng() - 0.5) * 55 : 0,
+      vy: cfg.speed,
+      type,
+      hp: cfg.hp,
+      maxHp: cfg.hp,
+      radius: isMini ? 12 : cfg.radius,
+      color: cfg.color,
+      stroke: cfg.stroke,
+      points: isMini ? 15 : cfg.points,
+      isMini,
+      rot: game.rng() * Math.PI * 2,
+      rotSpeed: (game.rng() - 0.5) * 1.6,
+      hitFlash: 0,
+      exploded: false // Çift patlama koruması
+    });
+  }
+
+  function spawnBoss() {
+    game.bossCount++;
+    const coreHp = 4 + game.bossCount * 2;
+    const petalCount = Math.min(8, 4 + game.bossCount);
+    const petals = [];
+    for (let i = 0; i < petalCount; i++) {
+      petals.push({
+        angle: (Math.PI * 2 / petalCount) * i,
+        hp: 1,
+        alive: true
+      });
+    }
+
+    game.boss = {
+      x: W / 2,
+      y: -60,
+      vy: 15 + Math.min(10, game.bossCount * 1.5),
+      radius: 34,
+      hp: coreHp,
+      maxHp: coreHp,
+      orbitRadius: 64,
+      orbitSpeed: 1.1 + game.bossCount * 0.12,
+      petals,
+      hitFlash: 0
+    };
+
+    addFloatingText(W / 2, H * 0.35, 'BÜYÜK REZONATÖR!', '#d99b26', 18);
+  }
+
+  /* =========================================================================
+     10. SAPAN KONTROLLERİ (DOKUNMATİK, FARE VE KLAVYE)
+     ========================================================================= */
+  const pointer = { active: false, id: null, startX: 0, startY: 0 };
+  const keys = { left: false, right: false, pull: false };
+
+  function getStretchInfo() {
+    const dx = game.string.pullX - W / 2;
+    const dy = Math.max(0, game.string.pullY - game.string.y);
+    const maxPullY = 125;
+    const ratio = Math.min(1, dy / maxPullY);
+    const clampedDx = Math.max(-135, Math.min(135, dx));
+    const angle = Math.atan2(-dy, -clampedDx);
+    const isPerfect = ratio >= 0.72 && ratio <= 0.88;
+    return { dx: clampedDx, dy: ratio * maxPullY, ratio, angle, isPerfect };
+  }
+
+  function beginPull(x, y) {
+    if (game.state !== 'playing') return;
+    if (game.string.snappedTimer > 0) return;
+    SoundEngine.init();
+    if (!saveData.tutorialSeen) {
+      saveData.tutorialSeen = true;
+      writeSave();
+    }
+    game.tutorialTimer = 0;
+    game.wasInGoldZone = false;
+    game.string.isDragging = true;
+    game.string.holdTime = 0;
+    pointer.startX = x;
+    pointer.startY = y;
+    game.string.pullX = W / 2;
+    game.string.pullY = game.string.y + 18;
+  }
+
+  function updatePull(x, y) {
+    if (!game.string.isDragging) return;
+    const deltaX = x - pointer.startX;
+    const deltaY = Math.max(0, y - pointer.startY);
+    game.string.pullX = W / 2 + Math.max(-140, Math.min(140, deltaX));
+    game.string.pullY = game.string.y + Math.min(135, deltaY);
+  }
+
+  function releaseString() {
+    if (!game.string.isDragging) return;
+    const info = getStretchInfo();
+    game.string.isDragging = false;
+    game.string.pullX = W / 2;
+    game.string.pullY = game.string.y;
+    game.string.holdTime = 0;
+
+    if (info.ratio < 0.14) return;
+
+    const sparkCount = Math.max(1, game.string.loadedSparks);
+    game.string.loadedSparks = 1;
+
+    if (sparkCount >= 3) {
+      recordQuestProgress('multi_shots', 1);
+    }
+
+    if (info.isPerfect) {
+      game.stats.perfectChords++;
+      recordQuestProgress('perfect_chords', 1);
+      activateEchoString();
+      triggerShake(5, 0.16);
+      triggerHaptic([18, 25, 22]);
+      addFloatingText(W / 2, game.string.y - 36, 'TAM AKOR!', '#d99b26', 16);
+    } else {
+      triggerHaptic(12);
+    }
+
+    game.string.vibrateAmp = 14 + info.ratio * 12;
+    game.string.vibratePhase = 0;
+    SoundEngine.playPluck(info.ratio, info.isPerfect);
+
+    const speed = (620 + info.ratio * 420) * (info.isPerfect ? 1.18 : 1);
+    const spread = sparkCount > 1 ? 0.08 : 0;
+
+    for (let i = 0; i < sparkCount; i++) {
+      const offsetAngle = (i - (sparkCount - 1) / 2) * spread;
+      const finalAngle = info.angle + offsetAngle;
+      game.sparks.push({
+        x: W / 2 + (i - (sparkCount - 1) / 2) * 8,
+        y: game.string.y - 6,
+        vx: Math.cos(finalAngle) * speed,
+        vy: Math.sin(finalAngle) * speed,
+        radius: info.isPerfect ? 6.5 : 5.5,
+        pierce: info.isPerfect ? 3 : 0,
+        isPerfect: info.isPerfect,
+        bounces: 0,
+        maxBounces: info.isPerfect ? 9 : 6,
+        trail: []
+      });
+    }
+  }
+
+  function activateEchoString() {
+    const bonus = saveData.upgrades.echoDuration * 1.4;
+    game.echoString.active = true;
+    game.echoString.timer = 4.2 + bonus;
+  }
+
+  canvas.addEventListener('pointerdown', e => {
+    if (pointer.active) return;
+    pointer.active = true;
+    pointer.id = e.pointerId;
+    canvas.setPointerCapture(e.pointerId);
+    const rect = canvas.getBoundingClientRect();
+    beginPull(e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    if (!pointer.active || e.pointerId !== pointer.id) return;
+    const rect = canvas.getBoundingClientRect();
+    updatePull(e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  function endPointer(e) {
+    if (!pointer.active || e.pointerId !== pointer.id) return;
+    pointer.active = false;
+    pointer.id = null;
+    releaseString();
+  }
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+
+  window.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+    if (e.key === ' ' || e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+      if (!keys.pull && game.state === 'playing') {
+        keys.pull = true;
+        beginPull(W / 2, game.string.y);
+      }
+      e.preventDefault();
+    }
+    if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
+      if (game.state === 'playing') pauseGame();
+      else if (game.state === 'paused') resumeGame();
+    }
+    if (e.key === 'm' || e.key === 'M') {
+      toggleMute();
+    }
+    if (e.key === 'Enter') {
+      if (game.state === 'menu') startGame('classic');
+      else if (game.state === 'gameover') startGame(game.mode);
+    }
+  });
+
+  window.addEventListener('keyup', e => {
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+    if (e.key === ' ' || e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+      if (keys.pull) {
+        keys.pull = false;
+        releaseString();
+      }
+    }
+  });
+
+  /* =========================================================================
+     11. OYUN DÖNGÜSÜ VE FİZİK GÜNCELLEMELERİ
+     ========================================================================= */
+  let lastFrameTime = performance.now();
+
+  function mainLoop(now) {
+    const rawDt = Math.min(0.05, (now - lastFrameTime) / 1000);
+    lastFrameTime = now;
+
+    if (game.state === 'playing') {
+      updateGame(rawDt);
+    }
+    renderGame();
+    requestAnimationFrame(mainLoop);
+  }
+
+  function updateGame(rawDt) {
+    if (game.tutorialTimer > 0) {
+      game.tutorialTimer = Math.max(0, game.tutorialTimer - rawDt);
+    }
+
+    if (keys.pull && game.string.isDragging) {
+      game.string.pullY = Math.min(game.string.y + 135, game.string.pullY + 135 * rawDt);
+      if (keys.left) game.string.pullX = Math.max(W / 2 - 135, game.string.pullX - 240 * rawDt);
+      if (keys.right) game.string.pullX = Math.min(W / 2 + 135, game.string.pullX + 240 * rawDt);
+    }
+
+    let timeScale = 1.0;
+    if (game.string.isDragging && game.focus > 0.02) {
+      timeScale = 0.28;
+      game.focus = Math.max(0, game.focus - rawDt * 0.42);
+    } else {
+      game.focus = Math.min(1, game.focus + rawDt * 0.26);
+    }
+
+    const dt = rawDt * timeScale;
+
+    if (game.string.isDragging) {
+      const stretch = getStretchInfo();
+      if (stretch.isPerfect && !game.wasInGoldZone) {
+        triggerHaptic(10);
+      }
+      game.wasInGoldZone = stretch.isPerfect;
+
+      if (stretch.ratio >= 0.94) {
+        game.string.holdTime += rawDt;
+        if (game.string.holdTime >= game.string.maxHoldTime) {
+          releaseString();
+        }
+      } else {
+        game.string.holdTime = Math.max(0, game.string.holdTime - rawDt);
       }
     }
 
-    saveData.stars += earnedStars;
-    if (game.mode === 'normal' && game.score > saveData.bestScore) {
-      saveData.bestScore = game.score;
+    if (game.string.snappedTimer > 0) {
+      game.string.snappedTimer = Math.max(0, game.string.snappedTimer - rawDt);
     }
-    if (game.mode === 'daily' && game.score > saveData.bestDaily) {
+
+    if (game.string.vibrateAmp > 0.1) {
+      game.string.vibratePhase += rawDt * 58;
+      game.string.vibrateAmp *= Math.pow(0.04, rawDt);
+    } else {
+      game.string.vibrateAmp = 0;
+    }
+
+    if (game.echoString.active) {
+      game.echoString.timer -= rawDt;
+      if (game.echoString.timer <= 0) {
+        game.echoString.active = false;
+      }
+    }
+
+    if (game.crescendoActive) {
+      game.crescendoTimer -= rawDt;
+      if (game.crescendoTimer <= 0) {
+        game.crescendoActive = false;
+        game.crescendoMeter = 0;
+        updateHUD();
+      }
+    }
+
+    if (game.mode === 'daily') {
+      game.dailyTimeLeft -= rawDt;
+      const timerEl = document.getElementById('hud-timer');
+      const sec = Math.max(0, Math.ceil(game.dailyTimeLeft));
+      timerEl.textContent = sec + 's';
+      if (sec <= 10) timerEl.classList.add('urgent');
+      if (game.dailyTimeLeft <= 0) {
+        endGame('Günlük Süre Doldu!');
+        return;
+      }
+    }
+
+    if (game.shakeTime > 0) {
+      game.shakeTime -= rawDt;
+    }
+
+    if (!game.boss) {
+      game.spawnTimer -= dt;
+      if (game.spawnTimer <= 0 || game.crystals.length === 0) {
+        spawnWave();
+        game.spawnTimer = Math.max(2.3, 4.6 - game.wave * 0.1);
+      }
+    }
+
+    game.orbTimer -= dt;
+    if (game.orbTimer <= 0) {
+      game.orbs.push({
+        x: 45 + game.rng() * (W - 90),
+        y: -15,
+        vy: 78 + game.rng() * 35,
+        radius: 9,
+        pulse: 0
+      });
+      game.orbTimer = 4.2 + game.rng() * 2.5;
+    }
+
+    updateSparks(dt);
+    updateCrystals(dt);
+    updateBoss(dt);
+    updateOrbs(dt);
+    updateParticles(rawDt);
+  }
+
+  function updateSparks(dt) {
+    const magnetBonus = saveData.upgrades.magnetRadius * 24;
+
+    for (let i = game.sparks.length - 1; i >= 0; i--) {
+      const s = game.sparks[i];
+      s.trail.push({ x: s.x, y: s.y });
+      if (s.trail.length > 7) s.trail.shift();
+
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+
+      if (s.x - s.radius < 12) {
+        s.x = 12 + s.radius;
+        s.vx = Math.abs(s.vx);
+        s.bounces++;
+      } else if (s.x + s.radius > W - 12) {
+        s.x = W - 12 - s.radius;
+        s.vx = -Math.abs(s.vx);
+        s.bounces++;
+      }
+
+      if (s.y - s.radius < 14) {
+        s.y = 14 + s.radius;
+        s.vy = Math.abs(s.vy);
+        s.bounces++;
+      }
+
+      if (game.echoString.active && s.vy > 0 && Math.abs(s.y - game.echoString.y) < 12) {
+        s.y = game.echoString.y - 12;
+        s.vy = -Math.abs(s.vy) * 1.03;
+        s.bounces++;
+        SoundEngine.playPluck(0.5, false);
+        spawnBurst(s.x, game.echoString.y, '#d99b26', 6);
+      }
+
+      if (game.string.isDragging && s.vy > 0) {
+        const distToPull = Math.hypot(s.x - game.string.pullX, s.y - game.string.pullY);
+        if (distToPull < 42 + magnetBonus && game.string.loadedSparks < game.string.maxSparks) {
+          game.string.loadedSparks++;
+          SoundEngine.playOrbCollect(game.string.loadedSparks);
+          spawnBurst(s.x, s.y, '#d99b26', 6);
+          game.sparks.splice(i, 1);
+          continue;
+        }
+      }
+
+      if (s.y > H + 20 || s.bounces > s.maxBounces) {
+        game.sparks.splice(i, 1);
+      }
+    }
+
+    if (game.sparks.length === 0 && game.combo > 0) {
+      game.combo = 0;
+      game.multiplier = 1;
+      updateHUD();
+    }
+  }
+
+  function updateCrystals(dt) {
+    const shieldLineY = H - 46;
+
+    for (let i = game.crystals.length - 1; i >= 0; i--) {
+      const c = game.crystals[i];
+      if (!c) continue;
+      c.x += c.vx * dt;
+      c.y += c.vy * dt;
+      c.rot += c.rotSpeed * dt;
+      if (c.hitFlash > 0) c.hitFlash -= dt;
+
+      if (c.x - c.radius < 18) {
+        c.x = 18 + c.radius;
+        c.vx = Math.abs(c.vx);
+      } else if (c.x + c.radius > W - 18) {
+        c.x = W - 18 - c.radius;
+        c.vx = -Math.abs(c.vx);
+      }
+
+      if (c.type === 'shadow' && game.string.isDragging) {
+        const distToString = Math.hypot(c.x - game.string.pullX, c.y - game.string.pullY);
+        if (distToString < c.radius + 22) {
+          game.string.isDragging = false;
+          game.string.pullX = W / 2;
+          game.string.pullY = game.string.y;
+          game.string.snappedTimer = 1.6;
+          game.string.loadedSparks = 1;
+          SoundEngine.playSnap();
+          triggerShake(8, 0.25);
+          triggerHaptic([40, 30, 40]);
+          addFloatingText(c.x, c.y, 'TEL KOPTU!', '#e11d48', 15);
+          spawnBurst(c.x, c.y, '#18181b', 12);
+          game.crystals.splice(i, 1);
+          continue;
+        }
+      }
+
+      let hitBySpark = false;
+      for (let j = game.sparks.length - 1; j >= 0; j--) {
+        const s = game.sparks[j];
+        const dist = Math.hypot(c.x - s.x, c.y - s.y);
+        if (dist < c.radius + s.radius) {
+          if (c.type === 'mirror' && !s.isPerfect && s.pierce <= 0) {
+            const nx = (s.x - c.x) / (dist || 1);
+            const ny = (s.y - c.y) / (dist || 1);
+            const dot = s.vx * nx + s.vy * ny;
+            s.vx = (s.vx - 2 * dot * nx) * 1.15;
+            s.vy = (s.vy - 2 * dot * ny) * 1.15;
+            s.x = c.x + nx * (c.radius + s.radius + 3);
+            s.y = c.y + ny * (c.radius + s.radius + 3);
+            s.bounces++;
+            c.hitFlash = 0.14;
+            SoundEngine.playCrystalHit(game.combo + 3, false);
+            spawnBurst(s.x, s.y, '#cbd5e1', 6);
+            addFloatingText(c.x, c.y - 16, 'YANSIDI!', '#64748b', 11);
+            break;
+          }
+
+          if (s.pierce > 0) {
+            s.pierce--;
+          } else {
+            const nx = (s.x - c.x) / (dist || 1);
+            const ny = (s.y - c.y) / (dist || 1);
+            const dot = s.vx * nx + s.vy * ny;
+            s.vx = s.vx - 2 * dot * nx;
+            s.vy = s.vy - 2 * dot * ny;
+            s.bounces++;
+          }
+
+          damageCrystal(i, s.isPerfect ? 2 : 1);
+          hitBySpark = true;
+          break;
+        }
+      }
+
+      if (hitBySpark) continue;
+
+      if (c && c.y + c.radius >= shieldLineY) {
+        game.crystals.splice(i, 1);
+        loseShield(1, c.x, shieldLineY);
+        if (game.state !== 'playing') return;
+      }
+    }
+  }
+
+  function damageCrystal(index, dmg) {
+    const c = game.crystals[index];
+    if (!c || c.exploded) return;
+
+    c.hp -= dmg;
+    c.hitFlash = 0.12;
+    game.combo++;
+    game.multiplier = Math.min(8, 1 + Math.floor(game.combo / 3));
+
+    if (c.hp <= 0) {
+      c.exploded = true; // Tekrar tetiklenmeyi kesin olarak önler
+      const cx = c.x;
+      const cy = c.y;
+      const cType = c.type;
+      const cColor = c.color;
+      const cPoints = c.points;
+      const cIsMini = c.isMini;
+
+      game.crystals.splice(index, 1);
+      SoundEngine.playCrystalHit(game.combo, true);
+      spawnBurst(cx, cy, cColor, 10);
+
+      game.stats.crystalsBroken++;
+      recordQuestProgress('break_crystals', 1);
+
+      const crescendoBonus = game.crescendoActive ? 2 : 1;
+      const gained = cPoints * game.multiplier * crescendoBonus;
+      addScore(gained);
+      addFloatingText(cx, cy, `+${gained}`, cColor, 14);
+
+      fillCrescendo(0.14);
+
+      if (cType === 'splitter' && !cIsMini) {
+        createCrystal(cx - 14, cy, 'prism', true);
+        createCrystal(cx + 14, cy, 'prism', true);
+      } else if (cType === 'nova') {
+        triggerNova(cx, cy, 0);
+      }
+    } else {
+      SoundEngine.playCrystalHit(game.combo, false);
+      spawnBurst(c.x, c.y, '#ffffff', 5);
+    }
+
+    updateHUD();
+  }
+
+  // Korumalı zincirleme Nova patlaması (donmayı önleyen kilitli yapı)
+  function triggerNova(nx, ny, depth = 0) {
+    if (depth > 3) return; // Sonsuz zincir koruyucusu
+
+    game.stats.novasTriggered++;
+    recordQuestProgress('trigger_novas', 1);
+    SoundEngine.playNova();
+    triggerShake(6, 0.2);
+    triggerHaptic(32);
+    spawnBurst(nx, ny, '#f43f5e', 14);
+
+    // Yazıyı skorun üstüne binmemesi için güvenli alana (en az y: 95) yerleştir
+    const safeTextY = Math.max(95, ny - 20);
+    addFloatingText(Math.min(W - 75, Math.max(75, nx)), safeTextY, 'ZİNCİRLEME PATLADI!', '#e11d48', 13);
+
+    const blastRadius = 115;
+    const targets = [];
+
+    for (let i = 0; i < game.crystals.length; i++) {
+      const other = game.crystals[i];
+      if (!other || other.exploded) continue;
+      if (Math.hypot(other.x - nx, other.y - ny) <= blastRadius) {
+        other.exploded = true; // Önce işaretle ki birbirini tekrar tetiklemesin
+        targets.push(other);
+      }
+    }
+
+    targets.forEach(t => {
+      const idx = game.crystals.indexOf(t);
+      if (idx !== -1) {
+        game.crystals.splice(idx, 1);
+        game.stats.crystalsBroken++;
+        recordQuestProgress('break_crystals', 1);
+        spawnBurst(t.x, t.y, t.color, 7);
+        const gained = t.points * game.multiplier * (game.crescendoActive ? 2 : 1);
+        addScore(gained);
+
+        if (t.type === 'nova') {
+          triggerNova(t.x, t.y, depth + 1);
+        }
+      }
+    });
+  }
+
+  function updateBoss(dt) {
+    const b = game.boss;
+    if (!b) return;
+
+    b.y += b.vy * dt;
+    if (b.hitFlash > 0) b.hitFlash -= dt;
+
+    let alivePetals = 0;
+    b.petals.forEach(p => {
+      if (!p.alive) return;
+      alivePetals++;
+      p.angle += b.orbitSpeed * dt;
+      const px = b.x + Math.cos(p.angle) * b.orbitRadius;
+      const py = b.y + Math.sin(p.angle) * b.orbitRadius;
+
+      for (let j = game.sparks.length - 1; j >= 0; j--) {
+        const s = game.sparks[j];
+        if (Math.hypot(px - s.x, py - s.y) < 15 + s.radius) {
+          p.alive = false;
+          if (s.pierce <= 0) s.vy = -s.vy;
+          SoundEngine.playCrystalHit(game.combo + 2, true);
+          spawnBurst(px, py, '#d99b26', 8);
+          addScore(45 * game.multiplier);
+          break;
+        }
+      }
+    });
+
+    for (let j = game.sparks.length - 1; j >= 0; j--) {
+      const s = game.sparks[j];
+      const dist = Math.hypot(b.x - s.x, b.y - s.y);
+      if (dist < b.radius + s.radius) {
+        const nx = (s.x - b.x) / (dist || 1);
+        const ny = (s.y - b.y) / (dist || 1);
+        const dot = s.vx * nx + s.vy * ny;
+        s.vx = s.vx - 2 * dot * nx;
+        s.vy = s.vy - 2 * dot * ny;
+        s.bounces++;
+
+        if (alivePetals > 0) {
+          SoundEngine.playCrystalHit(1, false);
+          addFloatingText(b.x, b.y - 42, 'ÖNCE YAPRAKLARI KIR!', '#686b7a', 11);
+        } else {
+          b.hp -= s.isPerfect ? 2 : 1;
+          b.hitFlash = 0.14;
+          SoundEngine.playCrystalHit(game.combo + 4, true);
+          spawnBurst(b.x, b.y, '#d99b26', 10);
+
+          if (b.hp <= 0) {
+            const bonus = 350 * game.bossCount;
+            addScore(bonus);
+            if (game.shields < game.maxShields) {
+              game.shields++;
+              addFloatingText(b.x, b.y - 22, '+1 KALKAN!', '#059669', 15);
+            }
+            addFloatingText(b.x, b.y + 8, `REZONATÖR YENİLDİ +${bonus}`, '#d99b26', 15);
+            triggerShake(9, 0.3);
+            triggerHaptic([35, 30, 50]);
+            spawnBurst(b.x, b.y, '#ffcf56', 24);
+            game.stats.bossesDefeated++;
+            recordQuestProgress('defeat_boss', 1);
+            game.boss = null;
+            updateHUD();
+            return;
+          }
+        }
+        break;
+      }
+    }
+
+    if (b && b.y + b.radius >= H - 46) {
+      game.boss = null;
+      loseShield(2, W / 2, H - 46);
+    }
+  }
+
+  function updateOrbs(dt) {
+    const magnetBonus = saveData.upgrades.magnetRadius * 28;
+
+    for (let i = game.orbs.length - 1; i >= 0; i--) {
+      const o = game.orbs[i];
+      o.y += o.vy * dt;
+      o.pulse += dt * 6;
+
+      if (game.string.isDragging) {
+        const dist = Math.hypot(o.x - game.string.pullX, o.y - game.string.pullY);
+        const pullRange = 75 + magnetBonus;
+        if (dist < pullRange) {
+          o.x += (game.string.pullX - o.x) * 8 * dt;
+          o.y += (game.string.pullY - o.y) * 8 * dt;
+        }
+        if (dist < 28 && game.string.loadedSparks < game.string.maxSparks) {
+          game.string.loadedSparks++;
+          SoundEngine.playOrbCollect(game.string.loadedSparks);
+          spawnBurst(o.x, o.y, '#ffcf56', 7);
+          game.orbs.splice(i, 1);
+          continue;
+        }
+      }
+
+      if (o.y > H + 20) {
+        game.orbs.splice(i, 1);
+      }
+    }
+  }
+
+  function fillCrescendo(amount) {
+    if (game.crescendoActive) return;
+    const speedMult = 1 + saveData.upgrades.crescendoSpeed * 0.25;
+    game.crescendoMeter = Math.min(1, game.crescendoMeter + amount * speedMult);
+    if (game.crescendoMeter >= 1) {
+      game.crescendoActive = true;
+      game.crescendoTimer = 6.5 + saveData.upgrades.crescendoSpeed * 1.2;
+      game.stats.crescendos++;
+      recordQuestProgress('crescendos', 1);
+      SoundEngine.playCrescendo();
+      addFloatingText(W / 2, H * 0.42, 'KREŞENDO! 2X PUAN', '#d99b26', 17);
+      updateHUD();
+    }
+  }
+
+  function addScore(pts) {
+    game.score += pts;
+    recordQuestProgress('score_points', game.score, true);
+    const targetPhase = Math.min(PHASES.length - 1, Math.floor(game.score / 600));
+    if (targetPhase !== game.phaseIndex) {
+      game.phaseIndex = targetPhase;
+    }
+    updateHUD();
+  }
+
+  function loseShield(amount, x, y) {
+    game.shields = Math.max(0, game.shields - amount);
+    game.combo = 0;
+    game.multiplier = 1;
+    triggerShake(9, 0.28);
+    triggerHaptic([50, 40, 50]);
+    SoundEngine.playSnap();
+    spawnBurst(x, y, '#e11d48', 14);
+    addFloatingText(x, y - 18, `-${amount} KALKAN`, '#e11d48', 15);
+    updateHUD();
+
+    if (game.shields <= 0) {
+      endGame('Kalkanlar Tükendi');
+    }
+  }
+
+  function triggerShake(intensity, time) {
+    game.shakeIntensity = intensity;
+    game.shakeTime = time;
+  }
+
+  function spawnBurst(x, y, color, count) {
+    // Performans koruması: Ekranda en fazla 90 parçacık
+    if (game.particles.length > 90) return;
+    const actualCount = Math.min(count, 95 - game.particles.length);
+    for (let i = 0; i < actualCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const spd = 60 + Math.random() * 170;
+      game.particles.push({
+        x, y,
+        vx: Math.cos(a) * spd,
+        vy: Math.sin(a) * spd,
+        life: 0.35 + Math.random() * 0.25,
+        maxLife: 0.6,
+        size: 2.5 + Math.random() * 3,
+        color
+      });
+    }
+  }
+
+  function addFloatingText(x, y, text, color, size = 14) {
+    if (game.floatingTexts.length > 14) {
+      game.floatingTexts.shift();
+    }
+    game.floatingTexts.push({
+      x, y, text, color, size,
+      life: 0.95,
+      maxLife: 0.95
+    });
+  }
+
+  function updateParticles(dt) {
+    for (let i = game.particles.length - 1; i >= 0; i--) {
+      const p = game.particles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vy += 220 * dt;
+      p.life -= dt;
+      if (p.life <= 0) game.particles.splice(i, 1);
+    }
+    for (let i = game.floatingTexts.length - 1; i >= 0; i--) {
+      const ft = game.floatingTexts[i];
+      ft.y -= 28 * dt;
+      ft.life -= dt;
+      if (ft.life <= 0) game.floatingTexts.splice(i, 1);
+    }
+  }
+
+  /* =========================================================================
+     12. ÇİZİM MOTORU (CANVAS RENDER)
+     ========================================================================= */
+  function renderGame() {
+    const phase = PHASES[game.phaseIndex];
+    ctx.save();
+
+    if (game.shakeTime > 0) {
+      const sx = (Math.random() - 0.5) * game.shakeIntensity;
+      const sy = (Math.random() - 0.5) * game.shakeIntensity;
+      ctx.translate(sx, sy);
+    }
+
+    ctx.fillStyle = phase.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = phase.line;
+    ctx.lineWidth = 1;
+    const cols = 5;
+    for (let i = 1; i < cols; i++) {
+      const lx = (W / cols) * i;
+      ctx.beginPath();
+      ctx.moveTo(lx, 0);
+      ctx.lineTo(lx, H);
+      ctx.stroke();
+    }
+
+    const barX = 16;
+    const barTop = H - 230;
+    const barH = 100;
+    ctx.fillStyle = 'rgba(30,32,43,0.08)';
+    roundRect(ctx, barX, barTop, 5, barH, 3);
+    ctx.fill();
+    ctx.fillStyle = game.focus < 0.25 ? '#e11d48' : '#3b82f6';
+    const fH = barH * game.focus;
+    roundRect(ctx, barX, barTop + (barH - fH), 5, fH, 3);
+    ctx.fill();
+
+    const cBarX = W - 21;
+    ctx.fillStyle = 'rgba(30,32,43,0.08)';
+    roundRect(ctx, cBarX, barTop, 5, barH, 3);
+    ctx.fill();
+    ctx.fillStyle = game.crescendoActive ? '#ffcf56' : '#d99b26';
+    const cFill = game.crescendoActive ? Math.max(0, game.crescendoTimer / 7) : game.crescendoMeter;
+    const cH = barH * Math.min(1, cFill);
+    roundRect(ctx, cBarX, barTop + (barH - cH), 5, cH, 3);
+    ctx.fill();
+
+    const shieldY = H - 46;
+    ctx.strokeStyle = 'rgba(30,32,43,0.12)';
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(20, shieldY);
+    ctx.lineTo(W - 20, shieldY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    for (let i = 0; i < game.maxShields; i++) {
+      const sx = W / 2 + (i - 1) * 26;
+      const sy = H - 24;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 7, 0, Math.PI * 2);
+      if (i < game.shields) {
+        ctx.fillStyle = phase.shield;
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = 'rgba(30,32,43,0.12)';
+        ctx.fill();
+      }
+    }
+
+    if (game.echoString.active) {
+      ctx.strokeStyle = 'rgba(217, 155, 38, 0.75)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(game.string.marginX, game.echoString.y);
+      ctx.lineTo(W - game.string.marginX, game.echoString.y);
+      ctx.stroke();
+    }
+
+    if (game.string.isDragging) {
+      drawAimTrajectory();
+    }
+
+    drawLightString(phase);
+
+    if (game.tutorialTimer > 0 && game.state === 'playing' && !game.string.isDragging) {
+      const pulse = (Math.sin(performance.now() * 0.006) + 1) * 0.5;
+      const handY = game.string.y + 16 + pulse * 44;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, game.tutorialTimer) * 0.85;
+      ctx.strokeStyle = '#d99b26';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(W / 2, game.string.y + 10);
+      ctx.lineTo(W / 2, handY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#1e202b';
+      ctx.beginPath();
+      ctx.arc(W / 2, handY, 11, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.font = '800 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('AŞAĞI ÇEK VE BIRAK', W / 2, handY + 26);
+      ctx.restore();
+    }
+
+    game.orbs.forEach(o => {
+      const r = o.radius + Math.sin(o.pulse) * 1.5;
+      ctx.fillStyle = '#d99b26';
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, r * 0.45, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    game.crystals.forEach(c => {
+      ctx.save();
+      ctx.translate(c.x, c.y);
+      ctx.rotate(c.rot);
+      ctx.fillStyle = c.hitFlash > 0 ? '#ffffff' : c.color;
+      ctx.strokeStyle = c.stroke;
+      ctx.lineWidth = 2.5;
+
+      if (c.type === 'nova') {
+        drawStarPolygon(ctx, 0, 0, 8, c.radius, c.radius * 0.52);
+      } else if (c.type === 'shadow') {
+        drawPolygon(ctx, 0, 0, 3, c.radius + 2);
+      } else if (c.type === 'armored') {
+        drawPolygon(ctx, 0, 0, 6, c.radius);
+      } else if (c.type === 'mirror') {
+        drawPolygon(ctx, 0, 0, 8, c.radius);
+      } else {
+        drawPolygon(ctx, 0, 0, 4, c.radius);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      if (c.type === 'armored' && c.hp > 1) {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+
+    if (game.boss) {
+      const b = game.boss;
+      b.petals.forEach(p => {
+        if (!p.alive) return;
+        const px = b.x + Math.cos(p.angle) * b.orbitRadius;
+        const py = b.y + Math.sin(p.angle) * b.orbitRadius;
+        ctx.fillStyle = '#d99b26';
+        ctx.strokeStyle = '#92400e';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(px, py, 11, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      ctx.fillStyle = b.hitFlash > 0 ? '#fff' : '#1e202b';
+      ctx.strokeStyle = '#d99b26';
+      ctx.lineWidth = 4;
+      drawPolygon(ctx, b.x, b.y, 8, b.radius);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '800 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(b.hp, b.x, b.y);
+    }
+
+    game.sparks.forEach(s => {
+      s.trail.forEach((pt, idx) => {
+        const alpha = (idx + 1) / s.trail.length * 0.35;
+        ctx.fillStyle = s.isPerfect ? `rgba(217, 155, 38, ${alpha})` : `rgba(30, 32, 43, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, s.radius * 0.7, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = s.isPerfect ? '#d99b26' : '#1e202b';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius * 0.42, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    game.particles.forEach(p => {
+      ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    game.floatingTexts.forEach(ft => {
+      ctx.globalAlpha = Math.min(1, ft.life / (ft.maxLife * 0.4));
+      ctx.fillStyle = ft.color;
+      ctx.font = `800 ${ft.size}px -apple-system, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(ft.text, ft.x, ft.y);
+    });
+    ctx.globalAlpha = 1;
+
+    ctx.restore();
+  }
+
+  function drawLightString(phase) {
+    const leftX = game.string.marginX;
+    const rightX = W - game.string.marginX;
+    const baseY = game.string.y;
+
+    if (game.string.snappedTimer > 0) {
+      ctx.strokeStyle = '#e11d48';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(leftX, baseY);
+      ctx.lineTo(W / 2 - 22, baseY + 14);
+      ctx.moveTo(W / 2 + 22, baseY + 14);
+      ctx.lineTo(rightX, baseY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      return;
+    }
+
+    const stretch = getStretchInfo();
+    const themeColor = (THEMES[saveData.equippedTheme] || THEMES.classic).color;
+
+    if (game.string.isDragging) {
+      const goldStart = baseY + 125 * 0.72;
+      const goldEnd = baseY + 125 * 0.88;
+      ctx.fillStyle = stretch.isPerfect ? 'rgba(217, 155, 38, 0.25)' : 'rgba(217, 155, 38, 0.1)';
+      roundRect(ctx, W / 2 - 55, goldStart, 110, goldEnd - goldStart, 8);
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = stretch.isPerfect ? '#d99b26' : (game.string.isDragging ? themeColor : phase.string);
+    ctx.lineWidth = stretch.isPerfect ? 4.5 : 3.2;
+    ctx.beginPath();
+    ctx.moveTo(leftX, baseY);
+
+    if (game.string.isDragging) {
+      ctx.lineTo(game.string.pullX, game.string.pullY);
+      ctx.lineTo(rightX, baseY);
+    } else {
+      const vibOffset = Math.sin(game.string.vibratePhase) * game.string.vibrateAmp;
+      ctx.quadraticCurveTo(W / 2, baseY + vibOffset, rightX, baseY);
+    }
+    ctx.stroke();
+
+    [leftX, rightX].forEach(px => {
+      ctx.fillStyle = phase.string;
+      ctx.beginPath();
+      ctx.arc(px, baseY, 5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    const nodeX = game.string.isDragging ? game.string.pullX : W / 2;
+    const nodeY = game.string.isDragging ? game.string.pullY : baseY;
+    const count = game.string.loadedSparks;
+    for (let i = 0; i < count; i++) {
+      const ox = nodeX + (i - (count - 1) / 2) * 12;
+      ctx.fillStyle = stretch.isPerfect ? '#d99b26' : '#1e202b';
+      ctx.beginPath();
+      ctx.arc(ox, nodeY, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(ox, nodeY, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawAimTrajectory() {
+    const info = getStretchInfo();
+    if (info.ratio < 0.14) return;
+
+    let simX = W / 2;
+    let simY = game.string.y - 6;
+    let vx = Math.cos(info.angle) * 600;
+    let vy = Math.sin(info.angle) * 600;
+    const stepDt = 0.025;
+
+    ctx.fillStyle = info.isPerfect ? 'rgba(217, 155, 38, 0.7)' : 'rgba(30, 32, 43, 0.35)';
+    for (let i = 0; i < 24; i++) {
+      simX += vx * stepDt;
+      simY += vy * stepDt;
+      if (simX < 18) { simX = 18; vx = Math.abs(vx); }
+      if (simX > W - 18) { simX = W - 18; vx = -Math.abs(vx); }
+      if (simY < 20) { simY = 20; vy = Math.abs(vy); }
+
+      ctx.beginPath();
+      ctx.arc(simX, simY, 3 - i * 0.06, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawPolygon(c, x, y, sides, radius) {
+    c.beginPath();
+    for (let i = 0; i < sides; i++) {
+      const a = (Math.PI * 2 / sides) * i - Math.PI / 2;
+      const px = x + Math.cos(a) * radius;
+      const py = y + Math.sin(a) * radius;
+      if (i === 0) c.moveTo(px, py);
+      else c.lineTo(px, py);
+    }
+    c.closePath();
+  }
+
+  function drawStarPolygon(c, x, y, points, outerR, innerR) {
+    c.beginPath();
+    for (let i = 0; i < points * 2; i++) {
+      const r = i % 2 === 0 ? outerR : innerR;
+      const a = (Math.PI / points) * i;
+      const px = x + Math.cos(a) * r;
+      const py = y + Math.sin(a) * r;
+      if (i === 0) c.moveTo(px, py);
+      else c.lineTo(px, py);
+    }
+    c.closePath();
+  }
+
+  function roundRect(c, x, y, w, h, r) {
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.arcTo(x + w, y, x + w, y + h, r);
+    c.arcTo(x + w, y + h, x, y + h, r);
+    c.arcTo(x, y + h, x, y, r);
+    c.arcTo(x, y, x + w, y, r);
+    c.closePath();
+  }
+
+  /* =========================================================================
+     13. ARAYÜZ, GÖREVLER, ATÖLYE VE TUR SONU YÖNETİMİ
+     ========================================================================= */
+  function updateHUD() {
+    document.getElementById('hud-score').textContent = game.score;
+    document.getElementById('hud-phase').textContent = PHASES[game.phaseIndex].name;
+    const multEl = document.getElementById('hud-mult');
+    const totalMult = game.multiplier * (game.crescendoActive ? 2 : 1);
+    multEl.textContent = `${totalMult}x ÇARPAN`;
+    if (game.crescendoActive) multEl.classList.add('crescendo');
+    else multEl.classList.remove('crescendo');
+  }
+
+  function recordQuestProgress(id, amount, isAbsolute = false) {
+    saveData.quests.forEach(q => {
+      if (q.id === id) {
+        if (isAbsolute) q.progress = Math.max(q.progress, amount);
+        else q.progress += amount;
+      }
+    });
+  }
+
+  function endGame(reasonText) {
+    game.state = 'gameover';
+    SoundEngine.stopMusic();
+    document.getElementById('hud').style.display = 'none';
+
+    if (game.mode === 'classic' && game.score > saveData.bestScore) {
+      saveData.bestScore = game.score;
+    } else if (game.mode === 'daily' && game.score > saveData.bestDaily) {
       saveData.bestDaily = game.score;
     }
-    persistSave();
 
-    document.getElementById('go-mode-tag').textContent = game.mode === 'daily' ? 'GÜNLÜK TUR (60s)' : 'SONSUZ TUR';
-    document.getElementById('go-title').textContent = dailyCompleted ? 'Süre Doldu — Harika Yankı!' : 'Kalkanlar Tükenince Tur Bitti';
+    let earnedStars = Math.max(2, Math.floor(game.score / 85));
+    let completedQuestsCount = 0;
+
+    saveData.quests.forEach(q => {
+      if (q.progress >= q.target) {
+        earnedStars += q.reward;
+        completedQuestsCount++;
+      }
+    });
+
+    saveData.quests = saveData.quests.filter(q => q.progress < q.target);
+    refillQuests();
+
+    saveData.stars += earnedStars;
+    writeSave();
+
+    document.getElementById('go-mode-tag').textContent = game.mode === 'daily' ? 'GÜNLÜK MOD SONUCU' : 'TUR TAMAMLANDI';
+    document.getElementById('go-title').textContent = reasonText;
     document.getElementById('go-score').textContent = game.score;
     document.getElementById('go-stars').textContent = `+${earnedStars} ★`;
     document.getElementById('go-crystals').textContent = game.stats.crystalsBroken;
     document.getElementById('go-perfect').textContent = game.stats.perfectChords;
+
+    const duelRes = document.getElementById('go-duel-result');
+    if (game.duelTarget !== null && game.duelTarget > 0) {
+      duelRes.style.display = 'block';
+      if (game.score > game.duelTarget) {
+        duelRes.style.color = '#059669';
+        duelRes.textContent = `🏆 DÜELLO KAZANILDI! (${game.duelTarget} hedefini geçtin!)`;
+      } else {
+        duelRes.style.color = '#e11d48';
+        duelRes.textContent = `⚔️ Düello Hedefi: ${game.duelTarget} (${game.duelTarget - game.score + 1} puan daha gerekli!)`;
+      }
+    } else {
+      duelRes.style.display = 'none';
+    }
 
     const qSum = document.getElementById('go-quest-summary');
     qSum.textContent = completedQuestsCount > 0
@@ -2921,180 +2693,201 @@
     refreshMenuUI();
   }
 
-  function togglePause() {
-    if (!game.running) return;
-    game.paused = !game.paused;
-    document.getElementById('pause-overlay').classList.toggle('hidden', !game.paused);
-  }
-
-  function toggleMuteUI() {
-    const muted = SoundEngine.toggleMute();
-    const icon = muted ? '🔇' : '🔊';
-    document.getElementById('btn-mute').textContent = icon;
-    document.getElementById('btn-hud-mute').textContent = icon;
-    showToast(muted ? 'Ses kapatıldı' : 'Ses açıldı');
-  }
-
-  // ============================================================================
-  // 13. MENÜ, TEMA RENGİ VE ATÖLYE ARAYÜZÜNÜ GÜNCELLEME
-  // ============================================================================
-  function applyPalette() {
-    const pal = UI_PALETTES.find(p => p.id === saveData.uiPalette) || UI_PALETTES[0];
-    shell.className = pal.className;
-  }
-
   function refreshMenuUI() {
-    applyPalette();
     document.getElementById('menu-stars').textContent = saveData.stars;
     document.getElementById('shop-stars').textContent = saveData.stars;
-    const maxBest = Math.max(saveData.bestScore, saveData.bestDaily);
-    const rankTitle = getPlayerRank(maxBest);
-    const rankEl = document.getElementById('menu-rank');
-    if (rankEl) rankEl.textContent = `✦ ${rankTitle.toUpperCase()}`;
-    document.getElementById('menu-best').textContent = `En Yüksek Skor: ${saveData.bestScore}  •  Günlük: ${saveData.bestDaily}`;
+    document.getElementById('menu-best').textContent = `En Yüksek: ${saveData.bestScore}  •  Günlük: ${saveData.bestDaily}`;
+    document.getElementById('menu-rank').textContent = getPlayerRank(Math.max(saveData.bestScore, saveData.bestDaily));
 
-    // Görev Listesi
-    const qContainer = document.getElementById('quests-container');
-    qContainer.innerHTML = '';
+    const muteSymbol = saveData.muted ? '🔇' : '🔊';
+    document.getElementById('btn-mute').textContent = muteSymbol;
+    document.getElementById('btn-menu-mute').textContent = muteSymbol;
+
+    const list = document.getElementById('menu-quests-list');
+    list.innerHTML = '';
     saveData.quests.forEach(q => {
       const pct = Math.min(100, Math.round((q.progress / q.target) * 100));
       const div = document.createElement('div');
       div.className = 'quest-item';
       div.innerHTML = `
         <div class="quest-top">
-          <span>${q.label} (${q.progress}/${q.target})</span>
+          <span>${q.text} (${Math.min(q.progress, q.target)}/${q.target})</span>
           <span class="quest-reward">+${q.reward} ★</span>
         </div>
         <div class="quest-bar-bg">
           <div class="quest-bar-fill" style="width:${pct}%"></div>
         </div>
       `;
-      qContainer.appendChild(div);
+      list.appendChild(div);
     });
-
-    // Tema Rengi Paletleri
-    const palGrid = document.getElementById('palette-grid');
-    if (palGrid) {
-      palGrid.innerHTML = '';
-      UI_PALETTES.forEach(p => {
-        const chip = document.createElement('button');
-        chip.className = `palette-chip ${saveData.uiPalette === p.id ? 'active' : ''}`;
-        chip.innerHTML = `
-          <span class="palette-dot" style="background:${p.color}"></span>
-          <span>${p.name}</span>
-        `;
-        chip.addEventListener('click', () => {
-          saveData.uiPalette = p.id;
-          persistSave();
-          refreshMenuUI();
-          showToast(`Tema: ${p.name}`);
-        });
-        palGrid.appendChild(chip);
-      });
-    }
-
-    // Atölye: Tel Tınıları & Temalar
-    const tGrid = document.getElementById('themes-grid');
-    if (tGrid) {
-      tGrid.innerHTML = '';
-      THEMES.forEach(th => {
-        const unlocked = saveData.unlockedThemes.includes(th.id);
-        const selected = saveData.selectedTheme === th.id;
-        const card = document.createElement('div');
-        card.className = `theme-card ${selected ? 'selected' : ''}`;
-        card.innerHTML = `
-          <div class="theme-swatch" style="background:${th.color}"></div>
-          <div class="theme-name">${th.name}</div>
-          <div class="theme-desc">${th.desc}</div>
-          <div class="theme-price">${selected ? '✓ Seçili' : (unlocked ? 'Seç' : `${th.price} ★`)}</div>
-        `;
-        card.addEventListener('click', () => {
-          if (unlocked) {
-            saveData.selectedTheme = th.id;
-            persistSave();
-            refreshMenuUI();
-            SoundEngine.playRelease(3, true);
-            showToast(`${th.name} seçildi`);
-          } else if (saveData.stars >= th.price) {
-            saveData.stars -= th.price;
-            saveData.unlockedThemes.push(th.id);
-            saveData.selectedTheme = th.id;
-            persistSave();
-            refreshMenuUI();
-            SoundEngine.playRelease(5, true);
-            showToast(`${th.name} kilidi açıldı!`);
-          } else {
-            showToast('Yeterli yıldız yok!');
-          }
-        });
-        tGrid.appendChild(card);
-      });
-    }
-
-    // Atölye: Akustik Geliştirmeler
-    const uList = document.getElementById('upgrades-list');
-    if (uList) {
-      uList.innerHTML = '';
-      UPGRADES.forEach(up => {
-        const lvl = saveData.upgrades[up.id] || 0;
-        const maxed = lvl >= up.maxLevel;
-        const cost = up.baseCost + lvl * up.stepCost;
-
-        let dotsHtml = '<div class="level-dots">';
-        for (let i = 0; i < up.maxLevel; i++) {
-          dotsHtml += `<span class="dot ${i < lvl ? 'active' : ''}"></span>`;
-        }
-        dotsHtml += '</div>';
-
-        const card = document.createElement('div');
-        card.className = 'upgrade-card';
-        card.innerHTML = `
-          <div class="upgrade-info">
-            <div class="upgrade-title">${up.name}</div>
-            <div class="upgrade-sub">${up.desc}</div>
-            ${dotsHtml}
-          </div>
-          <button class="upgrade-btn" ${maxed ? 'disabled' : ''}>
-            ${maxed ? 'MAKS' : `${cost} ★`}
-          </button>
-        `;
-
-        const btn = card.querySelector('button');
-        btn.addEventListener('click', () => {
-          if (maxed) return;
-          if (saveData.stars >= cost) {
-            saveData.stars -= cost;
-            saveData.upgrades[up.id] = lvl + 1;
-            persistSave();
-            refreshMenuUI();
-            SoundEngine.playRelease(4, true);
-            showToast(`${up.name} Seviye ${lvl + 1}!`);
-          } else {
-            showToast('Yeterli yıldız yok!');
-          }
-        });
-
-        uList.appendChild(card);
-      });
-    }
   }
 
-  // ============================================================================
-  // 14. BUTON BAĞLANTILARI VE ANA DÖNGÜ BAŞLATMA
-  // ============================================================================
-  document.getElementById('btn-play-normal').addEventListener('click', () => startGame('normal'));
-  document.getElementById('btn-play-daily').addEventListener('click', () => startGame('daily'));
-  document.getElementById('btn-retry').addEventListener('click', () => startGame(game.mode));
+  function renderShop() {
+    document.getElementById('shop-stars').textContent = saveData.stars;
+    const container = document.getElementById('shop-content');
+    container.innerHTML = '';
+
+    const upgTitle = document.createElement('div');
+    upgTitle.className = 'section-label';
+    upgTitle.textContent = 'Yükseltmeler (Maksimum Seviye 3)';
+    container.appendChild(upgTitle);
+
+    Object.keys(UPGRADES).forEach(key => {
+      const upg = UPGRADES[key];
+      const lvl = saveData.upgrades[key] || 0;
+      const isMax = lvl >= 3;
+      const cost = isMax ? 0 : upg.costs[lvl];
+
+      const card = document.createElement('div');
+      card.className = 'shop-card';
+      card.innerHTML = `
+        <div class="shop-info">
+          <h4>${upg.name}</h4>
+          <p>${upg.desc}</p>
+          <div class="level-dots">
+            <span class="lvl-dot ${lvl >= 1 ? 'filled' : ''}"></span>
+            <span class="lvl-dot ${lvl >= 2 ? 'filled' : ''}"></span>
+            <span class="lvl-dot ${lvl >= 3 ? 'filled' : ''}"></span>
+          </div>
+        </div>
+        <button class="buy-btn ${isMax ? 'maxed' : ''}" ${isMax || saveData.stars < cost ? 'disabled' : ''}>
+          ${isMax ? 'MAKS' : cost + ' ★'}
+        </button>
+      `;
+
+      const btn = card.querySelector('button');
+      if (!isMax) {
+        btn.addEventListener('click', () => {
+          if (saveData.stars >= cost) {
+            saveData.stars -= cost;
+            saveData.upgrades[key] = lvl + 1;
+            writeSave();
+            SoundEngine.playOrbCollect(3);
+            renderShop();
+            refreshMenuUI();
+          }
+        });
+      }
+      container.appendChild(card);
+    });
+
+    const themeTitle = document.createElement('div');
+    themeTitle.className = 'section-label';
+    themeTitle.style.marginTop = '6px';
+    themeTitle.textContent = 'Tel Tınıları ve Temalar';
+    container.appendChild(themeTitle);
+
+    Object.keys(THEMES).forEach(key => {
+      const th = THEMES[key];
+      const unlocked = saveData.unlockedThemes.includes(key);
+      const equipped = saveData.equippedTheme === key;
+
+      const card = document.createElement('div');
+      card.className = 'shop-card';
+      card.innerHTML = `
+        <div class="shop-info">
+          <h4 style="color:${th.color};">${th.name}</h4>
+          <p>${th.desc}</p>
+        </div>
+        <button class="buy-btn ${equipped ? 'equipped' : ''}" ${!unlocked && saveData.stars < th.cost ? 'disabled' : ''}>
+          ${equipped ? 'SEÇİLİ' : (unlocked ? 'KULLAN' : th.cost + ' ★')}
+        </button>
+      `;
+
+      const btn = card.querySelector('button');
+      btn.addEventListener('click', () => {
+        if (unlocked) {
+          saveData.equippedTheme = key;
+          writeSave();
+          SoundEngine.init();
+          SoundEngine.playPluck(0.8, true);
+          renderShop();
+        } else if (saveData.stars >= th.cost) {
+          saveData.stars -= th.cost;
+          saveData.unlockedThemes.push(key);
+          saveData.equippedTheme = key;
+          writeSave();
+          SoundEngine.init();
+          SoundEngine.playPluck(0.8, true);
+          renderShop();
+          refreshMenuUI();
+        }
+      });
+      container.appendChild(card);
+    });
+  }
+
+  function pauseGame() {
+    if (game.state !== 'playing') return;
+    game.state = 'paused';
+    document.getElementById('pause-overlay').classList.remove('hidden');
+  }
+
+  function resumeGame() {
+    if (game.state !== 'paused') return;
+    game.state = 'playing';
+    document.getElementById('pause-overlay').classList.add('hidden');
+  }
+
+  function toggleMute() {
+    saveData.muted = !saveData.muted;
+    writeSave();
+    refreshMenuUI();
+    showToast(saveData.muted ? 'Ses Kapatıldı' : 'Ses Açıldı');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  document.getElementById('btn-start-classic').addEventListener('click', () => startGame('classic'));
+  document.getElementById('btn-start-daily').addEventListener('click', () => startGame('daily'));
+  document.getElementById('btn-restart').addEventListener('click', () => startGame(game.mode));
+
+  document.getElementById('btn-open-shop').addEventListener('click', () => {
+    renderShop();
+    document.getElementById('shop-overlay').classList.remove('hidden');
+  });
+  document.getElementById('btn-close-shop').addEventListener('click', () => {
+    document.getElementById('shop-overlay').classList.add('hidden');
+  });
+
+  document.getElementById('btn-pause').addEventListener('click', pauseGame);
+  document.getElementById('btn-resume').addEventListener('click', resumeGame);
+  document.getElementById('btn-quit-to-menu').addEventListener('click', () => {
+    game.state = 'menu';
+    SoundEngine.stopMusic();
+    document.getElementById('hud').style.display = 'none';
+    hideAllOverlays();
+    document.getElementById('menu-overlay').classList.remove('hidden');
+    refreshMenuUI();
+  });
+
+  document.getElementById('btn-go-menu').addEventListener('click', () => {
+    game.state = 'menu';
+    hideAllOverlays();
+    document.getElementById('menu-overlay').classList.remove('hidden');
+    refreshMenuUI();
+  });
 
   document.getElementById('btn-share-score').addEventListener('click', () => {
     const rankTitle = getPlayerRank(Math.max(saveData.bestScore, saveData.bestDaily));
     const modeText = game.mode === 'daily' ? 'Günlük Mod' : 'Sonsuz Mod';
-    const shareText = `🎵 Lira: Kristal Yankısı (Seva Studio)\n🏆 Skor: ${game.score} (${modeText}) | ✨ Tam Akor: ${game.stats.perfectChords}\n🎖️ Rütbe: ${rankTitle}\nBeni geçebilir misin?`;
+    const baseUrl = window.location.origin && window.location.origin !== 'null'
+      ? `${window.location.origin}${window.location.pathname}?duel=${game.score}&mode=${game.mode}`
+      : '';
+    const linkLine = baseUrl ? `\n🔗 Düello Linki: ${baseUrl}` : '';
+    const shareText = `🎵 Lira: Kristal Yankısı (Seva Studio)\n🏆 Skor: ${game.score} (${modeText}) | ✨ Tam Akor: ${game.stats.perfectChords}\n🎖️ Rütbe: ${rankTitle}\nBeni geçebilir misin?${linkLine}`;
 
     if (navigator.share) {
       navigator.share({
-        title: 'Lira: Kristal Yankısı',
-        text: shareText
+        title: 'Lira: Kristal Yankısı — Düello',
+        text: shareText,
+        url: baseUrl || undefined
       }).catch(() => {});
     } else {
       const ta = document.createElement('textarea');
@@ -3105,7 +2898,7 @@
       ta.select();
       try {
         document.execCommand('copy');
-        showToast('Skor kartı panoya kopyalandı!');
+        showToast('Düello linki ve skor panoya kopyalandı!');
       } catch (e) {
         showToast('Paylaşım hazır!');
       }
@@ -3113,33 +2906,8 @@
     }
   });
 
-  document.getElementById('btn-mute').addEventListener('click', toggleMuteUI);
-  document.getElementById('btn-hud-mute').addEventListener('click', toggleMuteUI);
-  document.getElementById('btn-hud-pause').addEventListener('click', togglePause);
-  document.getElementById('btn-resume').addEventListener('click', togglePause);
-
-  document.getElementById('btn-pause-menu').addEventListener('click', () => {
-    game.running = false;
-    game.paused = false;
-    document.getElementById('pause-overlay').classList.add('hidden');
-    document.getElementById('hud-controls').classList.add('hidden');
-    document.getElementById('menu-overlay').classList.remove('hidden');
-    refreshMenuUI();
-  });
-
-  document.getElementById('btn-go-menu').addEventListener('click', () => {
-    document.getElementById('gameover-overlay').classList.add('hidden');
-    document.getElementById('menu-overlay').classList.remove('hidden');
-    refreshMenuUI();
-  });
-
-  document.getElementById('btn-open-shop').addEventListener('click', () => {
-    refreshMenuUI();
-    document.getElementById('shop-overlay').classList.remove('hidden');
-  });
-  document.getElementById('btn-close-shop').addEventListener('click', () => {
-    document.getElementById('shop-overlay').classList.add('hidden');
-  });
+  document.getElementById('btn-mute').addEventListener('click', toggleMute);
+  document.getElementById('btn-menu-mute').addEventListener('click', toggleMute);
 
   document.getElementById('btn-help').addEventListener('click', () => {
     document.getElementById('help-overlay').classList.remove('hidden');
@@ -3147,28 +2915,58 @@
   document.getElementById('btn-close-help').addEventListener('click', () => {
     document.getElementById('help-overlay').classList.add('hidden');
   });
-
-  document.getElementById('btn-personalize').addEventListener('click', () => {
-    refreshMenuUI();
-    document.getElementById('personalize-overlay').classList.remove('hidden');
-  });
-  document.getElementById('btn-close-personalize').addEventListener('click', () => {
-    document.getElementById('personalize-overlay').classList.add('hidden');
+  document.getElementById('btn-help-ok').addEventListener('click', () => {
+    document.getElementById('help-overlay').classList.add('hidden');
   });
 
-  let lastFrameTime = performance.now();
-  function mainLoop(now) {
-    const dt = (now - lastFrameTime) / 1000;
-    lastFrameTime = now;
+  let selectedSwatchColor = '#d99b26';
+  document.getElementById('btn-theme-open').addEventListener('click', () => {
+    selectedSwatchColor = saveData.accentColor || '#d99b26';
+    document.querySelectorAll('.swatch-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.color === selectedSwatchColor);
+    });
+    document.getElementById('theme-overlay').classList.remove('hidden');
+  });
 
-    update(dt);
-    render();
-    requestAnimationFrame(mainLoop);
+  document.querySelectorAll('.swatch-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedSwatchColor = btn.dataset.color;
+      saveData.accentColor = selectedSwatchColor;
+      applyCustomization();
+      writeSave();
+      document.querySelectorAll('.swatch-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  document.getElementById('btn-close-theme').addEventListener('click', () => {
+    document.getElementById('theme-overlay').classList.add('hidden');
+  });
+
+  document.getElementById('btn-save-theme').addEventListener('click', () => {
+    document.getElementById('theme-overlay').classList.add('hidden');
+    showToast('Tema rengi güncellendi!');
+  });
+
+  function checkDuelParams() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const duelScore = parseInt(params.get('duel'), 10);
+      if (!isNaN(duelScore) && duelScore > 0) {
+        game.duelTarget = duelScore;
+        const banner = document.getElementById('duel-banner');
+        if (banner) {
+          banner.textContent = `⚔️ Meydan Okuma Hedefi: ${duelScore} Puan`;
+          banner.classList.add('active');
+        }
+      }
+    } catch (e) {}
   }
 
   window.onload = function() {
     generateAppIcons();
     loadSave();
+    checkDuelParams();
     refreshMenuUI();
     resizeCanvas();
     lastFrameTime = performance.now();
