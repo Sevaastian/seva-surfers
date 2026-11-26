@@ -1,9 +1,871 @@
-<!-- BEGIN:nextjs-agent-rules -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Subway Surfers 3D - Three.js</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #111;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none; /* Mobil kaydırmada sayfa yenileme/kaydırmayı engeller */
+        }
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .hud-box {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(6px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .coin-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle at 30% 30%, #fff066, #f59e0b);
+            border-radius: 50%;
+            box-shadow: 0 0 8px #fbbf24;
+        }
+        .overlay-screen {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 15, 28, 0.82);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        .hidden {
+            display: none !important;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        p.subtitle {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+            max-width: 420px;
+            line-height: 1.5;
+        }
+        .stats-summary {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .stats-summary div {
+            font-size: 1.4rem;
+            margin: 8px 0;
+            font-weight: 700;
+        }
+        .highlight {
+            color: #fbbf24;
+        }
+        button {
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            color: white;
+            border: none;
+            padding: 16px 42px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.65);
+        }
+        button:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        .controls-hint {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .hud-box { font-size: 1rem; padding: 8px 14px; }
+        }
+    </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Üst Skor Paneli -->
+        <div id="hud">
+            <div class="hud-box">SKOR: <span id="score-val">0</span></div>
+            <div class="hud-box"><span class="coin-icon"></span> <span id="coins-val">0</span></div>
+        </div>
 
-## This is NOT the Next.js you know
+        <!-- Başlangıç Ekranı -->
+        <div id="start-screen" class="overlay-screen">
+            <h1>METRO RUNNER 3D</h1>
+            <p class="subtitle">Trenlerden kaç, bariyerlerin üzerinden zıpla veya altından kay, altınları topla!</p>
+            <button id="start-btn">OYUNA BAŞLA</button>
+            <div class="controls-hint">
+                PC: Ok Tuşları (⬅️ ➡️ ⬆️ ⬇️) | Mobil: Parmağını Kaydır
+            </div>
+        </div>
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+        <!-- Game Over Ekranı -->
+        <div id="gameover-screen" class="overlay-screen hidden">
+            <h1>GAME OVER</h1>
+            <div class="stats-summary">
+                <div>Toplam Skor: <span id="final-score" class="highlight">0</span></div>
+                <div>Toplanan Altın: <span id="final-coins" class="highlight">0</span></div>
+            </div>
+            <button id="restart-btn">Yeniden Başlat</button>
+        </div>
+    </div>
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+    <script>
+        // --- TEMEL DEĞİŞKENLER VE AYARLAR ---
+        const LANE_WIDTH = 3.2; // Şerit genişliği
+        const LANES = [-LANE_WIDTH, 0, LANE_WIDTH]; // Sol (-1), Orta (0), Sağ (1) X koordinatları
+        
+        let scene, camera, renderer;
+        let player, playerGroup;
+        let tracks = [];
+        let scenery = [];
+        let obstacles = [];
+        let coins = [];
 
-<!-- END:nextjs-agent-rules -->
+        // Oyun Durumu
+        let isGameRunning = false;
+        let gameSpeed = 24;
+        const maxSpeed = 62;
+        const speedAcceleration = 0.65; // Saniyede hız artışı
+        let score = 0;
+        let coinCount = 0;
+
+        // Oyuncu Fizik & Hareket Durumu
+        let currentLane = 1; // 0: Sol, 1: Orta, 2: Sağ
+        let targetX = 0;
+        let playerY = 0;
+        let velocityY = 0;
+        const gravity = -58;
+        const jumpForce = 21;
+        let isJumping = false;
+        let isRolling = false;
+        let rollTimer = 0;
+        const rollDuration = 0.65;
+
+        // Zamanlayıcılar
+        let clock = new THREE.Clock();
+        let spawnTimer = 0;
+        let runAnimTime = 0;
+
+        // DOM Elemanları
+        const scoreEl = document.getElementById('score-val');
+        const coinsEl = document.getElementById('coins-val');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('gameover-screen');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalCoinsEl = document.getElementById('final-coins');
+
+        // --- SAHNE KURULUMU ---
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+            scene.fog = new THREE.FogExp2(0x0f172a, 0.011);
+
+            // TPS Kamera
+            camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 200);
+            camera.position.set(0, 6.2, 10.5);
+            camera.lookAt(0, 1.8, -10);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('game-container').appendChild(renderer.domElement);
+
+            setupLights();
+            createEnvironment();
+            createPlayer();
+
+            window.addEventListener('resize', onWindowResize);
+            setupControls();
+
+            // İlk kareyi render et
+            renderer.render(scene, camera);
+        }
+
+        function setupLights() {
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.85);
+            hemiLight.position.set(0, 30, 0);
+            scene.add(hemiLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+            dirLight.position.set(15, 30, 20);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            dirLight.shadow.camera.near = 0.5;
+            dirLight.shadow.camera.far = 120;
+            const d = 25;
+            dirLight.shadow.camera.left = -d;
+            dirLight.shadow.camera.right = d;
+            dirLight.shadow.camera.top = d;
+            dirLight.shadow.camera.bottom = -d;
+            scene.add(dirLight);
+        }
+
+        // --- SONSUZ YOL VE ÇEVRE ---
+        function createEnvironment() {
+            const segmentLength = 20;
+            const segmentCount = 12;
+
+            const groundGeo = new THREE.BoxGeometry(12.5, 0.6, segmentLength);
+            const groundMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.8 });
+
+            const railGeo = new THREE.BoxGeometry(0.18, 0.15, segmentLength);
+            const railMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7, roughness: 0.3 });
+
+            const sleeperGeo = new THREE.BoxGeometry(1.8, 0.1, 0.45);
+            const sleeperMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
+
+            const wallGeo = new THREE.BoxGeometry(1.5, 14, segmentLength);
+            const wallMat1 = new THREE.MeshStandardMaterial({ color: 0x1e293b });
+            const wallMat2 = new THREE.MeshStandardMaterial({ color: 0x263349 });
+
+            for (let i = 0; i < segmentCount; i++) {
+                const segmentGroup = new THREE.Group();
+                segmentGroup.position.z = -i * segmentLength + 20;
+
+                // Ana Zemin
+                const ground = new THREE.Mesh(groundGeo, groundMat);
+                ground.position.y = -0.3;
+                ground.receiveShadow = true;
+                segmentGroup.add(ground);
+
+                // 3 Şerit İçin Raylar ve Traversler
+                LANES.forEach(laneX => {
+                    const leftRail = new THREE.Mesh(railGeo, railMat);
+                    leftRail.position.set(laneX - 0.7, 0.08, 0);
+                    segmentGroup.add(leftRail);
+
+                    const rightRail = new THREE.Mesh(railGeo, railMat);
+                    rightRail.position.set(laneX + 0.7, 0.08, 0);
+                    segmentGroup.add(rightRail);
+
+                    for (let z = -segmentLength / 2 + 1; z < segmentLength / 2; z += 2) {
+                        const sleeper = new THREE.Mesh(sleeperGeo, sleeperMat);
+                        sleeper.position.set(laneX, 0.03, z);
+                        segmentGroup.add(sleeper);
+                    }
+                });
+
+                // Kenar Duvarları / Binalar (Derinlik hissi için)
+                const matChoice = i % 2 === 0 ? wallMat1 : wallMat2;
+                const leftWall = new THREE.Mesh(wallGeo, matChoice);
+                leftWall.position.set(-7.2, 6.5, 0);
+                segmentGroup.add(leftWall);
+
+                const rightWall = new THREE.Mesh(wallGeo, matChoice);
+                rightWall.position.set(7.2, 6.5, 0);
+                segmentGroup.add(rightWall);
+
+                // Neon Şerit Süslemeleri
+                const neonGeo = new THREE.BoxGeometry(0.15, 0.25, segmentLength);
+                const neonMat = new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0x38bdf8 : 0x818cf8 });
+                const leftNeon = new THREE.Mesh(neonGeo, neonMat);
+                leftNeon.position.set(-6.4, 3.2, 0);
+                segmentGroup.add(leftNeon);
+
+                const rightNeon = new THREE.Mesh(neonGeo, neonMat);
+                rightNeon.position.set(6.4, 3.2, 0);
+                segmentGroup.add(rightNeon);
+
+                scene.add(segmentGroup);
+                tracks.push(segmentGroup);
+            }
+        }
+
+        // --- OYUNCU KARAKTERİ ---
+        function createPlayer() {
+            playerGroup = new THREE.Group();
+
+            // Ana Mavi Karakter Gövdesi
+            const bodyGeo = new THREE.BoxGeometry(1.1, 1.8, 1.1);
+            const bodyMat = new THREE.MeshStandardMaterial({ 
+                color: 0x0ea5e9, 
+                roughness: 0.3, 
+                metalness: 0.1 
+            });
+            player = new THREE.Mesh(bodyGeo, bodyMat);
+            player.position.y = 0.9; // Tabanı y=0'da olsun
+            player.castShadow = true;
+            playerGroup.add(player);
+
+            // Karakter Detayı: Sırt Çantası / Jetpack (Görsel yön belirteci)
+            const packGeo = new THREE.BoxGeometry(0.75, 1.0, 0.35);
+            const packMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e });
+            const pack = new THREE.Mesh(packGeo, packMat);
+            pack.position.set(0, 1.0, 0.65);
+            pack.castShadow = true;
+            playerGroup.add(pack);
+
+            // Karakter Başlığı / Şapka Detayı
+            const capGeo = new THREE.BoxGeometry(1.16, 0.35, 1.16);
+            const capMat = new THREE.MeshStandardMaterial({ color: 0xfacc15 });
+            const cap = new THREE.Mesh(capGeo, capMat);
+            cap.position.set(0, 1.75, 0);
+            playerGroup.add(cap);
+
+            scene.add(playerGroup);
+        }
+
+        // --- ENGEL VE ALTIN ÜRETİCİ ---
+        function spawnWave() {
+            const spawnZ = -140;
+            // 3 şerit için olası durumlar: 'train', 'low_barrier', 'high_barrier', 'coins', 'empty'
+            const laneIndices = [0, 1, 2];
+            // Karıştır
+            laneIndices.sort(() => Math.random() - 0.5);
+
+            // En az 1 şerit her zaman geçilebilir olmalı (tümü tren olamaz)
+            let trainCount = 0;
+
+            laneIndices.forEach((laneIdx, i) => {
+                const laneX = LANES[laneIdx];
+                const rand = Math.random();
+
+                if (rand < 0.36 && trainCount < 2) {
+                    // TREN (Hareketli yüksek blok - kaçmak için şerit değiştirilmeli)
+                    createTrain(laneX, spawnZ);
+                    trainCount++;
+                } else if (rand < 0.58) {
+                    // ALÇAK BARİYER (Üstünden zıplanmalı)
+                    createLowBarrier(laneX, spawnZ);
+                    // Bariyerin üstüne ödül olarak altın koy
+                    createCoin(laneX, 2.3, spawnZ);
+                } else if (rand < 0.76) {
+                    // YÜKSEK KEMER BARİYERİ (Altından yuvarlanarak/eğilerek geçilmeli)
+                    createHighBarrier(laneX, spawnZ);
+                    createCoin(laneX, 0.6, spawnZ);
+                } else {
+                    // SADECE ALTIN SIRASI
+                    for (let c = 0; c < 4; c++) {
+                        createCoin(laneX, 0.85, spawnZ - c * 3.2);
+                    }
+                }
+            });
+        }
+
+        function createTrain(x, z) {
+            const trainGroup = new THREE.Group();
+            const length = 14;
+            const height = 3.2;
+            const width = 2.3;
+
+            // Tren Gövdesi
+            const geo = new THREE.BoxGeometry(width, height, length);
+            const colors = [0xef4444, 0x8b5cf6, 0x10b981, 0xf97316];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.4 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.y = height / 2;
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            trainGroup.add(mesh);
+
+            // Ön Cam ve Farlar
+            const glassGeo = new THREE.BoxGeometry(width * 0.82, 0.9, 0.1);
+            const glassMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+            const glass = new THREE.Mesh(glassGeo, glassMat);
+            glass.position.set(0, 2.2, length / 2 + 0.02);
+            trainGroup.add(glass);
+
+            const lightGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.1, 12);
+            lightGeo.rotateX(Math.PI / 2);
+            const lightMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+            
+            const leftLight = new THREE.Mesh(lightGeo, lightMat);
+            leftLight.position.set(-0.7, 0.8, length / 2 + 0.03);
+            trainGroup.add(leftLight);
+
+            const rightLight = new THREE.Mesh(lightGeo, lightMat);
+            rightLight.position.set(0.7, 0.8, length / 2 + 0.03);
+            trainGroup.add(rightLight);
+
+            trainGroup.position.set(x, 0, z - length / 2);
+            scene.add(trainGroup);
+
+            obstacles.push({
+                mesh: trainGroup,
+                type: 'train',
+                speedOffset: 10, // Oyuncuya doğru ekstra hızla gelir
+                box: { width: width * 0.88, minY: 0, maxY: height, length: length }
+            });
+        }
+
+        function createLowBarrier(x, z) {
+            const barrierGroup = new THREE.Group();
+            const width = 2.4;
+            const height = 1.15;
+            const depth = 0.5;
+
+            const geo = new THREE.BoxGeometry(width, height, depth);
+            const mat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.5 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.y = height / 2;
+            mesh.castShadow = true;
+            barrierGroup.add(mesh);
+
+            // Uyarı Şeridi
+            const stripeGeo = new THREE.BoxGeometry(width + 0.04, 0.25, depth + 0.04);
+            const stripeMat = new THREE.MeshBasicMaterial({ color: 0x111827 });
+            const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+            stripe.position.y = height * 0.7;
+            barrierGroup.add(stripe);
+
+            barrierGroup.position.set(x, 0, z);
+            scene.add(barrierGroup);
+
+            obstacles.push({
+                mesh: barrierGroup,
+                type: 'low',
+                speedOffset: 0,
+                box: { width: width * 0.85, minY: 0, maxY: height, length: depth }
+            });
+        }
+
+        function createHighBarrier(x, z) {
+            const archGroup = new THREE.Group();
+            const width = 2.5;
+            const pillarHeight = 3.2;
+
+            const pillarGeo = new THREE.BoxGeometry(0.3, pillarHeight, 0.4);
+            const pillarMat = new THREE.MeshStandardMaterial({ color: 0x64748b });
+
+            const leftPillar = new THREE.Mesh(pillarGeo, pillarMat);
+            leftPillar.position.set(-width / 2 + 0.15, pillarHeight / 2, 0);
+            leftPillar.castShadow = true;
+            archGroup.add(leftPillar);
+
+            const rightPillar = new THREE.Mesh(pillarGeo, pillarMat);
+            rightPillar.position.set(width / 2 - 0.15, pillarHeight / 2, 0);
+            rightPillar.castShadow = true;
+            archGroup.add(rightPillar);
+
+            // Üst Engel Levhası (Altından eğilerek geçilecek kısım: Y = 1.15 ile 3.0 arası)
+            const topHeight = 1.85;
+            const topGeo = new THREE.BoxGeometry(width, topHeight, 0.45);
+            const topMat = new THREE.MeshStandardMaterial({ color: 0xec4899, roughness: 0.4 });
+            const topBoard = new THREE.Mesh(topGeo, topMat);
+            topBoard.position.y = 1.15 + topHeight / 2;
+            topBoard.castShadow = true;
+            archGroup.add(topBoard);
+
+            archGroup.position.set(x, 0, z);
+            scene.add(archGroup);
+
+            obstacles.push({
+                mesh: archGroup,
+                type: 'high',
+                speedOffset: 0,
+                // Alt boşluk 0 ile 1.15 arası. Eğilen oyuncu yüksekliği ~0.9 olduğu için geçebilir!
+                box: { width: width * 0.85, minY: 1.15, maxY: 3.1, length: 0.5 }
+            });
+        }
+
+        function createCoin(x, y, z) {
+            const geo = new THREE.SphereGeometry(0.42, 16, 16);
+            const mat = new THREE.MeshStandardMaterial({
+                color: 0xfacc15,
+                emissive: 0xd97706,
+                emissiveIntensity: 0.35,
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            const coin = new THREE.Mesh(geo, mat);
+            coin.position.set(x, y, z);
+            coin.castShadow = true;
+            scene.add(coin);
+            coins.push(coin);
+        }
+
+        // --- KONTROLLER (KLAVYE & MOBİL DOKUNMATİK KAYDIRMA) ---
+        function setupControls() {
+            // Klavye Ok Tuşları
+            window.addEventListener('keydown', (e) => {
+                if (!isGameRunning) return;
+                switch (e.key) {
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        moveLeft();
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        moveRight();
+                        break;
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                    case ' ':
+                        jump();
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        roll();
+                        break;
+                }
+            });
+
+            // Mobil Dokunmatik Kaydırma (Swipe)
+            let touchStartX = 0;
+            let touchStartY = 0;
+            const minSwipeDistance = 28; // Hassas tepki için minimum kaydırma mesafesi
+
+            window.addEventListener('touchstart', (e) => {
+                if (e.touches.length > 0) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchend', (e) => {
+                if (!isGameRunning || e.changedTouches.length === 0) return;
+
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+
+                // Yatay kaydırma mı, dikey kaydırma mı daha baskın?
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    if (Math.abs(deltaX) > minSwipeDistance) {
+                        if (deltaX > 0) {
+                            moveRight(); // Sağa kaydırma -> sağa
+                        } else {
+                            moveLeft();  // Sola kaydırma -> sola
+                        }
+                    }
+                } else {
+                    if (Math.abs(deltaY) > minSwipeDistance) {
+                        if (deltaY < 0) {
+                            jump(); // Yukarı kaydırma -> zıpla
+                        } else {
+                            roll(); // Aşağı kaydırma -> eğil/kay
+                        }
+                    }
+                }
+            }, { passive: true });
+
+            // Butonlar
+            document.getElementById('start-btn').addEventListener('click', startGame);
+            document.getElementById('restart-btn').addEventListener('click', startGame);
+        }
+
+        function moveLeft() {
+            if (currentLane > 0) {
+                currentLane--;
+                targetX = LANES[currentLane];
+            }
+        }
+
+        function moveRight() {
+            if (currentLane < 2) {
+                currentLane++;
+                targetX = LANES[currentLane];
+            }
+        }
+
+        function jump() {
+            if (!isJumping) {
+                isJumping = true;
+                velocityY = jumpForce;
+                // Eğer eğiliyorsa hemen ayağa kalkıp zıplasın
+                if (isRolling) {
+                    endRoll();
+                }
+            }
+        }
+
+        function roll() {
+            // Havadaysa hızlıca yere indir (Subway Surfers mekaniği)
+            if (isJumping) {
+                velocityY = -38;
+            }
+            isRolling = true;
+            rollTimer = rollDuration;
+            playerGroup.scale.set(1.15, 0.48, 1.15);
+        }
+
+        function endRoll() {
+            isRolling = false;
+            rollTimer = 0;
+            playerGroup.scale.set(1, 1, 1);
+        }
+
+        // --- OYUN DÖNGÜSÜ VE ÇARPIŞMA KONTROLÜ ---
+        function startGame() {
+            // Mevcut engelleri ve altınları temizle
+            obstacles.forEach(obs => scene.remove(obs.mesh));
+            obstacles = [];
+            coins.forEach(c => scene.remove(c));
+            coins = [];
+
+            // Değerleri sıfırla
+            isGameRunning = true;
+            gameSpeed = 25;
+            score = 0;
+            coinCount = 0;
+            currentLane = 1;
+            targetX = LANES[1];
+            playerY = 0;
+            velocityY = 0;
+            isJumping = false;
+            endRoll();
+            spawnTimer = 0;
+
+            playerGroup.position.set(0, 0, 0);
+            playerGroup.rotation.set(0, 0, 0);
+
+            updateHUD();
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+
+            clock.getDelta(); // Delta süresini sıfırla
+            requestAnimationFrame(animate);
+        }
+
+        function triggerGameOver() {
+            isGameRunning = false;
+            finalScoreEl.textContent = Math.floor(score);
+            finalCoinsEl.textContent = coinCount;
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        function updateHUD() {
+            scoreEl.textContent = Math.floor(score);
+            coinsEl.textContent = coinCount;
+        }
+
+        function checkCollisions() {
+            // Oyuncunun mevcut çarpışma kutusu (AABB)
+            const pWidth = 0.85;
+            const pDepth = 0.85;
+            const pHeight = isRolling ? 0.85 : 1.75;
+
+            const pMinX = playerGroup.position.x - pWidth / 2;
+            const pMaxX = playerGroup.position.x + pWidth / 2;
+            const pMinY = playerGroup.position.y;
+            const pMaxY = playerGroup.position.y + pHeight;
+            const pMinZ = playerGroup.position.z - pDepth / 2;
+            const pMaxZ = playerGroup.position.z + pDepth / 2;
+
+            // 1. Engel Çarpışmaları
+            for (let i = 0; i < obstacles.length; i++) {
+                const obs = obstacles[i];
+                const pos = obs.mesh.position;
+                const b = obs.box;
+
+                const oMinX = pos.x - b.width / 2;
+                const oMaxX = pos.x + b.width / 2;
+                const oMinY = b.minY;
+                const oMaxY = b.maxY;
+                const oMinZ = pos.z - b.length / 2;
+                const oMaxZ = pos.z + b.length / 2;
+
+                const overlapX = pMaxX > oMinX && pMinX < oMaxX;
+                const overlapY = pMaxY > oMinY && pMinY < oMaxY;
+                const overlapZ = pMaxZ > oMinZ && pMinZ < oMaxZ;
+
+                if (overlapX && overlapY && overlapZ) {
+                    triggerGameOver();
+                    return;
+                }
+            }
+
+            // 2. Altın Toplama
+            for (let i = coins.length - 1; i >= 0; i--) {
+                const coin = coins[i];
+                const cPos = coin.position;
+                const r = 0.65; // Toplama yarıçapı biraz toleranslı
+
+                const overlapX = pMaxX > (cPos.x - r) && pMinX < (cPos.x + r);
+                const overlapY = pMaxY > (cPos.y - r) && pMinY < (cPos.y + r);
+                const overlapZ = pMaxZ > (cPos.z - r) && pMinZ < (cPos.z + r);
+
+                if (overlapX && overlapY && overlapZ) {
+                    scene.remove(coin);
+                    coins.splice(i, 1);
+                    coinCount++;
+                    score += 50; // Altın bonusu
+                }
+            }
+        }
+
+        function animate() {
+            if (!isGameRunning) return;
+
+            requestAnimationFrame(animate);
+
+            const dt = Math.min(clock.getDelta(), 0.05); // Sekme değişimlerinde sıçramayı önle
+
+            // 1. Oyun hızını kademeli artır
+            if (gameSpeed < maxSpeed) {
+                gameSpeed += speedAcceleration * dt;
+            }
+
+            // Mesafe bazlı skor artışı
+            score += gameSpeed * dt * 1.5;
+            updateHUD();
+
+            // 2. Sonsuz Zemin Döngüsü
+            const segmentLength = 20;
+            const totalTrackLength = tracks.length * segmentLength;
+            tracks.forEach(segment => {
+                segment.position.z += gameSpeed * dt;
+                if (segment.position.z > 30) {
+                    segment.position.z -= totalTrackLength;
+                }
+            });
+
+            // 3. Oyuncu Yatay Şerit Geçişi (Yumuşak Lerp)
+            playerGroup.position.x = THREE.MathUtils.lerp(playerGroup.position.x, targetX, 16 * dt);
+            // Sağa/sola yatma (tilt) efekti
+            const tiltAngle = (playerGroup.position.x - targetX) * 0.12;
+            playerGroup.rotation.z = tiltAngle;
+
+            // 4. Oyuncu Zıplama & Yerçekimi Fiziği
+            if (isJumping) {
+                playerY += velocityY * dt;
+                velocityY += gravity * dt;
+
+                if (playerY <= 0) {
+                    playerY = 0;
+                    velocityY = 0;
+                    isJumping = false;
+                }
+            }
+            playerGroup.position.y = playerY;
+
+            // 5. Oyuncu Yuvarlanma / Eğilme Süresi
+            if (isRolling) {
+                rollTimer -= dt;
+                if (rollTimer <= 0) {
+                    endRoll();
+                }
+            } else if (!isJumping) {
+                // Koşma sekme animasyonu
+                runAnimTime += dt * (gameSpeed * 0.55);
+                player.position.y = 0.9 + Math.abs(Math.sin(runAnimTime)) * 0.14;
+            }
+
+            // 6. Engel Üretimi ve Hareketi
+            spawnTimer -= gameSpeed * dt;
+            if (spawnTimer <= 0) {
+                spawnWave();
+                // Hız arttıkça engeller arası mesafe dengeli ayarlansın
+                spawnTimer = THREE.MathUtils.clamp(28 + gameSpeed * 0.25, 28, 42);
+            }
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                obs.mesh.position.z += (gameSpeed + obs.speedOffset) * dt;
+
+                // Kameranın arkasında kalan engelleri temizle
+                if (obs.mesh.position.z - obs.box.length / 2 > 18) {
+                    scene.remove(obs.mesh);
+                    obstacles.splice(i, 1);
+                }
+            }
+
+            // 7. Altınların Hareketi ve Dönüşü
+            for (let i = coins.length - 1; i >= 0; i--) {
+                const coin = coins[i];
+                coin.position.z += gameSpeed * dt;
+                coin.rotation.y += 3.5 * dt;
+
+                if (coin.position.z > 18) {
+                    scene.remove(coin);
+                    coins.splice(i, 1);
+                }
+            }
+
+            // 8. Kamera Yumuşak Takibi
+            camera.position.x = THREE.MathUtils.lerp(camera.position.x, playerGroup.position.x * 0.45, 8 * dt);
+            camera.position.y = THREE.MathUtils.lerp(camera.position.y, 6.2 + playerY * 0.35, 8 * dt);
+
+            // 9. Çarpışma Kontrolü
+            checkCollisions();
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Uygulamayı başlat
+        init();
+    </script>
+</body>
+</html>
