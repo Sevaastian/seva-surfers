@@ -2,13 +2,12 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Seva Surfers">
-    <meta name="theme-color" content="#090d16">
-    <title>SEVA SURFERS 3.0</title>
-    <!-- iPhone Ana Ekran Logosu (SVG -> Data URI) -->
+    <meta name="apple-mobile-web-app-title" content="Seva Surfers İstanbul">
+    <meta name="theme-color" content="#071324">
+    <title>SEVA SURFERS — İstanbul 3D</title>
     <link rel="apple-touch-icon" id="dynamic-apple-icon" href="">
     <link rel="icon" id="dynamic-favicon" href="">
     <style>
@@ -24,7 +23,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #090d16;
+            background-color: #071324;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             touch-action: none;
         }
@@ -39,47 +38,19 @@
             height: 100%;
         }
 
-        /* HIZ ÇİZGİLERİ & EKRAN FLAŞI */
-        #speed-lines {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 6;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            background:
-                radial-gradient(circle at center, transparent 48%, rgba(56, 189, 248, 0.22) 82%, rgba(129, 140, 248, 0.45) 100%),
-                repeating-linear-gradient(
-                    90deg,
-                    transparent 0%,
-                    transparent 49%,
-                    rgba(255, 255, 255, 0.08) 49.5%,
-                    transparent 50%
-                );
-        }
-        #hit-flash {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 15;
-            background: rgba(244, 63, 94, 0.45);
-            opacity: 0;
-            transition: opacity 0.12s ease-out;
-        }
-
         /* ÜST HUD */
         #hud {
             position: absolute;
-            top: max(16px, env(safe-area-inset-top));
-            left: 16px;
-            right: 16px;
+            top: max(14px, env(safe-area-inset-top));
+            left: 14px;
+            right: 14px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             pointer-events: none;
             z-index: 10;
         }
-        .hud-left, .hud-right {
+        .hud-col {
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -87,28 +58,19 @@
         .hud-right {
             align-items: flex-end;
         }
-        .hud-pill {
-            background: rgba(10, 15, 28, 0.78);
+        .hud-badge {
+            background: rgba(7, 19, 36, 0.82);
             backdrop-filter: blur(10px);
-            border: 1.5px solid rgba(255, 255, 255, 0.16);
+            border: 1.5px solid rgba(56, 189, 248, 0.28);
             color: #fff;
-            padding: 8px 18px;
+            padding: 8px 16px;
             border-radius: 14px;
-            font-size: 1.15rem;
             font-weight: 800;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            font-size: 1.05rem;
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-        .multiplier-badge {
-            background: linear-gradient(135deg, #f59e0b, #ef4444);
-            color: #fff;
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 900;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
         }
         .coin-dot {
             width: 16px;
@@ -116,88 +78,70 @@
             background: radial-gradient(circle at 30% 30%, #fef08a, #f59e0b);
             border-radius: 50%;
             box-shadow: 0 0 10px #fbbf24;
+            flex-shrink: 0;
+        }
+        .mult-pill {
+            background: linear-gradient(135deg, #f97316, #e11d48);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 900;
         }
         #sound-toggle {
             pointer-events: auto;
             cursor: pointer;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(7, 19, 36, 0.86);
             border: 1.5px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            padding: 8px 14px;
+            padding: 7px 13px;
             border-radius: 12px;
-            font-size: 0.95rem;
             font-weight: 700;
+            font-size: 0.9rem;
         }
 
-        /* COMBO POPUP */
-        #combo-banner {
-            position: absolute;
-            top: 22%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.7);
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.95), rgba(244, 63, 94, 0.95));
-            color: #090d16;
-            padding: 8px 22px;
-            border-radius: 999px;
-            font-size: 1.25rem;
-            font-weight: 950;
-            letter-spacing: 1px;
-            box-shadow: 0 10px 30px rgba(244, 63, 94, 0.55);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 12;
-            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        #combo-banner.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.08);
-        }
-
-        /* AKTİF GÜÇLENDİRİCİ BARLARI */
+        /* AKTİF GÜÇLENDİRİCİLER */
         #powerup-hud {
             position: absolute;
-            bottom: max(24px, env(safe-area-inset-bottom));
+            bottom: max(20px, env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            width: 245px;
+            gap: 7px;
+            width: 240px;
             pointer-events: none;
             z-index: 10;
         }
-        .pu-bar-wrap {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .pu-card {
+            background: rgba(7, 19, 36, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 10px;
             padding: 6px 10px;
             color: #fff;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 800;
         }
-        .pu-bar-header {
+        .pu-top {
             display: flex;
             justify-content: space-between;
             margin-bottom: 4px;
         }
-        .pu-track {
-            width: 100%;
+        .pu-bar {
             height: 6px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.14);
             border-radius: 4px;
             overflow: hidden;
         }
         .pu-fill {
             height: 100%;
             width: 100%;
-            transition: width 0.05s linear;
         }
 
-        /* MENÜ & EKRANLAR */
+        /* EKRANLAR */
         .overlay {
             position: absolute;
             inset: 0;
-            background: rgba(9, 13, 22, 0.84);
+            background: rgba(7, 19, 36, 0.86);
             backdrop-filter: blur(12px);
             display: flex;
             flex-direction: column;
@@ -211,457 +155,474 @@
         .hidden {
             display: none !important;
         }
-        .app-logo-badge {
-            width: 84px;
-            height: 84px;
-            border-radius: 22px;
-            margin-bottom: 12px;
-            box-shadow: 0 12px 32px rgba(56, 189, 248, 0.45);
+        .logo-box {
+            width: 82px;
+            height: 82px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 10px 28px rgba(56, 189, 248, 0.4);
             border: 2px solid rgba(255, 255, 255, 0.25);
         }
-        .brand-title {
-            font-size: 3.2rem;
+        .title-text {
+            font-size: 2.9rem;
             font-weight: 950;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, #38bdf8, #818cf8, #f43f5e);
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #38bdf8, #fbbf24, #f43f5e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            margin-bottom: 4px;
-            filter: drop-shadow(0 4px 18px rgba(56, 189, 248, 0.35));
         }
-        .brand-sub {
+        .sub-text {
             color: #94a3b8;
-            font-size: 0.98rem;
-            margin-bottom: 20px;
+            font-size: 0.95rem;
+            margin-bottom: 18px;
             font-weight: 600;
         }
-        .wallet-bar {
+        .stats-row {
             display: flex;
-            gap: 14px;
-            margin-bottom: 20px;
+            gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
+            margin-bottom: 20px;
         }
-        .wallet-item {
+        .stat-box {
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(255, 255, 255, 0.14);
-            padding: 8px 18px;
+            padding: 8px 16px;
             border-radius: 12px;
             font-weight: 800;
-            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
         }
-        .btn-group {
+        .btn-row {
             display: flex;
-            gap: 14px;
+            gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
         }
-        button.primary-btn {
-            background: linear-gradient(135deg, #2563eb, #06b6d4);
+        .btn-main {
+            background: linear-gradient(135deg, #0284c7, #06b6d4);
             color: #fff;
             border: none;
-            padding: 15px 38px;
-            font-size: 1.18rem;
+            padding: 14px 36px;
+            border-radius: 999px;
+            font-size: 1.12rem;
             font-weight: 900;
-            border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
-            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.45);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
-        button.primary-btn:hover {
-            transform: translateY(-2px) scale(1.03);
-        }
-        button.secondary-btn {
+        .btn-sec {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
             border: 1.5px solid rgba(255, 255, 255, 0.25);
-            padding: 15px 28px;
-            font-size: 1.05rem;
+            padding: 14px 26px;
+            border-radius: 999px;
+            font-size: 1.02rem;
             font-weight: 800;
-            border-radius: 50px;
             cursor: pointer;
-            transition: background 0.15s, transform 0.15s;
             text-transform: uppercase;
         }
-        button.secondary-btn:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateY(-2px);
-        }
 
-        /* MAĞAZA GRID */
-        .shop-container {
-            max-width: 680px;
+        /* SUBWAY TARZI MAĞAZA */
+        .shop-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: #090d16;
+            border-color: transparent;
+        }
+        .shop-grid {
             width: 100%;
-            max-height: 60vh;
+            max-width: 720px;
+            max-height: 55vh;
             overflow-y: auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-            gap: 14px;
-            margin-bottom: 20px;
-            padding: 6px;
+            grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 4px;
         }
-        .shop-card {
-            background: rgba(30, 41, 59, 0.85);
+        .item-card {
+            background: rgba(15, 29, 51, 0.92);
             border: 2px solid rgba(255, 255, 255, 0.12);
             border-radius: 16px;
-            padding: 16px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
-        .shop-card.equipped {
+        .item-card.equipped {
             border-color: #38bdf8;
-            box-shadow: 0 0 18px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
         }
-        .skin-preview {
-            width: 48px;
-            height: 48px;
+        .swatch {
+            width: 46px;
+            height: 46px;
             border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.25);
         }
-        .shop-card h3 { font-size: 1rem; font-weight: 800; }
-        .shop-card p { font-size: 0.78rem; color: #94a3b8; }
-        .shop-btn {
+        .item-card h3 { font-size: 0.98rem; font-weight: 800; }
+        .item-card p { font-size: 0.76rem; color: #94a3b8; min-height: 28px; }
+        .action-btn {
             width: 100%;
             padding: 8px;
             border-radius: 10px;
             border: none;
             font-weight: 800;
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             cursor: pointer;
-            background: #2563eb;
+            background: #0284c7;
             color: #fff;
         }
-        .shop-btn.owned { background: #334155; }
-        .shop-btn.active { background: #10b981; }
+        .action-btn.owned { background: #334155; }
+        .action-btn.active { background: #10b981; color: #06281e; }
+        .action-btn.box-btn { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; }
 
-        .controls-tip {
-            margin-top: 20px;
-            font-size: 0.84rem;
+        .tip-foot {
+            margin-top: 16px;
+            font-size: 0.82rem;
             color: #94a3b8;
-            line-height: 1.55;
-        }
-        @media (max-width: 600px) {
-            .brand-title { font-size: 2.2rem; }
-            .hud-pill { font-size: 0.95rem; padding: 6px 12px; }
+            line-height: 1.5;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
     <div id="game-container">
-        <!-- GÖRSEL EFEKT KATMANLARI -->
-        <div id="speed-lines"></div>
-        <div id="hit-flash"></div>
-        <div id="combo-banner">COMBO x2!</div>
-
-        <!-- OYUN İÇİ HUD -->
         <div id="hud">
-            <div class="hud-left">
-                <div class="hud-pill">
+            <div class="hud-col">
+                <div class="hud-badge">
                     <span>SKOR: <span id="score-val">0</span></span>
-                    <span id="mult-badge" class="multiplier-badge">1x</span>
+                    <span id="mult-badge" class="mult-pill">1x</span>
                 </div>
-                <div class="hud-pill" style="font-size: 0.88rem; padding: 5px 14px; color: #94a3b8;">
-                    REKOR: <span id="hud-high-score" style="color:#fff;">0</span>
+                <div class="hud-badge" style="font-size: 0.85rem; padding: 5px 12px; color: #cbd5e1;">
+                    REKOR: <span id="hud-best" style="color: #38bdf8;">0</span>
                 </div>
             </div>
-            <div class="hud-right">
-                <div class="hud-pill">
+            <div class="hud-col hud-right">
+                <div class="hud-badge">
                     <span class="coin-dot"></span>
                     <span id="coins-val">0</span>
                 </div>
-                <button id="sound-toggle">🔊 Ses: Açık</button>
+                <button id="sound-toggle">🔊 Ses Açık</button>
             </div>
         </div>
 
-        <!-- AKTİF GÜÇLENDİRİCİ SÜRELERİ -->
         <div id="powerup-hud"></div>
 
         <!-- ANA MENÜ -->
         <div id="start-screen" class="overlay">
-            <img id="menu-logo-img" class="app-logo-badge" alt="Seva Surfers Logo">
-            <div class="brand-title">SEVA SURFERS</div>
-            <div class="brand-sub">3.0 Visual Show • iPhone Ana Ekran Hazır</div>
-            <div class="wallet-bar">
-                <div class="wallet-item">🏆 Rekor: <span id="menu-highscore" style="color:#38bdf8;">0</span></div>
-                <div class="wallet-item"><span class="coin-dot"></span> Kasa: <span id="menu-bank" style="color:#fbbf24;">0</span></div>
+            <img id="menu-logo" class="logo-box" alt="Seva Surfers İstanbul">
+            <div class="title-text">SEVA SURFERS</div>
+            <div class="sub-text">İstanbul Boğaz Hattı • Katmanlı 3D Karakter</div>
+            <div class="stats-row">
+                <div class="stat-box">🏆 Rekor: <span id="menu-best" style="color:#38bdf8;">0</span></div>
+                <div class="stat-box"><span class="coin-dot"></span> Kasa: <span id="menu-bank" style="color:#fbbf24;">0</span></div>
             </div>
-            <div class="btn-group">
-                <button id="start-btn" class="primary-btn">KOŞUYA BAŞLA</button>
-                <button id="open-shop-btn" class="secondary-btn">🛒 MAĞAZA</button>
+            <div class="btn-row">
+                <button id="start-btn" class="btn-main">KOŞUYA BAŞLA</button>
+                <button id="open-shop-btn" class="btn-sec">🛍️ MAĞAZA</button>
             </div>
-            <div class="controls-tip">
-                <b>Kontroller:</b> Ok Tuşları (⬅️ ➡️ ⬆️ ⬇️) veya Mobil Kaydırma<br>
-                <b>Çift Tık / Space:</b> Kaykay Kalkanı • <b>iPhone Safari:</b> Paylaş → Ana Ekrana Ekle
+            <div class="tip-foot">
+                Ok Tuşları veya Kaydırma: Hareket • Çift Tık / Space: Kaykay Kalkanı
             </div>
         </div>
 
-        <!-- MAĞAZA EKRANI -->
+        <!-- SUBWAY TARZI MAĞAZA -->
         <div id="shop-screen" class="overlay hidden">
-            <div class="brand-title" style="font-size: 2.3rem;">SEVA MAĞAZA</div>
-            <div class="wallet-bar">
-                <div class="wallet-item"><span class="coin-dot"></span> Mevcut Altın: <span id="shop-bank" style="color:#fbbf24;">0</span></div>
+            <div class="title-text" style="font-size: 2.2rem;">SUBWAY MAĞAZA</div>
+            <div class="stats-row" style="margin-bottom: 12px;">
+                <div class="stat-box"><span class="coin-dot"></span> Altın: <span id="shop-bank" style="color:#fbbf24;">0</span></div>
             </div>
-            <div class="shop-container" id="shop-items"></div>
-            <button id="close-shop-btn" class="secondary-btn">GERİ DÖN</button>
+            <div class="shop-tabs">
+                <button class="tab-btn active" data-tab="surfers">Karakterler</button>
+                <button class="tab-btn" data-tab="boards">Kaykaylar</button>
+                <button class="tab-btn" data-tab="boosts">Boost & Kutu</button>
+            </div>
+            <div class="shop-grid" id="shop-grid"></div>
+            <button id="close-shop-btn" class="btn-sec">GERİ DÖN</button>
         </div>
 
-        <!-- GAME OVER EKRANI -->
+        <!-- GAME OVER -->
         <div id="gameover-screen" class="overlay hidden">
-            <div class="brand-title" style="font-size: 2.7rem;">YAKALANDIN!</div>
-            <div class="brand-sub" id="new-record-msg" style="color:#fbbf24; display:none;">🔥 YENİ REKOR KIRDIN! 🔥</div>
-            <div class="wallet-bar" style="flex-direction: column; gap: 10px; min-width: 240px;">
-                <div class="wallet-item" style="justify-content: space-between;"><span>Skor:</span> <span id="final-score" style="color:#38bdf8;">0</span></div>
-                <div class="wallet-item" style="justify-content: space-between;"><span>Toplanan Altın:</span> <span id="final-coins" style="color:#fbbf24;">0</span></div>
-                <div class="wallet-item" style="justify-content: space-between;"><span>Toplam Kasa:</span> <span id="final-bank" style="color:#10b981;">0</span></div>
+            <div class="title-text" style="font-size: 2.5rem;">TUR BİTTİ!</div>
+            <div class="sub-text" id="new-best-msg" style="color:#fbbf24; display:none;">⭐ YENİ İSTANBUL REKORU! ⭐</div>
+            <div class="stats-row" style="flex-direction: column; min-width: 240px;">
+                <div class="stat-box" style="justify-content: space-between;"><span>Skor:</span> <span id="final-score" style="color:#38bdf8;">0</span></div>
+                <div class="stat-box" style="justify-content: space-between;"><span>Altın:</span> <span id="final-coins" style="color:#fbbf24;">0</span></div>
+                <div class="stat-box" style="justify-content: space-between;"><span>Toplam Kasa:</span> <span id="final-bank" style="color:#10b981;">0</span></div>
             </div>
-            <div class="btn-group">
-                <button id="restart-btn" class="primary-btn">Yeniden Başlat</button>
-                <button id="go-shop-btn" class="secondary-btn">🛒 Mağaza</button>
+            <div class="btn-row">
+                <button id="restart-btn" class="btn-main">Yeniden Başlat</button>
+                <button id="go-shop-btn" class="btn-sec">🛍️ Mağaza</button>
             </div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // 0. IPHONE ANA EKRAN LOGOSU ÜRETİCİ (SVG -> PNG/SVG URI)
+        // 0. İKON ÜRETİCİ (IPHONE ANA EKRAN)
         // ==========================================
-        function generateAppIcon() {
+        function buildAppIcon() {
             const svg = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                 <defs>
-                    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#090d16"/>
-                        <stop offset="55%" stop-color="#1e1b4b"/>
-                        <stop offset="100%" stop-color="#0f172a"/>
+                    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#071324"/>
+                        <stop offset="65%" stop-color="#0f294a"/>
+                        <stop offset="100%" stop-color="#0284c7"/>
                     </linearGradient>
-                    <linearGradient id="neonLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#38bdf8"/>
-                        <stop offset="50%" stop-color="#818cf8"/>
-                        <stop offset="100%" stop-color="#f43f5e"/>
-                    </linearGradient>
-                    <radialGradient id="coinGrad" cx="35%" cy="35%" r="65%">
-                        <stop offset="0%" stop-color="#fef08a"/>
-                        <stop offset="65%" stop-color="#f59e0b"/>
-                        <stop offset="100%" stop-color="#b45309"/>
-                    </radialGradient>
                 </defs>
-                <!-- Arka Plan -->
-                <rect width="512" height="512" rx="115" fill="url(#bgGrad)"/>
-                <!-- Neon Raylar -->
-                <polygon points="155,512 225,245 245,245 190,512" fill="#38bdf8" opacity="0.75"/>
-                <polygon points="357,512 287,245 267,245 322,512" fill="#818cf8" opacity="0.75"/>
-                <!-- Stilize S Harfi / Surfer Silüeti -->
-                <path d="M318 148 C318 112, 286 92, 246 92 C196 92, 166 122, 166 158 C166 238, 344 218, 344 318 C344 366, 304 398, 248 398 C196 398, 158 368, 154 324"
-                      fill="none" stroke="url(#neonLine)" stroke-width="34" stroke-linecap="round"/>
-                <!-- Kemik Gözlük Vurgusu -->
-                <rect x="192" y="196" width="54" height="32" rx="7" fill="#090d16" stroke="#38bdf8" stroke-width="7"/>
-                <rect x="266" y="196" width="54" height="32" rx="7" fill="#090d16" stroke="#38bdf8" stroke-width="7"/>
-                <line x1="246" y1="210" x2="266" y2="210" stroke="#38bdf8" stroke-width="7"/>
-                <!-- Sağ Üst Altın Rozet -->
-                <circle cx="404" cy="112" r="46" fill="url(#coinGrad)" stroke="#fef9c3" stroke-width="5"/>
-                <text x="404" y="128" font-family="Arial, sans-serif" font-size="48" font-weight="900" fill="#78350f" text-anchor="middle">S</text>
+                <rect width="512" height="512" rx="112" fill="url(#sky)"/>
+                <!-- Boğaz Köprüsü Silüeti -->
+                <path d="M40 270 Q155 150 256 270 Q357 150 472 270" fill="none" stroke="#38bdf8" stroke-width="10"/>
+                <line x1="155" y1="160" x2="155" y2="340" stroke="#e2e8f0" stroke-width="12"/>
+                <line x1="357" y1="160" x2="357" y2="340" stroke="#e2e8f0" stroke-width="12"/>
+                <!-- Ön Plan S & Gözlük -->
+                <rect x="174" y="210" width="66" height="40" rx="8" fill="#090d16" stroke="#fbbf24" stroke-width="8"/>
+                <rect x="272" y="210" width="66" height="40" rx="8" fill="#090d16" stroke="#fbbf24" stroke-width="8"/>
+                <line x1="240" y1="228" x2="272" y2="228" stroke="#fbbf24" stroke-width="8"/>
+                <text x="256" y="405" font-family="Arial, sans-serif" font-size="112" font-weight="900" fill="#ffffff" text-anchor="middle">SEVA</text>
             </svg>`;
-
-            // Canvas üzerinden yüksek kaliteli PNG data URL üret (iOS Safari en kararlı PNG apple-touch-icon sever)
+            const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
             const img = new Image();
-            const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-            const url = URL.createObjectURL(svgBlob);
-
             img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 512;
-                canvas.height = 512;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, 512, 512);
-                const pngDataUrl = canvas.toDataURL('image/png');
-
-                document.getElementById('dynamic-apple-icon').href = pngDataUrl;
-                document.getElementById('dynamic-favicon').href = pngDataUrl;
-                document.getElementById('menu-logo-img').src = pngDataUrl;
+                const c = document.createElement('canvas');
+                c.width = 512; c.height = 512;
+                c.getContext('2d').drawImage(img, 0, 0, 512, 512);
+                const dataUrl = c.toDataURL('image/png');
+                document.getElementById('dynamic-apple-icon').href = dataUrl;
+                document.getElementById('dynamic-favicon').href = dataUrl;
+                document.getElementById('menu-logo').src = dataUrl;
                 URL.revokeObjectURL(url);
             };
             img.src = url;
         }
-        generateAppIcon();
+        buildAppIcon();
 
         // ==========================================
-        // 1. WEB AUDIO API SENTETİK SES MOTORU
+        // 1. SES MOTORU
         // ==========================================
         class SoundFX {
-            constructor() {
-                this.ctx = null;
-                this.enabled = true;
-            }
+            constructor() { this.ctx = null; this.enabled = true; }
             init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
+                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
             }
-            playTone(freq, type, duration, vol = 0.15, slideFreq = null) {
+            tone(freq, type, dur, vol = 0.14, slide = null) {
                 if (!this.enabled) return;
                 this.init();
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = type;
                 osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                if (slideFreq) {
-                    osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + duration);
-                }
+                if (slide) osc.frequency.exponentialRampToValueAtTime(slide, this.ctx.currentTime + dur);
                 gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + duration);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + dur);
             }
-            swipe() { this.playTone(320, 'sine', 0.1, 0.12, 520); }
-            jump() { this.playTone(260, 'triangle', 0.18, 0.18, 620); }
-            roll() { this.playTone(220, 'sawtooth', 0.16, 0.1, 90); }
-            coin(combo = 1) {
-                const pitchBoost = 1 + Math.min(combo - 1, 8) * 0.05;
-                this.playTone(987.77 * pitchBoost, 'sine', 0.08, 0.12);
-                setTimeout(() => this.playTone(1318.51 * pitchBoost, 'sine', 0.14, 0.12), 55);
+            swipe() { this.tone(330, 'sine', 0.1, 0.12, 540); }
+            jump() { this.tone(270, 'triangle', 0.18, 0.16, 620); }
+            roll() { this.tone(210, 'sawtooth', 0.15, 0.1, 95); }
+            coin() {
+                this.tone(988, 'sine', 0.08, 0.11);
+                setTimeout(() => this.tone(1318, 'sine', 0.13, 0.11), 50);
             }
-            powerup() {
-                [523, 659, 783, 1046].forEach((f, i) => {
-                    setTimeout(() => this.playTone(f, 'triangle', 0.14, 0.15), i * 60);
-                });
-            }
-            shieldBreak() { this.playTone(400, 'sawtooth', 0.3, 0.25, 80); }
-            crash() {
-                this.playTone(140, 'sawtooth', 0.45, 0.3, 35);
-                this.playTone(90, 'square', 0.4, 0.25, 25);
-            }
+            powerup() { [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this.tone(f, 'triangle', 0.14, 0.14), i * 55)); }
+            crash() { this.tone(140, 'sawtooth', 0.4, 0.25, 38); }
         }
         const sfx = new SoundFX();
 
         // ==========================================
-        // 2. KAYIT SİSTEMİ & MAĞAZA VERİLERİ
+        // 2. SUBWAY MAĞAZA VERİLERİ & KAYIT
         // ==========================================
-        const SKINS = [
-            { id: 'sevaastian', name: 'Sevaastian Klasik', desc: 'Mat siyah kombin & kemik gözlük', price: 0, body: 0x111827, pants: 0x090d16, accent: 0x38bdf8, glasses: true },
-            { id: 'neon_cyber', name: 'Siber Neon', desc: 'Gece parlayan elektrik mavisi zırh', price: 150, body: 0x0284c7, pants: 0x1e1b4b, accent: 0xf43f5e, glasses: true },
-            { id: 'crimson_pro', name: 'Kızıl Süvari', desc: 'Hız tutkunlarına özel kırmızı ceket', price: 350, body: 0xdc2626, pants: 0x18181b, accent: 0xfacc15, glasses: false },
-            { id: 'gold_legend', name: 'Altın Efsane', desc: 'Saf altın kaplama VIP görünüm', price: 750, body: 0xf59e0b, pants: 0x78350f, accent: 0xffffff, glasses: true }
+        const SURFERS = [
+            { id: 'sevaastian', name: 'Sevaastian', desc: 'Siyah kombin & kemik gözlük', price: 0, main: '#111827', accent: '#38bdf8', glasses: true },
+            { id: 'bosphorus_pro', name: 'Boğaz Runner', desc: 'Turkuaz-lacivert sahil stili', price: 150, main: '#0284c7', accent: '#fbbf24', glasses: true },
+            { id: 'galata_red', name: 'Galata Red', desc: 'Kırmızı ceket & yüksek tempo', price: 320, main: '#dc2626', accent: '#f8fafc', glasses: false }
         ];
 
-        let saveData = JSON.parse(localStorage.getItem('seva_surfers_save')) || {
-            highScore: 0,
+        const BOARDS = [
+            { id: 'standard', name: 'Metro Board', desc: 'Standart kaykay (12sn kalkan)', price: 0, color: '#06b6d4', duration: 12 },
+            { id: 'bogaz_wave', name: 'Boğaz Dalgası', desc: 'Geniş hız kaykayı (15sn kalkan)', price: 200, color: '#38bdf8', duration: 15 },
+            { id: 'altin_star', name: 'Altın Yıldız', desc: 'VIP uzun kalkan (18sn kalkan)', price: 450, color: '#fbbf24', duration: 18 }
+        ];
+
+        let saveData = JSON.parse(localStorage.getItem('seva_istanbul_save')) || {
+            bestScore: 0,
             bankCoins: 0,
-            unlockedSkins: ['sevaastian'],
-            equippedSkin: 'sevaastian'
+            unlockedSurfers: ['sevaastian'],
+            equippedSurfer: 'sevaastian',
+            unlockedBoards: ['standard'],
+            equippedBoard: 'standard',
+            headstartCount: 1,
+            scoreBoostCount: 1
         };
 
-        function persistSave() {
-            localStorage.setItem('seva_surfers_save', JSON.stringify(saveData));
-            updateWalletUI();
+        function saveState() {
+            localStorage.setItem('seva_istanbul_save', JSON.stringify(saveData));
+            syncWalletUI();
         }
 
         // ==========================================
-        // 3. THREE.JS SAHNE & GÖRSEL ŞOV DEĞİŞKENLERİ
+        // 3. THREE.JS SAHNE, İSTANBUL HARİTASI & KATMANLI KARAKTER
         // ==========================================
         const LANE_WIDTH = 3.3;
         const LANES = [-LANE_WIDTH, 0, LANE_WIDTH];
 
-        let scene, camera, renderer, hemiLight, dirLight;
-        let tracks = [];
-        let arches = [];
+        let scene, camera, renderer;
+        let segments = [];
         let obstacles = [];
         let coins = [];
         let powerups = [];
         let particles = [];
-        let coinTrails = [];
 
-        // Karakter Parçaları
-        let playerGroup, torsoGroup, headGroup, leftArm, rightArm, leftLeg, rightLeg, jetpackMesh, hoverboardMesh, magnetRing;
+        // Katmanlı 3D Karakter Düzlemleri (Back -> Mid -> Front Katmanlar)
+        let playerRoot, layeredCharGroup, backLayerMesh, bodyLayerMesh, headLayerMesh, frontLayerMesh, boardPlaneMesh;
+        let currentTab = 'surfers';
 
-        // Oyun Durumu & Görsel Şov Metrikleri
-        let isGameRunning = false;
+        let isRunning = false;
         let gameSpeed = 26;
-        const maxSpeed = 68;
+        const maxSpeed = 66;
         let score = 0;
         let runCoins = 0;
-        let comboCount = 0;
-        let comboTimer = 0;
-        let shakeIntensity = 0;
-        let dayCycleTime = 0;
+        let scoreMult = 1;
 
-        // Oyuncu Fizik
         let currentLane = 1;
         let targetX = 0;
         let playerY = 0;
         let velocityY = 0;
-        const baseGravity = -62;
-        const baseJumpForce = 22;
         let isJumping = false;
         let isRolling = false;
         let rollTimer = 0;
-        let runCycle = 0;
+        let animPhase = 0;
 
-        // Aktif Güçlendiriciler
-        let activeEffects = {
-            magnet: 0,
-            jetpack: 0,
-            sneakers: 0,
-            multiplier: 0,
-            hoverboard: 0
-        };
-
+        let activePU = { magnet: 0, jetpack: 0, sneakers: 0, multiplier: 0, shield: 0 };
         let clock = new THREE.Clock();
         let spawnTimer = 0;
 
-        // ==========================================
-        // 4. KURULUM, DİNAMİK IŞIK & ÇEVRE
-        // ==========================================
+        // Dinamik Katmanlı Karakter Dokusu Üretici (CanvasTexture -> Katmanlı 3D Düzlemler)
+        function createLayeredSurferTextures(surfer) {
+            // 1. Arka Katman (Sırt Çantası / Gölge Katmanı)
+            const backCanvas = document.createElement('canvas');
+            backCanvas.width = 256; backCanvas.height = 256;
+            const bctx = backCanvas.getContext('2d');
+            bctx.fillStyle = '#0f172a';
+            bctx.beginPath();
+            bctx.roundRect(84, 88, 88, 92, 18);
+            bctx.fill();
+            bctx.strokeStyle = surfer.accent;
+            bctx.lineWidth = 6;
+            bctx.stroke();
+
+            // 2. Gövde & Bacak Katmanı
+            const bodyCanvas = document.createElement('canvas');
+            bodyCanvas.width = 256; bodyCanvas.height = 256;
+            const ctx = bodyCanvas.getContext('2d');
+            ctx.fillStyle = surfer.main;
+            ctx.beginPath();
+            ctx.roundRect(78, 82, 100, 96, 16);
+            ctx.fill();
+            ctx.strokeStyle = surfer.accent;
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(88, 125); ctx.lineTo(168, 125);
+            ctx.stroke();
+
+            // Bacaklar
+            ctx.fillStyle = '#090d16';
+            ctx.beginPath();
+            ctx.roundRect(88, 174, 32, 64, 10);
+            ctx.roundRect(136, 174, 32, 64, 10);
+            ctx.fill();
+
+            // 3. Baş & Kemik Gözlük Katmanı
+            const headCanvas = document.createElement('canvas');
+            headCanvas.width = 256; headCanvas.height = 256;
+            const hctx = headCanvas.getContext('2d');
+            hctx.fillStyle = '#fcd34d';
+            hctx.beginPath();
+            hctx.roundRect(84, 16, 88, 76, 20);
+            hctx.fill();
+            // Saç
+            hctx.fillStyle = '#090d16';
+            hctx.beginPath();
+            hctx.roundRect(80, 10, 96, 28, 12);
+            hctx.fill();
+            // Kemik Gözlük
+            if (surfer.glasses) {
+                hctx.fillStyle = '#050811';
+                hctx.fillRect(92, 42, 30, 20);
+                hctx.fillRect(134, 42, 30, 20);
+                hctx.fillRect(122, 49, 12, 6);
+                hctx.fillStyle = surfer.accent;
+                hctx.fillRect(97, 46, 20, 10);
+                hctx.fillRect(139, 46, 20, 10);
+            }
+
+            // 4. Ön Katman (Ön Kol & Vurgu Şeridi)
+            const frontCanvas = document.createElement('canvas');
+            frontCanvas.width = 256; frontCanvas.height = 256;
+            const fctx = frontCanvas.getContext('2d');
+            fctx.fillStyle = surfer.accent;
+            fctx.beginPath();
+            fctx.roundRect(168, 96, 24, 72, 10);
+            fctx.fill();
+
+            return {
+                back: new THREE.CanvasTexture(backCanvas),
+                body: new THREE.CanvasTexture(bodyCanvas),
+                head: new THREE.CanvasTexture(headCanvas),
+                front: new THREE.CanvasTexture(frontCanvas)
+            };
+        }
+
         function init() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0b1120);
-            scene.fog = new THREE.FogExp2(0x0b1120, 0.0105);
+            scene.background = new THREE.Color(0x071324);
+            scene.fog = new THREE.FogExp2(0x071324, 0.0105);
 
             camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 220);
-            camera.position.set(0, 6.5, 11);
+            camera.position.set(0, 6.2, 10.8);
             camera.lookAt(0, 2, -12);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.getElementById('game-container').appendChild(renderer.domElement);
 
-            hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x1e293b, 0.92);
-            scene.add(hemiLight);
+            const hemi = new THREE.HemisphereLight(0xbae6fd, 0x0f172a, 1.0);
+            scene.add(hemi);
+            const dir = new THREE.DirectionalLight(0xffffff, 0.95);
+            dir.position.set(16, 32, 20);
+            scene.add(dir);
 
-            dirLight = new THREE.DirectionalLight(0xffffff, 1.05);
-            dirLight.position.set(18, 35, 22);
-            dirLight.castShadow = true;
-            dirLight.shadow.mapSize.width = 1024;
-            dirLight.shadow.mapSize.height = 1024;
-            const d = 28;
-            dirLight.shadow.camera.left = -d;
-            dirLight.shadow.camera.right = d;
-            dirLight.shadow.camera.top = d;
-            dirLight.shadow.camera.bottom = -d;
-            scene.add(dirLight);
-
-            createTracks();
-            buildCharacter();
-            applySkin(saveData.equippedSkin);
-            updateWalletUI();
+            buildIstanbulTrack();
+            buildLayeredCharacter();
+            applyLoadout();
+            syncWalletUI();
             renderShop();
-            setupControls();
+            setupEvents();
 
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
@@ -672,1000 +633,535 @@
             renderer.render(scene, camera);
         }
 
-        function createTracks() {
-            const segLen = 20;
-            const segCount = 13;
+        // İSTANBUL HARİTASI: Boğaz Suyu, Sahil Hattı, Köprü Kemerleri & Kız Kulesi Silüeti
+        function buildIstanbulTrack() {
+            const segLen = 22;
+            const count = 12;
 
-            const groundGeo = new THREE.BoxGeometry(13, 0.6, segLen);
-            const groundMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.85 });
+            const roadGeo = new THREE.BoxGeometry(12.6, 0.6, segLen);
+            const roadMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
 
-            const railGeo = new THREE.BoxGeometry(0.18, 0.16, segLen);
-            const railMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.75, roughness: 0.25 });
+            // Sağ tarafta İstanbul Boğazı su şeridi
+            const bosphorusGeo = new THREE.BoxGeometry(16, 0.4, segLen);
+            const bosphorusMat = new THREE.MeshStandardMaterial({ color: 0x0369a1, roughness: 0.25, metalness: 0.3 });
 
-            const sleeperGeo = new THREE.BoxGeometry(1.9, 0.1, 0.45);
-            const sleeperMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+            // Sol tarafta İstanbul kıyı yapıları ve kule/köprü silüetleri
+            const railGeo = new THREE.BoxGeometry(0.16, 0.14, segLen);
+            const railMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7 });
 
-            // Üst Kemer Takları (Görsel Derinlik)
-            const archTopGeo = new THREE.BoxGeometry(13.4, 0.45, 0.8);
-            const archPostGeo = new THREE.BoxGeometry(0.45, 8.5, 0.8);
-            const archMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5, roughness: 0.4 });
-            const neonBarGeo = new THREE.BoxGeometry(11.5, 0.14, 0.18);
-            const neonBarMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+            for (let i = 0; i < count; i++) {
+                const grp = new THREE.Group();
+                grp.position.z = -i * segLen + 20;
 
-            for (let i = 0; i < segCount; i++) {
-                const group = new THREE.Group();
-                group.position.z = -i * segLen + 20;
+                const road = new THREE.Mesh(roadGeo, roadMat);
+                road.position.y = -0.3;
+                grp.add(road);
 
-                const ground = new THREE.Mesh(groundGeo, groundMat);
-                ground.position.y = -0.3;
-                ground.receiveShadow = true;
-                group.add(ground);
+                // Boğaz suyu (sağ taraf)
+                const sea = new THREE.Mesh(bosphorusGeo, bosphorusMat);
+                sea.position.set(14.5, -0.55, 0);
+                grp.add(sea);
 
+                // Kıyı korkuluğu
+                const shoreBar = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.35, 1.1, segLen),
+                    new THREE.MeshStandardMaterial({ color: 0xe2e8f0 })
+                );
+                shoreBar.position.set(6.5, 0.4, 0);
+                grp.add(shoreBar);
+
+                // 3 Şerit rayları
                 LANES.forEach(lx => {
-                    const r1 = new THREE.Mesh(railGeo, railMat);
-                    r1.position.set(lx - 0.75, 0.08, 0);
-                    group.add(r1);
-
-                    const r2 = new THREE.Mesh(railGeo, railMat);
-                    r2.position.set(lx + 0.75, 0.08, 0);
-                    group.add(r2);
-
-                    for (let z = -segLen / 2 + 1; z < segLen / 2; z += 2) {
-                        const sl = new THREE.Mesh(sleeperGeo, sleeperMat);
-                        sl.position.set(lx, 0.03, z);
-                        group.add(sl);
-                    }
+                    const r1 = new THREE.Mesh(railGeo, railMat); r1.position.set(lx - 0.72, 0.08, 0);
+                    const r2 = new THREE.Mesh(railGeo, railMat); r2.position.set(lx + 0.72, 0.08, 0);
+                    grp.add(r1, r2);
                 });
 
-                [-1, 1].forEach(side => {
-                    const bHeight = 10 + ((i * 7 + (side > 0 ? 3 : 0)) % 9);
-                    const bGeo = new THREE.BoxGeometry(4, bHeight, segLen - 1);
-                    const bMat = new THREE.MeshStandardMaterial({
-                        color: i % 2 === 0 ? 0x172033 : 0x1e293b,
-                        roughness: 0.7
-                    });
-                    const building = new THREE.Mesh(bGeo, bMat);
-                    building.position.set(side * 8.8, bHeight / 2 - 0.3, 0);
-                    group.add(building);
+                // Sol kıyı binaları ve belirli segmentlerde Kız Kulesi / Boğaz Kemeri
+                const bH = 8 + ((i * 5) % 8);
+                const bldg = new THREE.Mesh(
+                    new THREE.BoxGeometry(4.2, bH, segLen - 1.5),
+                    new THREE.MeshStandardMaterial({ color: i % 2 === 0 ? 0x172554 : 0x1e293b })
+                );
+                bldg.position.set(-8.6, bH / 2 - 0.3, 0);
+                grp.add(bldg);
 
-                    const winGeo = new THREE.BoxGeometry(0.15, 0.35, segLen - 3);
-                    const winMat = new THREE.MeshBasicMaterial({
-                        color: (i + (side > 0 ? 1 : 0)) % 2 === 0 ? 0x38bdf8 : 0x818cf8
-                    });
-                    const win = new THREE.Mesh(winGeo, winMat);
-                    win.position.set(side * 6.75, 4.5, 0);
-                    group.add(win);
-                });
-
-                // Her 3 segmentte bir ışıklı geçit kemeri
-                if (i % 3 === 1) {
-                    const archGroup = new THREE.Group();
-                    const topBeam = new THREE.Mesh(archTopGeo, archMat);
-                    topBeam.position.y = 8.4;
-                    const leftPost = new THREE.Mesh(archPostGeo, archMat);
-                    leftPost.position.set(-6.3, 4.2, 0);
-                    const rightPost = new THREE.Mesh(archPostGeo, archMat);
-                    rightPost.position.set(6.3, 4.2, 0);
-                    const neonStrip = new THREE.Mesh(neonBarGeo, neonBarMat);
-                    neonStrip.position.y = 8.1;
-                    archGroup.add(topBeam, leftPost, rightPost, neonStrip);
-                    group.add(archGroup);
-                    arches.push(neonStrip);
+                if (i % 4 === 2) {
+                    // Boğaz hattında Kız Kulesi minyatür silüeti
+                    const towerGrp = new THREE.Group();
+                    const base = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.3, 4.5, 12), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+                    base.position.y = 2.25;
+                    const dome = new THREE.Mesh(new THREE.ConeGeometry(1.15, 2.0, 12), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
+                    dome.position.y = 5.5;
+                    towerGrp.add(base, dome);
+                    towerGrp.position.set(9.8, -0.3, 0);
+                    grp.add(towerGrp);
                 }
 
-                scene.add(group);
-                tracks.push(group);
+                scene.add(grp);
+                segments.push(grp);
             }
         }
 
-        function updateDayNightCycle(dt) {
-            dayCycleTime += dt * 0.045;
-            // 0..1 arası döngü: Gece (lacivert/neon) -> Gün Batımı (mor/turuncu) -> Aydınlık (derin mavi)
-            const t = (Math.sin(dayCycleTime) + 1) * 0.5;
+        // KATMANLI 3D KARAKTER (Arka, Gövde, Baş, Ön Katman + Kaykay)
+        function buildLayeredCharacter() {
+            playerRoot = new THREE.Group();
+            layeredCharGroup = new THREE.Group();
+            playerRoot.add(layeredCharGroup);
 
-            const nightCol = new THREE.Color(0x0b1120);
-            const sunsetCol = new THREE.Color(0x2e1a47);
-            const dayCol = new THREE.Color(0x172554);
+            const planeGeo = new THREE.PlaneGeometry(2.1, 2.2);
 
-            const currentSky = new THREE.Color();
-            if (t < 0.5) {
-                currentSky.lerpColors(nightCol, sunsetCol, t * 2);
-            } else {
-                currentSky.lerpColors(sunsetCol, dayCol, (t - 0.5) * 2);
-            }
+            backLayerMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.1, side: THREE.DoubleSide }));
+            backLayerMesh.position.set(0, 1.15, 0.14);
+            backLayerMesh.renderOrder = 1;
 
-            scene.background.copy(currentSky);
-            scene.fog.color.copy(currentSky);
-            dirLight.intensity = 0.9 + t * 0.45;
-            hemiLight.intensity = 0.85 + t * 0.35;
+            bodyLayerMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.1, side: THREE.DoubleSide }));
+            bodyLayerMesh.position.set(0, 1.15, 0.04);
+            bodyLayerMesh.renderOrder = 2;
 
-            const neonHex = t < 0.5 ? 0x38bdf8 : 0xf59e0b;
-            arches.forEach(strip => strip.material.color.setHex(neonHex));
+            headLayerMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.1, side: THREE.DoubleSide }));
+            headLayerMesh.position.set(0, 1.32, -0.06);
+            headLayerMesh.renderOrder = 3;
+
+            frontLayerMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.1, side: THREE.DoubleSide }));
+            frontLayerMesh.position.set(0, 1.15, -0.14);
+            frontLayerMesh.renderOrder = 4;
+
+            boardPlaneMesh = new THREE.Mesh(
+                new THREE.BoxGeometry(1.1, 0.15, 2.1),
+                new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x0284c7, emissiveIntensity: 0.5 })
+            );
+            boardPlaneMesh.position.set(0, 0.08, 0);
+            boardPlaneMesh.visible = false;
+            playerRoot.add(boardPlaneMesh);
+
+            layeredCharGroup.add(backLayerMesh, bodyLayerMesh, headLayerMesh, frontLayerMesh);
+            scene.add(playerRoot);
+        }
+
+        function applyLoadout() {
+            const surfer = SURFERS.find(s => s.id === saveData.equippedSurfer) || SURFERS[0];
+            const board = BOARDS.find(b => b.id === saveData.equippedBoard) || BOARDS[0];
+            const tex = createLayeredSurferTextures(surfer);
+
+            backLayerMesh.material.map = tex.back; backLayerMesh.material.needsUpdate = true;
+            bodyLayerMesh.material.map = tex.body; bodyLayerMesh.material.needsUpdate = true;
+            headLayerMesh.material.map = tex.head; headLayerMesh.material.needsUpdate = true;
+            frontLayerMesh.material.map = tex.front; frontLayerMesh.material.needsUpdate = true;
+
+            boardPlaneMesh.material.color.set(board.color);
         }
 
         // ==========================================
-        // 5. EKLEMLİ SEVAASTIAN KARAKTER MODELİ
-        // ==========================================
-        function buildCharacter() {
-            playerGroup = new THREE.Group();
-
-            torsoGroup = new THREE.Group();
-            torsoGroup.position.y = 1.15;
-            playerGroup.add(torsoGroup);
-
-            const bodyMesh = new THREE.Mesh(
-                new THREE.BoxGeometry(0.85, 0.95, 0.48),
-                new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 })
-            );
-            bodyMesh.name = 'torsoMesh';
-            bodyMesh.castShadow = true;
-            torsoGroup.add(bodyMesh);
-
-            headGroup = new THREE.Group();
-            headGroup.position.y = 0.78;
-            torsoGroup.add(headGroup);
-
-            const headMesh = new THREE.Mesh(
-                new THREE.BoxGeometry(0.62, 0.62, 0.62),
-                new THREE.MeshStandardMaterial({ color: 0xfcd34d, roughness: 0.5 })
-            );
-            headMesh.castShadow = true;
-            headGroup.add(headMesh);
-
-            const hairMesh = new THREE.Mesh(
-                new THREE.BoxGeometry(0.66, 0.24, 0.66),
-                new THREE.MeshStandardMaterial({ color: 0x090d16 })
-            );
-            hairMesh.position.y = 0.25;
-            headGroup.add(hairMesh);
-
-            const glassesGroup = new THREE.Group();
-            glassesGroup.name = 'glassesGroup';
-            glassesGroup.position.set(0, 0.04, -0.32);
-            const frameMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-            const lensMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-
-            const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.16, 0.04), frameMat);
-            leftFrame.position.x = -0.15;
-            const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.16, 0.04), frameMat);
-            rightFrame.position.x = 0.15;
-            const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.04, 0.04), frameMat);
-            const leftLens = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.05), lensMat);
-            leftLens.position.x = -0.15;
-            const rightLens = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.05), lensMat);
-            rightLens.position.x = 0.15;
-
-            glassesGroup.add(leftFrame, rightFrame, bridge, leftLens, rightLens);
-            headGroup.add(glassesGroup);
-
-            const armGeo = new THREE.BoxGeometry(0.24, 0.8, 0.24);
-            const armMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
-            leftArm = new THREE.Mesh(armGeo, armMat);
-            leftArm.position.set(-0.58, 0.05, 0);
-            leftArm.castShadow = true;
-            torsoGroup.add(leftArm);
-
-            rightArm = new THREE.Mesh(armGeo, armMat);
-            rightArm.position.set(0.58, 0.05, 0);
-            rightArm.castShadow = true;
-            torsoGroup.add(rightArm);
-
-            const legGeo = new THREE.BoxGeometry(0.32, 0.78, 0.32);
-            const legMat = new THREE.MeshStandardMaterial({ color: 0x090d16 });
-            leftLeg = new THREE.Mesh(legGeo, legMat);
-            leftLeg.position.set(-0.22, 0.42, 0);
-            leftLeg.castShadow = true;
-            playerGroup.add(leftLeg);
-
-            rightLeg = new THREE.Mesh(legGeo, legMat);
-            rightLeg.position.set(0.22, 0.42, 0);
-            rightLeg.castShadow = true;
-            playerGroup.add(rightLeg);
-
-            jetpackMesh = new THREE.Group();
-            jetpackMesh.position.set(0, 0.05, 0.34);
-            const tankGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.75, 12);
-            const tankMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, metalness: 0.7 });
-            const t1 = new THREE.Mesh(tankGeo, tankMat); t1.position.x = -0.17;
-            const t2 = new THREE.Mesh(tankGeo, tankMat); t2.position.x = 0.17;
-            jetpackMesh.add(t1, t2);
-            jetpackMesh.visible = false;
-            torsoGroup.add(jetpackMesh);
-
-            hoverboardMesh = new THREE.Mesh(
-                new THREE.BoxGeometry(1.1, 0.14, 2.1),
-                new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x0284c7, emissiveIntensity: 0.55 })
-            );
-            hoverboardMesh.position.y = 0.08;
-            hoverboardMesh.visible = false;
-            playerGroup.add(hoverboardMesh);
-
-            magnetRing = new THREE.Mesh(
-                new THREE.RingGeometry(0.95, 1.18, 28),
-                new THREE.MeshBasicMaterial({ color: 0xef4444, side: THREE.DoubleSide })
-            );
-            magnetRing.rotation.x = Math.PI / 2;
-            magnetRing.position.y = 0.12;
-            magnetRing.visible = false;
-            playerGroup.add(magnetRing);
-
-            scene.add(playerGroup);
-        }
-
-        function applySkin(skinId) {
-            const skin = SKINS.find(s => s.id === skinId) || SKINS[0];
-            torsoGroup.getObjectByName('torsoMesh').material.color.setHex(skin.body);
-            leftArm.material.color.setHex(skin.body);
-            rightArm.material.color.setHex(skin.body);
-            leftLeg.material.color.setHex(skin.pants);
-            rightLeg.material.color.setHex(skin.pants);
-            hoverboardMesh.material.color.setHex(skin.accent);
-            headGroup.getObjectByName('glassesGroup').visible = skin.glasses;
-        }
-
-        // ==========================================
-        // 6. PARÇACIK EFEKTLERİ & IŞIK İZLERİ
-        // ==========================================
-        function spawnParticles(x, y, z, colorHex, count = 12) {
-            const geo = new THREE.BoxGeometry(0.17, 0.17, 0.17);
-            const mat = new THREE.MeshBasicMaterial({ color: colorHex });
-            for (let i = 0; i < count; i++) {
-                const mesh = new THREE.Mesh(geo, mat);
-                mesh.position.set(x, y, z);
-                scene.add(mesh);
-                particles.push({
-                    mesh,
-                    vx: (Math.random() - 0.5) * 9.5,
-                    vy: Math.random() * 7.5 + 2.2,
-                    vz: (Math.random() - 0.5) * 9.5,
-                    life: 0.52
-                });
-            }
-        }
-
-        function spawnTrailSpark(x, y, z, colorHex = 0xfacc15) {
-            const spark = new THREE.Mesh(
-                new THREE.SphereGeometry(0.14, 8, 8),
-                new THREE.MeshBasicMaterial({ color: colorHex })
-            );
-            spark.position.set(x, y, z);
-            scene.add(spark);
-            coinTrails.push({ mesh: spark, life: 0.22 });
-        }
-
-        function showCombo(count) {
-            const banner = document.getElementById('combo-banner');
-            banner.textContent = `⚡ COMBO x${count}!`;
-            banner.classList.add('show');
-            clearTimeout(showCombo._t);
-            showCombo._t = setTimeout(() => banner.classList.remove('show'), 750);
-        }
-
-        // ==========================================
-        // 7. ENGEL, ALTIN VE POWER-UP ÜRETİCİ
+        // 4. ENGELLER, ALTINLAR & GÜÇLENDİRİCİLER
         // ==========================================
         function spawnWave() {
-            const spawnZ = -150;
+            const zPos = -145;
+            const order = [0, 1, 2].sort(() => Math.random() - 0.5);
+            let trains = 0;
 
-            if (activeEffects.jetpack > 0.5) {
-                const laneX = LANES[Math.floor(Math.random() * 3)];
-                for (let c = 0; c < 6; c++) {
-                    createCoin(laneX, 8.5, spawnZ - c * 3);
-                }
-                return;
-            }
-
-            const laneIndices = [0, 1, 2].sort(() => Math.random() - 0.5);
-            let trainCount = 0;
-
-            laneIndices.forEach((laneIdx) => {
-                const laneX = LANES[laneIdx];
-                const rand = Math.random();
-
-                if (rand < 0.35 && trainCount < 2) {
-                    createTrain(laneX, spawnZ);
-                    trainCount++;
-                } else if (rand < 0.56) {
-                    createLowBarrier(laneX, spawnZ);
-                    createCoin(laneX, 2.4, spawnZ);
-                } else if (rand < 0.74) {
-                    createHighBarrier(laneX, spawnZ);
-                    createCoin(laneX, 0.7, spawnZ);
+            order.forEach(idx => {
+                const lx = LANES[idx];
+                const r = Math.random();
+                if (r < 0.34 && trains < 2) {
+                    trains++;
+                    const train = new THREE.Mesh(
+                        new THREE.BoxGeometry(2.3, 3.2, 14),
+                        new THREE.MeshStandardMaterial({ color: [0xef4444, 0x8b5cf6, 0x10b981][trains % 3] })
+                    );
+                    train.position.set(lx, 1.6, zPos - 7);
+                    scene.add(train);
+                    obstacles.push({ mesh: train, speedAdd: 10, box: { w: 2.0, minY: 0, maxY: 3.2, l: 14 } });
+                } else if (r < 0.56) {
+                    const bar = new THREE.Mesh(
+                        new THREE.BoxGeometry(2.4, 1.15, 0.5),
+                        new THREE.MeshStandardMaterial({ color: 0xf59e0b })
+                    );
+                    bar.position.set(lx, 0.58, zPos);
+                    scene.add(bar);
+                    obstacles.push({ mesh: bar, speedAdd: 0, box: { w: 2.1, minY: 0, maxY: 1.15, l: 0.5 } });
+                    addCoin(lx, 2.35, zPos);
+                } else if (r < 0.74) {
+                    const high = new THREE.Mesh(
+                        new THREE.BoxGeometry(2.5, 1.85, 0.5),
+                        new THREE.MeshStandardMaterial({ color: 0xf43f5e })
+                    );
+                    high.position.set(lx, 2.1, zPos);
+                    scene.add(high);
+                    obstacles.push({ mesh: high, speedAdd: 0, box: { w: 2.1, minY: 1.18, maxY: 3.1, l: 0.5 } });
+                    addCoin(lx, 0.65, zPos);
                 } else {
-                    for (let c = 0; c < 4; c++) {
-                        createCoin(laneX, 0.9, spawnZ - c * 3.2);
-                    }
-                    if (Math.random() < 0.18) {
-                        spawnPowerup(laneX, 1.1, spawnZ - 14);
-                    }
+                    for (let c = 0; c < 4; c++) addCoin(lx, 0.9, zPos - c * 3.2);
+                    if (Math.random() < 0.2) addPowerup(lx, 1.1, zPos - 13);
                 }
             });
         }
 
-        function createTrain(x, z) {
-            const group = new THREE.Group();
-            const length = 15;
-            const height = 3.3;
-            const width = 2.35;
-
-            const colors = [0xef4444, 0x8b5cf6, 0x0ea5e9, 0x10b981];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            const body = new THREE.Mesh(
-                new THREE.BoxGeometry(width, height, length),
-                new THREE.MeshStandardMaterial({ color, roughness: 0.35 })
+        function addCoin(x, y, z) {
+            const c = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.4, 0.4, 0.15, 14),
+                new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xd97706, emissiveIntensity: 0.35 })
             );
-            body.position.y = height / 2;
-            body.castShadow = true;
-            group.add(body);
-
-            const glass = new THREE.Mesh(
-                new THREE.BoxGeometry(width * 0.84, 0.95, 0.1),
-                new THREE.MeshBasicMaterial({ color: 0xe0f2fe })
-            );
-            glass.position.set(0, 2.3, length / 2 + 0.02);
-            group.add(glass);
-
-            const lightGeo = new THREE.SphereGeometry(0.22, 8, 8);
-            const lightMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
-            const l1 = new THREE.Mesh(lightGeo, lightMat); l1.position.set(-0.7, 0.85, length / 2 + 0.02);
-            const l2 = new THREE.Mesh(lightGeo, lightMat); l2.position.set(0.7, 0.85, length / 2 + 0.02);
-
-            // Far ışık huzmeleri (konik)
-            const beamGeo = new THREE.ConeGeometry(0.9, 5.5, 12, 1, true);
-            beamGeo.rotateX(Math.PI / 2);
-            const beamMat = new THREE.MeshBasicMaterial({
-                color: 0xfef08a,
-                transparent: true,
-                opacity: 0.16,
-                side: THREE.DoubleSide,
-                depthWrite: false
-            });
-            const b1 = new THREE.Mesh(beamGeo, beamMat); b1.position.set(-0.7, 0.85, length / 2 + 2.75);
-            const b2 = new THREE.Mesh(beamGeo, beamMat); b2.position.set(0.7, 0.85, length / 2 + 2.75);
-
-            group.add(l1, l2, b1, b2);
-
-            group.position.set(x, 0, z - length / 2);
-            scene.add(group);
-
-            obstacles.push({
-                mesh: group,
-                speedOffset: 11,
-                box: { width: width * 0.86, minY: 0, maxY: height, length }
-            });
+            c.rotation.x = Math.PI / 2;
+            c.position.set(x, y, z);
+            scene.add(c);
+            coins.push(c);
         }
 
-        function createLowBarrier(x, z) {
-            const group = new THREE.Group();
-            const width = 2.45;
-            const height = 1.15;
-            const depth = 0.5;
-
-            const mesh = new THREE.Mesh(
-                new THREE.BoxGeometry(width, height, depth),
-                new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.4 })
-            );
-            mesh.position.y = height / 2;
-            mesh.castShadow = true;
-            group.add(mesh);
-
-            const stripe = new THREE.Mesh(
-                new THREE.BoxGeometry(width + 0.04, 0.25, depth + 0.04),
-                new THREE.MeshBasicMaterial({ color: 0x0f172a })
-            );
-            stripe.position.y = height * 0.72;
-            group.add(stripe);
-
-            group.position.set(x, 0, z);
-            scene.add(group);
-
-            obstacles.push({
-                mesh: group,
-                speedOffset: 0,
-                box: { width: width * 0.85, minY: 0, maxY: height, length: depth }
-            });
-        }
-
-        function createHighBarrier(x, z) {
-            const group = new THREE.Group();
-            const width = 2.55;
-            const pillarH = 3.3;
-
-            const pGeo = new THREE.BoxGeometry(0.3, pillarH, 0.4);
-            const pMat = new THREE.MeshStandardMaterial({ color: 0x64748b });
-            const p1 = new THREE.Mesh(pGeo, pMat); p1.position.set(-width / 2 + 0.15, pillarH / 2, 0);
-            const p2 = new THREE.Mesh(pGeo, pMat); p2.position.set(width / 2 - 0.15, pillarH / 2, 0);
-            group.add(p1, p2);
-
-            const topH = 1.9;
-            const topBoard = new THREE.Mesh(
-                new THREE.BoxGeometry(width, topH, 0.45),
-                new THREE.MeshStandardMaterial({ color: 0xf43f5e, roughness: 0.4 })
-            );
-            topBoard.position.y = 1.18 + topH / 2;
-            topBoard.castShadow = true;
-            group.add(topBoard);
-
-            group.position.set(x, 0, z);
-            scene.add(group);
-
-            obstacles.push({
-                mesh: group,
-                speedOffset: 0,
-                box: { width: width * 0.85, minY: 1.18, maxY: 3.2, length: 0.5 }
-            });
-        }
-
-        function createCoin(x, y, z) {
-            const coin = new THREE.Mesh(
-                new THREE.CylinderGeometry(0.42, 0.42, 0.16, 16),
-                new THREE.MeshStandardMaterial({
-                    color: 0xfacc15,
-                    emissive: 0xd97706,
-                    emissiveIntensity: 0.45,
-                    metalness: 0.85,
-                    roughness: 0.2
-                })
-            );
-            coin.rotation.x = Math.PI / 2;
-            coin.position.set(x, y, z);
-            scene.add(coin);
-            coins.push(coin);
-        }
-
-        function spawnPowerup(x, y, z) {
-            const types = [
-                { type: 'magnet', color: 0xef4444, label: '🧲 Mıknatıs' },
-                { type: 'jetpack', color: 0x38bdf8, label: '🚀 Jetpack' },
-                { type: 'sneakers', color: 0x10b981, label: '👟 Süper Zıplama' },
-                { type: 'multiplier', color: 0xa855f7, label: '⚡ 2x Skor' }
+        function addPowerup(x, y, z) {
+            const list = [
+                { key: 'magnet', color: 0xef4444, label: '🧲 Mıknatıs' },
+                { key: 'jetpack', color: 0x38bdf8, label: '🚀 Jetpack' },
+                { key: 'sneakers', color: 0x10b981, label: '👟 Süper Zıplama' },
+                { key: 'multiplier', color: 0xa855f7, label: '⚡ 2x Skor' }
             ];
-            const chosen = types[Math.floor(Math.random() * types.length)];
-
-            const mesh = new THREE.Mesh(
-                new THREE.OctahedronGeometry(0.58, 0),
-                new THREE.MeshStandardMaterial({
-                    color: chosen.color,
-                    emissive: chosen.color,
-                    emissiveIntensity: 0.65,
-                    roughness: 0.2
-                })
+            const pick = list[Math.floor(Math.random() * list.length)];
+            const m = new THREE.Mesh(
+                new THREE.OctahedronGeometry(0.55, 0),
+                new THREE.MeshStandardMaterial({ color: pick.color, emissive: pick.color, emissiveIntensity: 0.5 })
             );
-            mesh.position.set(x, y, z);
-            scene.add(mesh);
-            powerups.push({ mesh, ...chosen });
+            m.position.set(x, y, z);
+            scene.add(m);
+            powerups.push({ mesh: m, ...pick });
         }
 
         // ==========================================
-        // 8. KONTROLLER
+        // 5. KONTROLLER & OYUN DÖNGÜSÜ
         // ==========================================
-        function setupControls() {
-            let lastSpaceTime = 0;
-
-            window.addEventListener('keydown', (e) => {
-                if (!isGameRunning) return;
-                if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveLeft();
-                else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveRight();
-                else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') jump();
-                else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') roll();
+        function setupEvents() {
+            let lastTap = 0;
+            window.addEventListener('keydown', e => {
+                if (!isRunning) return;
+                if (e.key === 'ArrowLeft' || e.key === 'a') { if (currentLane > 0) { currentLane--; targetX = LANES[currentLane]; sfx.swipe(); } }
+                else if (e.key === 'ArrowRight' || e.key === 'd') { if (currentLane < 2) { currentLane++; targetX = LANES[currentLane]; sfx.swipe(); } }
+                else if (e.key === 'ArrowUp' || e.key === 'w') doJump();
+                else if (e.key === 'ArrowDown' || e.key === 's') doRoll();
                 else if (e.key === ' ') {
                     const now = Date.now();
-                    if (now - lastSpaceTime < 300) activateHoverboard();
-                    else jump();
-                    lastSpaceTime = now;
+                    if (now - lastTap < 300) activateBoard(); else doJump();
+                    lastTap = now;
                 }
             });
 
-            let touchStartX = 0, touchStartY = 0, lastTapTime = 0;
-            const minSwipe = 26;
-
-            window.addEventListener('touchstart', (e) => {
-                if (e.touches.length > 0) {
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                }
+            let sx = 0, sy = 0, lastTouchTap = 0;
+            window.addEventListener('touchstart', e => {
+                if (e.touches[0]) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }
             }, { passive: true });
-
-            window.addEventListener('touchend', (e) => {
-                if (!isGameRunning || e.changedTouches.length === 0) return;
-                const dx = e.changedTouches[0].clientX - touchStartX;
-                const dy = e.changedTouches[0].clientY - touchStartY;
-
+            window.addEventListener('touchend', e => {
+                if (!isRunning || !e.changedTouches[0]) return;
+                const dx = e.changedTouches[0].clientX - sx;
+                const dy = e.changedTouches[0].clientY - sy;
                 if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
                     const now = Date.now();
-                    if (now - lastTapTime < 300) activateHoverboard();
-                    lastTapTime = now;
+                    if (now - lastTouchTap < 300) activateBoard();
+                    lastTouchTap = now;
                     return;
                 }
-
                 if (Math.abs(dx) > Math.abs(dy)) {
-                    if (Math.abs(dx) > minSwipe) dx > 0 ? moveRight() : moveLeft();
+                    if (Math.abs(dx) > 26) {
+                        if (dx > 0 && currentLane < 2) { currentLane++; targetX = LANES[currentLane]; sfx.swipe(); }
+                        else if (dx < 0 && currentLane > 0) { currentLane--; targetX = LANES[currentLane]; sfx.swipe(); }
+                    }
                 } else {
-                    if (Math.abs(dy) > minSwipe) dy < 0 ? jump() : roll();
+                    if (Math.abs(dy) > 26) dy < 0 ? doJump() : doRoll();
                 }
             }, { passive: true });
 
-            document.getElementById('start-btn').addEventListener('click', startGame);
-            document.getElementById('restart-btn').addEventListener('click', startGame);
-
-            document.getElementById('open-shop-btn').addEventListener('click', () => {
-                document.getElementById('start-screen').classList.add('hidden');
-                document.getElementById('shop-screen').classList.remove('hidden');
-                renderShop();
-            });
-            document.getElementById('go-shop-btn').addEventListener('click', () => {
-                document.getElementById('gameover-screen').classList.add('hidden');
-                document.getElementById('shop-screen').classList.remove('hidden');
-                renderShop();
-            });
-            document.getElementById('close-shop-btn').addEventListener('click', () => {
+            document.getElementById('start-btn').onclick = startGame;
+            document.getElementById('restart-btn').onclick = startGame;
+            document.getElementById('open-shop-btn').onclick = () => openShop('gameover-screen');
+            document.getElementById('go-shop-btn').onclick = () => openShop('gameover-screen');
+            document.getElementById('close-shop-btn').onclick = () => {
                 document.getElementById('shop-screen').classList.add('hidden');
                 document.getElementById('start-screen').classList.remove('hidden');
+            };
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentTab = btn.dataset.tab;
+                    renderShop();
+                };
             });
-
-            document.getElementById('sound-toggle').addEventListener('click', (e) => {
+            document.getElementById('sound-toggle').onclick = e => {
                 sfx.enabled = !sfx.enabled;
-                e.target.textContent = sfx.enabled ? '🔊 Ses: Açık' : '🔇 Ses: Kapalı';
-            });
+                e.target.textContent = sfx.enabled ? '🔊 Ses Açık' : '🔇 Ses Kapalı';
+            };
         }
 
-        function moveLeft() {
-            if (currentLane > 0) {
-                currentLane--;
-                targetX = LANES[currentLane];
-                sfx.swipe();
-            }
+        function openShop(hideId) {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById(hideId).classList.add('hidden');
+            document.getElementById('shop-screen').classList.remove('hidden');
+            renderShop();
         }
-        function moveRight() {
-            if (currentLane < 2) {
-                currentLane++;
-                targetX = LANES[currentLane];
-                sfx.swipe();
-            }
-        }
-        function jump() {
-            if (activeEffects.jetpack > 0) return;
-            if (!isJumping) {
+
+        function doJump() {
+            if (!isJumping && activePU.jetpack <= 0) {
                 isJumping = true;
-                velocityY = activeEffects.sneakers > 0 ? baseJumpForce * 1.38 : baseJumpForce;
-                if (isRolling) endRoll();
+                velocityY = activePU.sneakers > 0 ? 30 : 22;
+                isRolling = false;
+                layeredCharGroup.scale.set(1, 1, 1);
                 sfx.jump();
             }
         }
-        function roll() {
-            if (activeEffects.jetpack > 0) return;
-            if (isJumping) velocityY = -44;
+
+        function doRoll() {
+            if (activePU.jetpack > 0) return;
+            if (isJumping) velocityY = -42;
             isRolling = true;
             rollTimer = 0.65;
-            playerGroup.scale.set(1.12, 0.48, 1.12);
+            layeredCharGroup.scale.set(1.15, 0.48, 1);
             sfx.roll();
         }
-        function endRoll() {
-            isRolling = false;
-            rollTimer = 0;
-            playerGroup.scale.set(1, 1, 1);
-        }
-        function activateHoverboard() {
-            if (activeEffects.hoverboard <= 0) {
-                activeEffects.hoverboard = 12;
-                hoverboardMesh.visible = true;
-                spawnParticles(playerGroup.position.x, playerY + 0.3, 0, 0x38bdf8, 18);
+
+        function activateBoard() {
+            if (activePU.shield <= 0) {
+                const board = BOARDS.find(b => b.id === saveData.equippedBoard) || BOARDS[0];
+                activePU.shield = board.duration;
+                boardPlaneMesh.visible = true;
                 sfx.powerup();
             }
         }
 
-        // ==========================================
-        // 9. OYUN DÖNGÜSÜ & GÖRSEL ŞOV SİSTEMLERİ
-        // ==========================================
         function startGame() {
             sfx.init();
-            obstacles.forEach(o => scene.remove(o.mesh));
-            obstacles = [];
-            coins.forEach(c => scene.remove(c));
-            coins = [];
-            powerups.forEach(p => scene.remove(p.mesh));
-            powerups = [];
-            particles.forEach(pt => scene.remove(pt.mesh));
-            particles = [];
-            coinTrails.forEach(tr => scene.remove(tr.mesh));
-            coinTrails = [];
+            obstacles.forEach(o => scene.remove(o.mesh)); obstacles = [];
+            coins.forEach(c => scene.remove(c)); coins = [];
+            powerups.forEach(p => scene.remove(p.mesh)); powerups = [];
 
-            isGameRunning = true;
+            applyLoadout();
+            isRunning = true;
             gameSpeed = 26;
             score = 0;
             runCoins = 0;
-            comboCount = 0;
-            comboTimer = 0;
+            scoreMult = 1;
             currentLane = 1;
             targetX = 0;
             playerY = 0;
             velocityY = 0;
             isJumping = false;
-            endRoll();
-            spawnTimer = 0;
-
-            activeEffects = { magnet: 0, jetpack: 0, sneakers: 0, multiplier: 0, hoverboard: 0 };
-            jetpackMesh.visible = false;
-            hoverboardMesh.visible = false;
-            magnetRing.visible = false;
-
-            playerGroup.position.set(0, 0, 0);
-            playerGroup.rotation.set(0, 0, 0);
+            isRolling = false;
+            layeredCharGroup.scale.set(1, 1, 1);
+            activePU = { magnet: 0, jetpack: 0, sneakers: 0, multiplier: 0, shield: 0 };
+            boardPlaneMesh.visible = false;
+            playerRoot.position.set(0, 0, 0);
 
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('gameover-screen').classList.add('hidden');
-            document.getElementById('new-record-msg').style.display = 'none';
+            document.getElementById('new-best-msg').style.display = 'none';
 
             clock.getDelta();
-            requestAnimationFrame(animate);
+            requestAnimationFrame(loop);
         }
 
-        function triggerGameOver() {
-            isGameRunning = false;
+        function gameOver() {
+            isRunning = false;
             sfx.crash();
-            shakeIntensity = 0.9;
-
-            const flash = document.getElementById('hit-flash');
-            flash.style.opacity = '1';
-            setTimeout(() => { flash.style.opacity = '0'; }, 160);
-            document.getElementById('speed-lines').style.opacity = '0';
-
-            const finalScoreInt = Math.floor(score);
+            const finalS = Math.floor(score);
             saveData.bankCoins += runCoins;
-            if (finalScoreInt > saveData.highScore) {
-                saveData.highScore = finalScoreInt;
-                document.getElementById('new-record-msg').style.display = 'block';
+            if (finalS > saveData.bestScore) {
+                saveData.bestScore = finalS;
+                document.getElementById('new-best-msg').style.display = 'block';
             }
-            persistSave();
-
-            document.getElementById('final-score').textContent = finalScoreInt;
+            saveState();
+            document.getElementById('final-score').textContent = finalS;
             document.getElementById('final-coins').textContent = runCoins;
             document.getElementById('final-bank').textContent = saveData.bankCoins;
             document.getElementById('gameover-screen').classList.remove('hidden');
         }
 
-        function updatePowerupHUD() {
-            const container = document.getElementById('powerup-hud');
-            container.innerHTML = '';
-
-            const items = [
-                { key: 'jetpack', name: '🚀 Jetpack', max: 8, color: '#38bdf8' },
-                { key: 'magnet', name: '🧲 Altın Mıknatısı', max: 12, color: '#ef4444' },
-                { key: 'sneakers', name: '👟 Süper Zıplama', max: 12, color: '#10b981' },
-                { key: 'multiplier', name: '⚡ 2x Skor Çarpanı', max: 12, color: '#a855f7' },
-                { key: 'hoverboard', name: '🛹 Kaykay Kalkanı', max: 12, color: '#06b6d4' }
+        function renderPUHud() {
+            const el = document.getElementById('powerup-hud');
+            el.innerHTML = '';
+            const map = [
+                { k: 'jetpack', label: '🚀 Jetpack', max: 8, col: '#38bdf8' },
+                { k: 'magnet', label: '🧲 Mıknatıs', max: 12, col: '#ef4444' },
+                { k: 'sneakers', label: '👟 Süper Zıplama', max: 12, col: '#10b981' },
+                { k: 'multiplier', label: '⚡ 2x Skor', max: 12, col: '#a855f7' },
+                { k: 'shield', label: '🛹 Kaykay', max: 18, col: '#f59e0b' }
             ];
-
-            items.forEach(item => {
-                const rem = activeEffects[item.key];
-                if (rem > 0) {
-                    const pct = Math.min(100, (rem / item.max) * 100);
-                    container.innerHTML += `
-                        <div class="pu-bar-wrap">
-                            <div class="pu-bar-header">
-                                <span>${item.name}</span>
-                                <span>${rem.toFixed(1)}s</span>
-                            </div>
-                            <div class="pu-track">
-                                <div class="pu-fill" style="width:${pct}%; background:${item.color};"></div>
-                            </div>
-                        </div>
-                    `;
+            map.forEach(item => {
+                if (activePU[item.k] > 0) {
+                    const pct = Math.min(100, (activePU[item.k] / item.max) * 100);
+                    el.innerHTML += `<div class="pu-card"><div class="pu-top"><span>${item.label}</span><span>${activePU[item.k].toFixed(1)}s</span></div><div class="pu-bar"><div class="pu-fill" style="width:${pct}%;background:${item.col}"></div></div></div>`;
                 }
             });
         }
 
-        function animate() {
-            if (!isGameRunning) return;
-            requestAnimationFrame(animate);
-
+        function loop() {
+            if (!isRunning) return;
+            requestAnimationFrame(loop);
             const dt = Math.min(clock.getDelta(), 0.05);
 
-            updateDayNightCycle(dt);
+            if (gameSpeed < maxSpeed) gameSpeed += 0.65 * dt;
+            const spd = activePU.jetpack > 0 ? gameSpeed * 1.4 : gameSpeed;
 
-            if (gameSpeed < maxSpeed) {
-                gameSpeed += 0.65 * dt;
-            }
-            const currentSpeed = activeEffects.jetpack > 0 ? gameSpeed * 1.45 : gameSpeed;
+            Object.keys(activePU).forEach(k => { if (activePU[k] > 0) activePU[k] = Math.max(0, activePU[k] - dt); });
+            boardPlaneMesh.visible = activePU.shield > 0;
 
-            // Hız Çizgileri ve Dinamik FOV
-            const speedRatio = Math.max(0, (currentSpeed - 34) / (maxSpeed * 1.45 - 34));
-            document.getElementById('speed-lines').style.opacity = Math.min(0.85, speedRatio).toFixed(2);
-            const targetFov = 62 + speedRatio * 11 + (activeEffects.jetpack > 0 ? 5 : 0);
-            camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, 6 * dt);
-            camera.updateProjectionMatrix();
-
-            // Combo zamanlayıcısı
-            if (comboTimer > 0) {
-                comboTimer -= dt;
-                if (comboTimer <= 0) comboCount = 0;
-            }
-
-            Object.keys(activeEffects).forEach(k => {
-                if (activeEffects[k] > 0) {
-                    activeEffects[k] = Math.max(0, activeEffects[k] - dt);
-                }
-            });
-            jetpackMesh.visible = activeEffects.jetpack > 0;
-            hoverboardMesh.visible = activeEffects.hoverboard > 0;
-            magnetRing.visible = activeEffects.magnet > 0;
-            if (magnetRing.visible) magnetRing.rotation.z += 4.5 * dt;
-
-            const mult = activeEffects.multiplier > 0 ? 2 : 1;
-            score += currentSpeed * dt * 1.6 * mult;
+            const mult = (activePU.multiplier > 0 ? 2 : 1) * scoreMult;
+            score += spd * dt * 1.5 * mult;
             document.getElementById('score-val').textContent = Math.floor(score);
             document.getElementById('coins-val').textContent = runCoins;
             document.getElementById('mult-badge').textContent = mult + 'x';
-            updatePowerupHUD();
+            renderPUHud();
 
-            // Sonsuz Zemin Akışı
-            const segLen = 20;
-            const totalLen = tracks.length * segLen;
-            tracks.forEach(seg => {
-                seg.position.z += currentSpeed * dt;
-                if (seg.position.z > 30) seg.position.z -= totalLen;
-            });
+            const segLen = 22, totalL = segments.length * segLen;
+            segments.forEach(s => { s.position.z += spd * dt; if (s.position.z > 30) s.position.z -= totalL; });
 
-            // Yatay Hareket & Yatma Açısı
-            playerGroup.position.x = THREE.MathUtils.lerp(playerGroup.position.x, targetX, 16 * dt);
-            playerGroup.rotation.z = (playerGroup.position.x - targetX) * 0.14;
+            playerRoot.position.x = THREE.MathUtils.lerp(playerRoot.position.x, targetX, 16 * dt);
+            layeredCharGroup.rotation.z = (playerRoot.position.x - targetX) * 0.14;
 
-            // Dikey Fizik
-            if (activeEffects.jetpack > 0) {
-                playerY = THREE.MathUtils.lerp(playerY, 8.2, 6 * dt);
+            if (activePU.jetpack > 0) {
+                playerY = THREE.MathUtils.lerp(playerY, 8.0, 6 * dt);
                 isJumping = false;
-                if (isRolling) endRoll();
-                torsoGroup.rotation.x = 0.55;
-                if (Math.random() < 0.65) {
-                    spawnParticles(playerGroup.position.x, playerY + 0.8, 0.5, 0xf97316, 1);
-                }
-            } else {
-                torsoGroup.rotation.x = THREE.MathUtils.lerp(torsoGroup.rotation.x, 0.12, 10 * dt);
-                if (isJumping) {
-                    playerY += velocityY * dt;
-                    velocityY += baseGravity * dt;
-                    if (playerY <= 0) {
-                        playerY = 0;
-                        velocityY = 0;
-                        isJumping = false;
-                        spawnParticles(playerGroup.position.x, 0.1, 0, 0x94a3b8, 6);
-                    }
-                } else if (playerY > 0) {
-                    playerY += velocityY * dt;
-                    velocityY += baseGravity * 0.65 * dt;
-                    if (playerY <= 0) {
-                        playerY = 0;
-                        velocityY = 0;
-                    }
-                }
+            } else if (isJumping || playerY > 0) {
+                isJumping = true;
+                playerY += velocityY * dt;
+                velocityY -= 60 * dt;
+                if (playerY <= 0) { playerY = 0; velocityY = 0; isJumping = false; }
             }
-            playerGroup.position.y = playerY;
+            playerRoot.position.y = playerY;
 
-            // Koşu Animasyonu
             if (isRolling) {
                 rollTimer -= dt;
-                if (rollTimer <= 0) endRoll();
-            } else if (!isJumping && activeEffects.jetpack <= 0) {
-                runCycle += dt * (currentSpeed * 0.65);
-                leftLeg.rotation.x = Math.sin(runCycle) * 0.95;
-                rightLeg.rotation.x = -Math.sin(runCycle) * 0.95;
-                leftArm.rotation.x = -Math.sin(runCycle) * 0.85;
-                rightArm.rotation.x = Math.sin(runCycle) * 0.85;
-                torsoGroup.position.y = 1.15 + Math.abs(Math.cos(runCycle)) * 0.08;
-            } else if (isJumping) {
-                leftLeg.rotation.x = 0.5;
-                rightLeg.rotation.x = -0.4;
-                leftArm.rotation.x = -0.8;
-                rightArm.rotation.x = -0.8;
+                if (rollTimer <= 0) { isRolling = false; layeredCharGroup.scale.set(1, 1, 1); }
+            } else if (!isJumping && activePU.jetpack <= 0) {
+                animPhase += dt * spd * 0.65;
+                // Katmanlı 3D derinlik/sekme animasyonu
+                headLayerMesh.position.y = 1.32 + Math.abs(Math.sin(animPhase)) * 0.08;
+                frontLayerMesh.position.z = -0.14 - Math.sin(animPhase) * 0.06;
+                backLayerMesh.position.z = 0.14 + Math.sin(animPhase) * 0.06;
             }
 
-            spawnTimer -= currentSpeed * dt;
-            if (spawnTimer <= 0) {
-                spawnWave();
-                spawnTimer = THREE.MathUtils.clamp(29 + currentSpeed * 0.25, 29, 44);
-            }
+            spawnTimer -= spd * dt;
+            if (spawnTimer <= 0) { spawnWave(); spawnTimer = 31; }
 
-            const pW = 0.8, pD = 0.8;
-            const pH = isRolling ? 0.85 : 1.75;
-            const pMinX = playerGroup.position.x - pW / 2, pMaxX = playerGroup.position.x + pW / 2;
-            const pMinY = playerGroup.position.y, pMaxY = playerGroup.position.y + pH;
-            const pMinZ = -pD / 2, pMaxZ = pD / 2;
+            const pW = 0.8, pH = isRolling ? 0.85 : 1.75;
+            const pMinX = playerRoot.position.x - pW / 2, pMaxX = playerRoot.position.x + pW / 2;
+            const pMinY = playerY, pMaxY = playerY + pH;
 
-            // Engeller
             for (let i = obstacles.length - 1; i >= 0; i--) {
-                const obs = obstacles[i];
-                obs.mesh.position.z += (currentSpeed + obs.speedOffset) * dt;
-
-                const pos = obs.mesh.position;
-                const b = obs.box;
-                const hit =
-                    pMaxX > pos.x - b.width / 2 && pMinX < pos.x + b.width / 2 &&
-                    pMaxY > b.minY && pMinY < b.maxY &&
-                    pMaxZ > pos.z - b.length / 2 && pMinZ < pos.z + b.length / 2;
-
+                const o = obstacles[i];
+                o.mesh.position.z += (spd + o.speedAdd) * dt;
+                const pos = o.mesh.position, b = o.box;
+                const hit = pMaxX > pos.x - b.w / 2 && pMinX < pos.x + b.w / 2 &&
+                            pMaxY > b.minY && pMinY < b.maxY &&
+                            0.45 > pos.z - b.l / 2 && -0.45 < pos.z + b.l / 2;
                 if (hit) {
-                    if (activeEffects.hoverboard > 0) {
-                        activeEffects.hoverboard = 0;
-                        hoverboardMesh.visible = false;
-                        sfx.shieldBreak();
-                        shakeIntensity = 0.6;
-                        spawnParticles(pos.x, 1.5, pos.z, 0x38bdf8, 28);
-                        scene.remove(obs.mesh);
-                        obstacles.splice(i, 1);
-                        continue;
-                    } else {
-                        triggerGameOver();
-                        return;
+                    if (activePU.shield > 0) {
+                        activePU.shield = 0; boardPlaneMesh.visible = false;
+                        scene.remove(o.mesh); obstacles.splice(i, 1); sfx.crash(); continue;
                     }
+                    gameOver(); return;
                 }
-
-                if (obs.mesh.position.z - b.length / 2 > 18) {
-                    scene.remove(obs.mesh);
-                    obstacles.splice(i, 1);
-                }
+                if (o.mesh.position.z - b.l / 2 > 18) { scene.remove(o.mesh); obstacles.splice(i, 1); }
             }
 
-            // Altınlar & Mıknatıs İzi
             for (let i = coins.length - 1; i >= 0; i--) {
-                const coin = coins[i];
-                coin.position.z += currentSpeed * dt;
-                coin.rotation.z += 4 * dt;
-
-                if (activeEffects.magnet > 0 && coin.position.z > -40 && coin.position.z < 5) {
-                    coin.position.lerp(new THREE.Vector3(playerGroup.position.x, playerY + 1, 0), 13 * dt);
-                    if (Math.random() < 0.45) {
-                        spawnTrailSpark(coin.position.x, coin.position.y, coin.position.z, 0xfef08a);
-                    }
+                const c = coins[i];
+                c.position.z += spd * dt;
+                c.rotation.z += 4 * dt;
+                if (activePU.magnet > 0 && c.position.z > -38 && c.position.z < 5) {
+                    c.position.lerp(new THREE.Vector3(playerRoot.position.x, playerY + 1, 0), 12 * dt);
                 }
-
-                const dist = coin.position.distanceTo(new THREE.Vector3(playerGroup.position.x, playerY + 0.9, 0));
-                if (dist < 1.35) {
-                    comboCount++;
-                    comboTimer = 1.6;
-                    if (comboCount > 0 && comboCount % 5 === 0) {
-                        showCombo(comboCount);
-                    }
-                    const comboBonus = Math.min(comboCount, 10) * 10;
-                    spawnParticles(coin.position.x, coin.position.y, coin.position.z, 0xfacc15, 8);
-                    scene.remove(coin);
-                    coins.splice(i, 1);
-                    runCoins++;
-                    score += (50 + comboBonus) * mult;
-                    sfx.coin(comboCount);
-                    continue;
+                if (c.position.distanceTo(new THREE.Vector3(playerRoot.position.x, playerY + 0.9, 0)) < 1.35) {
+                    scene.remove(c); coins.splice(i, 1); runCoins++; score += 50 * mult; sfx.coin(); continue;
                 }
-
-                if (coin.position.z > 18) {
-                    scene.remove(coin);
-                    coins.splice(i, 1);
-                }
+                if (c.position.z > 18) { scene.remove(c); coins.splice(i, 1); }
             }
 
-            // Güçlendirici Objeler
             for (let i = powerups.length - 1; i >= 0; i--) {
-                const pu = powerups[i];
-                pu.mesh.position.z += currentSpeed * dt;
-                pu.mesh.rotation.y += 3 * dt;
-                pu.mesh.rotation.x += 2 * dt;
-
-                const dist = pu.mesh.position.distanceTo(new THREE.Vector3(playerGroup.position.x, playerY + 0.9, 0));
-                if (dist < 1.5) {
-                    activeEffects[pu.type] = pu.type === 'jetpack' ? 8 : 12;
-                    spawnParticles(pu.mesh.position.x, pu.mesh.position.y, pu.mesh.position.z, pu.color, 20);
-                    sfx.powerup();
-                    scene.remove(pu.mesh);
-                    powerups.splice(i, 1);
-                    continue;
+                const p = powerups[i];
+                p.mesh.position.z += spd * dt;
+                p.mesh.rotation.y += 3 * dt;
+                if (p.mesh.position.distanceTo(new THREE.Vector3(playerRoot.position.x, playerY + 0.9, 0)) < 1.5) {
+                    activePU[p.key] = p.key === 'jetpack' ? 8 : 12;
+                    scene.remove(p.mesh); powerups.splice(i, 1); sfx.powerup(); continue;
                 }
-
-                if (pu.mesh.position.z > 18) {
-                    scene.remove(pu.mesh);
-                    powerups.splice(i, 1);
-                }
+                if (p.mesh.position.z > 18) { scene.remove(p.mesh); powerups.splice(i, 1); }
             }
 
-            // Parçacıklar & İzciler
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const pt = particles[i];
-                pt.life -= dt;
-                pt.mesh.position.x += pt.vx * dt;
-                pt.mesh.position.y += pt.vy * dt;
-                pt.mesh.position.z += pt.vz * dt;
-                pt.mesh.scale.setScalar(Math.max(0.01, pt.life * 2));
-                if (pt.life <= 0) {
-                    scene.remove(pt.mesh);
-                    particles.splice(i, 1);
-                }
-            }
-
-            for (let i = coinTrails.length - 1; i >= 0; i--) {
-                const tr = coinTrails[i];
-                tr.life -= dt;
-                tr.mesh.scale.setScalar(Math.max(0.01, tr.life * 4));
-                if (tr.life <= 0) {
-                    scene.remove(tr.mesh);
-                    coinTrails.splice(i, 1);
-                }
-            }
-
-            // Kamera Takibi & Sarsıntı
-            let shakeX = 0, shakeY = 0;
-            if (shakeIntensity > 0) {
-                shakeX = (Math.random() - 0.5) * shakeIntensity;
-                shakeY = (Math.random() - 0.5) * shakeIntensity;
-                shakeIntensity = Math.max(0, shakeIntensity - 2.5 * dt);
-            }
-            const laneBank = (playerGroup.position.x - targetX) * 0.025;
-            camera.position.x = THREE.MathUtils.lerp(camera.position.x, playerGroup.position.x * 0.45, 8 * dt) + shakeX;
-            camera.position.y = THREE.MathUtils.lerp(camera.position.y, 6.5 + playerY * 0.42, 8 * dt) + shakeY;
-            camera.rotation.z = THREE.MathUtils.lerp(camera.rotation.z, laneBank, 8 * dt);
-
+            camera.position.x = THREE.MathUtils.lerp(camera.position.x, playerRoot.position.x * 0.45, 8 * dt);
+            camera.position.y = THREE.MathUtils.lerp(camera.position.y, 6.2 + playerY * 0.4, 8 * dt);
             renderer.render(scene, camera);
         }
 
         // ==========================================
-        // 10. MAĞAZA & ARAYÜZ GÜNCELLEME
+        // 6. SUBWAY MAĞAZA RENDER
         // ==========================================
-        function updateWalletUI() {
-            document.getElementById('menu-highscore').textContent = saveData.highScore;
-            document.getElementById('hud-high-score').textContent = saveData.highScore;
+        function syncWalletUI() {
+            document.getElementById('menu-best').textContent = saveData.bestScore;
+            document.getElementById('hud-best').textContent = saveData.bestScore;
             document.getElementById('menu-bank').textContent = saveData.bankCoins;
             document.getElementById('shop-bank').textContent = saveData.bankCoins;
         }
 
         function renderShop() {
-            const container = document.getElementById('shop-items');
-            container.innerHTML = '';
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
 
-            SKINS.forEach(skin => {
-                const isUnlocked = saveData.unlockedSkins.includes(skin.id);
-                const isEquipped = saveData.equippedSkin === skin.id;
-
-                const hexColor = '#' + skin.body.toString(16).padStart(6, '0');
-                const accentColor = '#' + skin.accent.toString(16).padStart(6, '0');
-
-                let btnText = `🪙 ${skin.price} Satın Al`;
-                let btnClass = 'shop-btn';
-                if (isEquipped) {
-                    btnText = '✓ Kuşanıldı';
-                    btnClass += ' active';
-                } else if (isUnlocked) {
-                    btnText = 'Seç';
-                    btnClass += ' owned';
-                }
-
-                const card = document.createElement('div');
-                card.className = 'shop-card' + (isEquipped ? ' equipped' : '');
-                card.innerHTML = `
-                    <div class="skin-preview" style="background: linear-gradient(135deg, ${hexColor} 60%, ${accentColor} 100%);"></div>
-                    <h3>${skin.name}</h3>
-                    <p>${skin.desc}</p>
-                    <button class="${btnClass}">${btnText}</button>
-                `;
-
-                card.querySelector('button').addEventListener('click', () => {
-                    if (isEquipped) return;
-                    if (isUnlocked) {
-                        saveData.equippedSkin = skin.id;
-                        applySkin(skin.id);
-                        persistSave();
-                        renderShop();
-                        sfx.swipe();
-                    } else if (saveData.bankCoins >= skin.price) {
-                        saveData.bankCoins -= skin.price;
-                        saveData.unlockedSkins.push(skin.id);
-                        saveData.equippedSkin = skin.id;
-                        applySkin(skin.id);
-                        persistSave();
-                        renderShop();
-                        sfx.powerup();
-                    } else {
-                        sfx.crash();
-                    }
+            if (currentTab === 'surfers') {
+                SURFERS.forEach(s => {
+                    const owned = saveData.unlockedSurfers.includes(s.id);
+                    const eq = saveData.equippedSurfer === s.id;
+                    const card = document.createElement('div');
+                    card.className = 'item-card' + (eq ? ' equipped' : '');
+                    card.innerHTML = `<div class="swatch" style="background:linear-gradient(135deg,${s.main} 65%,${s.accent})"></div><h3>${s.name}</h3><p>${s.desc}</p><button class="action-btn ${eq ? 'active' : owned ? 'owned' : ''}">${eq ? '✓ Seçili' : owned ? 'Kuşan' : '🪙 ' + s.price}</button>`;
+                    card.querySelector('button').onclick = () => {
+                        if (eq) return;
+                        if (owned) { saveData.equippedSurfer = s.id; applyLoadout(); saveState(); renderShop(); sfx.swipe(); }
+                        else if (saveData.bankCoins >= s.price) {
+                            saveData.bankCoins -= s.price; saveData.unlockedSurfers.push(s.id); saveData.equippedSurfer = s.id;
+                            applyLoadout(); saveState(); renderShop(); sfx.powerup();
+                        } else sfx.crash();
+                    };
+                    grid.appendChild(card);
                 });
+            } else if (currentTab === 'boards') {
+                BOARDS.forEach(b => {
+                    const owned = saveData.unlockedBoards.includes(b.id);
+                    const eq = saveData.equippedBoard === b.id;
+                    const card = document.createElement('div');
+                    card.className = 'item-card' + (eq ? ' equipped' : '');
+                    card.innerHTML = `<div class="swatch" style="background:${b.color}"></div><h3>${b.name}</h3><p>${b.desc}</p><button class="action-btn ${eq ? 'active' : owned ? 'owned' : ''}">${eq ? '✓ Seçili' : owned ? 'Kuşan' : '🪙 ' + b.price}</button>`;
+                    card.querySelector('button').onclick = () => {
+                        if (eq) return;
+                        if (owned) { saveData.equippedBoard = b.id; applyLoadout(); saveState(); renderShop(); sfx.swipe(); }
+                        else if (saveData.bankCoins >= b.price) {
+                            saveData.bankCoins -= b.price; saveData.unlockedBoards.push(b.id); saveData.equippedBoard = b.id;
+                            applyLoadout(); saveState(); renderShop(); sfx.powerup();
+                        } else sfx.crash();
+                    };
+                    grid.appendChild(card);
+                });
+            } else {
+                // Mystery Box
+                const boxCard = document.createElement('div');
+                boxCard.className = 'item-card';
+                boxCard.innerHTML = `<div class="swatch" style="background:linear-gradient(135deg,#f59e0b,#ef4444)"></div><h3>Mystery Box</h3><p>Rastgele 40–220 altın kazandırır</p><button class="action-btn box-btn">🎁 Aç (🪙 80)</button>`;
+                boxCard.querySelector('button').onclick = () => {
+                    if (saveData.bankCoins < 80) { sfx.crash(); return; }
+                    saveData.bankCoins -= 80;
+                    const prize = [40, 60, 100, 150, 220][Math.floor(Math.random() * 5)];
+                    saveData.bankCoins += prize;
+                    saveState(); renderShop(); sfx.powerup();
+                    alert(`🎁 Mystery Box içinden ${prize} altın çıktı!`);
+                };
+                grid.appendChild(boxCard);
 
-                container.appendChild(card);
-            });
+                // Kalıcı Skor Çarpanı
+                const multCard = document.createElement('div');
+                multCard.className = 'item-card';
+                multCard.innerHTML = `<div class="swatch" style="background:linear-gradient(135deg,#a855f7,#38bdf8)"></div><h3>Kalıcı Çarpan (+1x)</h3><p>Mevcut çarpan: ${scoreMult}x</p><button class="action-btn">⬆️ Yükselt (🪙 250)</button>`;
+                multCard.querySelector('button').onclick = () => {
+                    if (saveData.bankCoins >= 250) {
+                        saveData.bankCoins -= 250; scoreMult++; saveState(); renderShop(); sfx.powerup();
+                    } else sfx.crash();
+                };
+                grid.appendChild(multCard);
+            }
         }
 
         init();
