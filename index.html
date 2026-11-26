@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lira">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#121216">
 <title>Lira: Kristal Yankısı — Seva Studio</title>
+<link id="app-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%231e202b'/%3E%3Cstop offset='100%25' stop-color='%23121216'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23f6d388'/%3E%3Cstop offset='100%25' stop-color='%23d99b38'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23bg)'/%3E%3Crect x='24' y='24' width='464' height='464' rx='92' fill='none' stroke='url(%23gold)' stroke-opacity='0.35' stroke-width='4'/%3E%3Cpolygon points='256,84 316,164 256,244 196,164' fill='url(%23gold)'/%3E%3Cpolygon points='256,108 292,164 256,220 220,164' fill='%23fff8e7' fill-opacity='0.45'/%3E%3Cpath d='M146,168 C118,248 144,352 256,396 C368,352 394,248 366,168' fill='none' stroke='url(%23gold)' stroke-width='20' stroke-linecap='round'/%3E%3Cpath d='M132,164 L164,174 M380,164 L348,174' stroke='url(%23gold)' stroke-width='16' stroke-linecap='round'/%3E%3Cline x1='212' y1='195' x2='212' y2='376' stroke='%23ffffff' stroke-opacity='0.75' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='256' y1='244' x2='256' y2='392' stroke='url(%23gold)' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='300' y1='195' x2='300' y2='376' stroke='%23ffffff' stroke-opacity='0.75' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='318' r='16' fill='%23ffffff'/%3E%3C/svg%3E">
+<link id="apple-touch-icon" rel="apple-touch-icon" href="">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -167,42 +174,60 @@
   /* Başlık Bölümü */
   .hero-section {
     text-align: center;
-    margin-top: 6px;
+    margin-top: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  .subtitle-tag {
-    display: inline-block;
+  .brand-emblem {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #1e202b 0%, #2c2f3f 100%);
+    box-shadow: 0 10px 24px rgba(24, 25, 34, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    border: 1.5px solid rgba(217, 155, 56, 0.45);
+  }
+
+  .rank-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
+    font-weight: 800;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent);
     background: var(--accent-soft);
-    padding: 5px 12px;
+    padding: 4px 12px;
     border-radius: 999px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
 
   .game-title {
-    font-size: 38px;
+    font-size: 34px;
     font-weight: 800;
     letter-spacing: -0.03em;
     color: #181922;
-    line-height: 1.05;
+    line-height: 1.04;
   }
 
   .game-title span {
     display: block;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 600;
     color: #5c5f70;
-    margin-top: 4px;
-    letter-spacing: 0.06em;
+    margin-top: 3px;
+    letter-spacing: 0.08em;
   }
 
   .best-score-line {
-    margin-top: 8px;
-    font-size: 13px;
+    margin-top: 6px;
+    font-size: 12px;
     font-weight: 600;
     color: #787b8c;
   }
@@ -353,6 +378,13 @@
     background: linear-gradient(135deg, #f7e4bc 0%, #f1d293 100%);
     border-color: rgba(197, 130, 29, 0.25);
     color: #5c3a06;
+  }
+
+  .btn-share {
+    background: linear-gradient(135deg, var(--accent) 0%, #1e202b 160%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   }
 
   /* Atölye & Modallar */
@@ -649,7 +681,25 @@
     </div>
 
     <div class="hero-section">
-      <div class="subtitle-tag">Senfonik Arcade</div>
+      <div class="brand-emblem" aria-hidden="true">
+        <svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+          <defs>
+            <linearGradient id="emblemGold" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#f7d794"/>
+              <stop offset="100%" stop-color="#d99b38"/>
+            </linearGradient>
+          </defs>
+          <polygon points="32,7 41,19 32,31 23,19" fill="url(#emblemGold)"/>
+          <polygon points="32,11 37,19 32,27 27,19" fill="#ffffff" fill-opacity="0.45"/>
+          <path d="M17 20C13 31 16 45 32 52C48 45 51 31 47 20" stroke="url(#emblemGold)" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M14 19L20 21M50 19L44 21" stroke="url(#emblemGold)" stroke-width="2.6" stroke-linecap="round"/>
+          <line x1="26" y1="24" x2="26" y2="49" stroke="#ffffff" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="32" y1="31" x2="32" y2="51" stroke="url(#emblemGold)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="38" y1="24" x2="38" y2="49" stroke="#ffffff" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="32" cy="40" r="3" fill="#ffffff"/>
+        </svg>
+      </div>
+      <div class="rank-pill" id="menu-rank">✦ ÇIRAK OZAN</div>
       <h1 class="game-title">LİRA<span>KRİSTAL YANKISI</span></h1>
       <div class="best-score-line" id="menu-best">En Yüksek Skor: 0</div>
     </div>
@@ -737,7 +787,7 @@
       </div>
       <div class="upgrade-card" style="flex-direction:column; align-items:flex-start;">
         <div class="upgrade-title">4. Kristal Türleri & Büyük Rezonatör</div>
-        <div class="upgrade-sub">Düz, Zırhlı (2 vuruş), Bölünen, Kırmızı Nova (zincirleme patlama) ve Siyah Gölge Dikeni (gergin teli koparır!). Belli aralıklarla gelen Büyük Rezonatör'ü yenerek +1 kalkan kazan.</div>
+        <div class="upgrade-sub">Düz, Zırhlı (2 vuruş), Bölünen, Kırmızı Nova (zincirleme patlama), Gümüş Ayna (sadece Tam Akor kırar, normal vuruşu hızla sektirir) ve Siyah Gölge Dikeni (gergin teli koparır!).</div>
       </div>
     </div>
   </div>
@@ -779,6 +829,10 @@
 
       <div id="go-quest-summary" style="font-size:12px; font-weight:600; color:#2e7d32;"></div>
 
+      <button class="btn-secondary btn-share" id="btn-share-score">
+        <span>↗</span>
+        <span>SKORU PAYLAŞ / MEYDAN OKU</span>
+      </button>
       <button class="btn-primary" id="btn-retry">TEKRAR OYNA</button>
       <button class="btn-secondary" id="btn-go-menu">ANA MENÜ</button>
     </div>
@@ -796,9 +850,144 @@
   'use strict';
 
   // ============================================================================
-  // 1. KAYIT, TEMALAR & VERİ YÖNETİMİ (LocalStorage)
+  // 0. ANA EKRAN UYGULAMA İKONU (PWA / APPLE TOUCH ICON OLUŞTURUCU) & TİTREŞİM
+  // ============================================================================
+  function generateAppIcons() {
+    try {
+      const iconCanvas = document.createElement('canvas');
+      iconCanvas.width = 512;
+      iconCanvas.height = 512;
+      const ictx = iconCanvas.getContext('2d');
+
+      // Koyu lüks arka plan
+      const bgGrad = ictx.createLinearGradient(0, 0, 512, 512);
+      bgGrad.addColorStop(0, '#1e202b');
+      bgGrad.addColorStop(1, '#121216');
+      ictx.fillStyle = bgGrad;
+      ictx.beginPath();
+      ictx.roundRect(0, 0, 512, 512, 112);
+      ictx.fill();
+
+      // Altın çerçeve
+      const goldGrad = ictx.createLinearGradient(40, 40, 472, 472);
+      goldGrad.addColorStop(0, '#f7d794');
+      goldGrad.addColorStop(1, '#d99b38');
+      ictx.strokeStyle = goldGrad;
+      ictx.lineWidth = 6;
+      ictx.beginPath();
+      ictx.roundRect(24, 24, 464, 464, 92);
+      ictx.stroke();
+
+      // Üst kristal elmas
+      ictx.fillStyle = goldGrad;
+      ictx.beginPath();
+      ictx.moveTo(256, 76);
+      ictx.lineTo(318, 160);
+      ictx.lineTo(256, 244);
+      ictx.lineTo(194, 160);
+      ictx.closePath();
+      ictx.fill();
+
+      ictx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+      ictx.beginPath();
+      ictx.moveTo(256, 102);
+      ictx.lineTo(294, 160);
+      ictx.lineTo(256, 218);
+      ictx.lineTo(218, 160);
+      ictx.closePath();
+      ictx.fill();
+
+      // Lira kolları
+      ictx.strokeStyle = goldGrad;
+      ictx.lineWidth = 22;
+      ictx.lineCap = 'round';
+      ictx.beginPath();
+      ictx.moveTo(142, 166);
+      ictx.bezierCurveTo(112, 252, 140, 360, 256, 406);
+      ictx.bezierCurveTo(372, 360, 400, 252, 370, 166);
+      ictx.stroke();
+
+      // Üst boynuz uçları
+      ictx.lineWidth = 16;
+      ictx.beginPath();
+      ictx.moveTo(124, 160);
+      ictx.lineTo(164, 174);
+      ictx.moveTo(388, 160);
+      ictx.lineTo(348, 174);
+      ictx.stroke();
+
+      // Teller
+      ictx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      ictx.lineWidth = 7;
+      ictx.beginPath();
+      ictx.moveTo(210, 196);
+      ictx.lineTo(210, 384);
+      ictx.moveTo(302, 196);
+      ictx.lineTo(302, 384);
+      ictx.stroke();
+
+      ictx.strokeStyle = goldGrad;
+      ictx.lineWidth = 9;
+      ictx.beginPath();
+      ictx.moveTo(256, 244);
+      ictx.lineTo(256, 402);
+      ictx.stroke();
+
+      // Parlayan kıvılcım noktası
+      ictx.fillStyle = '#ffffff';
+      ictx.beginPath();
+      ictx.arc(256, 322, 18, 0, Math.PI * 2);
+      ictx.fill();
+
+      const pngUrl = iconCanvas.toDataURL('image/png');
+      const appleIcon = document.getElementById('apple-touch-icon');
+      if (appleIcon) appleIcon.href = pngUrl;
+
+      // Dinamik Web App Manifest (Android / Chrome Ana Ekrana Ekle için)
+      const manifest = {
+        name: 'Lira: Kristal Yankısı',
+        short_name: 'Lira',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#121216',
+        theme_color: '#121216',
+        icons: [{ src: pngUrl, sizes: '512x512', type: 'image/png' }]
+      };
+      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = URL.createObjectURL(manifestBlob);
+      document.head.appendChild(manifestLink);
+    } catch (e) {}
+  }
+
+  function triggerHaptic(pattern) {
+    try {
+      if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    } catch (e) {}
+  }
+
+  // ============================================================================
+  // 1. KAYIT, TEMALAR, RÜTBELER & VERİ YÖNETİMİ (LocalStorage)
   // ============================================================================
   const STORAGE_KEY = 'lira_kristal_yankisi_sevastudio_v1';
+
+  const RANKS = [
+    { min: 0, title: 'Çırak Ozan' },
+    { min: 500, title: 'Akort Ustası' },
+    { min: 1500, title: 'Kristal Virtüözü' },
+    { min: 3000, title: 'Senfoni Mimarı' }
+  ];
+
+  function getPlayerRank(bestScore) {
+    let current = RANKS[0].title;
+    for (const r of RANKS) {
+      if (bestScore >= r.min) current = r.title;
+    }
+    return current;
+  }
 
   const UI_PALETTES = [
     { id: 'gold', name: 'Klasik Altın', color: '#d99b38', className: '' },
@@ -917,6 +1106,7 @@
     stars: 20,
     bestScore: 0,
     bestDaily: 0,
+    tutorialSeen: false,
     uiPalette: 'gold',
     selectedTheme: 'harp',
     unlockedThemes: ['harp'],
@@ -1247,6 +1437,8 @@
     waveCount: 0,
     bossSpawnedCount: 0,
     nextBossScore: 450,
+    tutorialTimer: 0,
+    wasInPerfectZone: false,
 
     sparks: [],
     crystals: [],
@@ -1316,7 +1508,7 @@
   // 6. VARLIK OLUŞTURMA (KRİSTALLER, NOTA KÜRELERİ, BÜYÜK REZONATÖR)
   // ============================================================================
   function spawnCrystal(type, x, y, customSpeed) {
-    const r = type === 'mini' ? 13 : (type === 'shadow' ? 16 : (type === 'nova' ? 21 : 22));
+    const r = type === 'mini' ? 13 : (type === 'shadow' ? 16 : (type === 'nova' ? 21 : (type === 'mirror' ? 20 : 22)));
     const hp = type === 'armored' ? 2 : 1;
     const baseSpeed = customSpeed || (46 + Math.min(55, game.score * 0.022));
     const speed = type === 'shadow' ? baseSpeed * 1.65 : (type === 'mini' ? baseSpeed * 1.15 : baseSpeed);
@@ -1354,13 +1546,15 @@
 
       const roll = rng();
       let type = 'prism';
-      if (game.waveCount >= 2 && roll < 0.14) {
+      if (game.waveCount >= 8 && roll < 0.10) {
+        type = 'mirror';
+      } else if (game.waveCount >= 2 && roll < 0.22) {
         type = 'nova';
-      } else if (game.waveCount >= 3 && roll < 0.30) {
+      } else if (game.waveCount >= 3 && roll < 0.36) {
         type = 'armored';
-      } else if (game.waveCount >= 4 && roll < 0.44) {
+      } else if (game.waveCount >= 4 && roll < 0.49) {
         type = 'splitter';
-      } else if (game.waveCount >= 5 && roll < 0.56) {
+      } else if (game.waveCount >= 5 && roll < 0.60) {
         type = 'shadow';
       }
 
@@ -1498,6 +1692,9 @@
       addFloatingText(cp.x, cp.y - 24, 'TAM AKOR! • DELİCİ + YANKI', '#d99b38', 14);
       addShockwave(cp.x, cp.y, 120, 'rgba(217, 155, 56, 0.6)');
       game.shake = 6;
+      triggerHaptic([14, 24, 18]);
+    } else {
+      triggerHaptic(8);
     }
 
     SoundEngine.playRelease(count, perfect);
@@ -1517,6 +1714,7 @@
     game.string.brokenTimer = 1.65;
     game.string.loadedSparks = 1;
     game.shake = 10;
+    triggerHaptic([35, 30, 45]);
     SoundEngine.playDamage();
     addFloatingText(W * 0.5, getStringAnchorY() - 10, 'TEL KOPTU!', '#e11d48', 16);
     spawnParticles(W * 0.5, getStringAnchorY(), '#1e202b', 18, 180);
@@ -1545,6 +1743,12 @@
     game.string.holdTime = 0;
     game.string.pullX = 0;
     game.string.pullY = 0.18;
+    game.wasInPerfectZone = false;
+
+    if (!saveData.tutorialSeen) {
+      saveData.tutorialSeen = true;
+      persistSave();
+    }
   }
 
   function onPointerMove(e) {
@@ -1558,6 +1762,12 @@
 
     game.string.pullX = Math.max(-1, Math.min(1, dx / (W * 0.34)));
     game.string.pullY = Math.max(0.1, Math.min(1, (dy + 22) / 145));
+
+    const inPerf = isPerfectRange(game.string.pullY);
+    if (inPerf && !game.wasInPerfectZone) {
+      triggerHaptic(10);
+    }
+    game.wasInPerfectZone = inPerf;
 
     const step = Math.floor(game.string.pullY * 10);
     if (step !== game.string.lastTickStep) {
@@ -1651,6 +1861,7 @@
     addShockwave(x, y, 115, 'rgba(239, 68, 68, 0.65)');
     spawnParticles(x, y, '#ef4444', 22, 220);
     game.shake = Math.max(game.shake, 8);
+    triggerHaptic(32);
     SoundEngine.playHit(game.combo + 3, true, true);
 
     const blastR = 112;
@@ -1683,12 +1894,13 @@
       splitter: '#10b981',
       nova: '#ef4444',
       shadow: '#1e202b',
-      mini: '#34d399'
+      mini: '#34d399',
+      mirror: '#cbd5e1'
     };
     const col = colors[c.type] || '#3b82f6';
     spawnParticles(c.x, c.y, col, 14, 170);
 
-    const pts = c.type === 'armored' ? 30 : (c.type === 'nova' ? 35 : (c.type === 'shadow' ? 40 : 20));
+    const pts = c.type === 'mirror' ? 55 : (c.type === 'armored' ? 30 : (c.type === 'nova' ? 35 : (c.type === 'shadow' ? 40 : 20)));
     addScore(pts, c.x, c.y);
 
     if (!fromExplosion) {
@@ -1912,6 +2124,22 @@
         const dist = Math.hypot(dx, dy);
 
         if (dist < sp.r + c.r) {
+          // Ayna Kristal: Sadece Tam Akor (piercing) kırabilir; normal atışı hızlandırarak yansıtır
+          if (c.type === 'mirror' && !sp.piercing) {
+            const nx = dx / (dist || 1);
+            const ny = dy / (dist || 1);
+            const dot = sp.vx * nx + sp.vy * ny;
+            sp.vx = (sp.vx - 2 * dot * nx) * 1.12;
+            sp.vy = (sp.vy - 2 * dot * ny) * 1.12;
+            sp.x = c.x + nx * (sp.r + c.r + 3);
+            sp.y = c.y + ny * (sp.r + c.r + 3);
+            c.hitFlash = 1.0;
+            SoundEngine.playHit(game.combo + 4, false, false);
+            spawnParticles(c.x, c.y, '#e2e8f0', 8, 130);
+            addFloatingText(c.x, c.y - 14, 'AYNA YANSITTI!', '#475569', 11);
+            break;
+          }
+
           c.hp--;
           c.hitFlash = 1.0;
 
@@ -2004,6 +2232,7 @@
         game.shields--;
         game.combo = 0;
         game.shake = 11;
+        triggerHaptic(40);
         SoundEngine.playDamage();
         spawnParticles(c.x, shieldY, '#ef4444', 18, 180);
         addFloatingText(c.x, shieldY - 18, '-1 KALKAN', '#ef4444', 14);
@@ -2450,6 +2679,35 @@
       ctx.strokeStyle = '#e11d48';
       ctx.lineWidth = 1.5;
       ctx.stroke();
+    } else if (c.type === 'mirror') {
+      // Gümüş Ayna Kristali (Sekizgen parlak ayna)
+      const sides = 8;
+      ctx.beginPath();
+      for (let i = 0; i < sides; i++) {
+        const a = (i / sides) * Math.PI * 2;
+        const px = Math.cos(a) * c.r;
+        const py = Math.sin(a) * c.r;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      const mGrad = ctx.createLinearGradient(-c.r, -c.r, c.r, c.r);
+      mGrad.addColorStop(0, '#f8fafc');
+      mGrad.addColorStop(0.5, '#94a3b8');
+      mGrad.addColorStop(1, '#e2e8f0');
+      ctx.fillStyle = mGrad;
+      ctx.fill();
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // İç ayna parıltısı
+      ctx.beginPath();
+      ctx.moveTo(-c.r * 0.4, -c.r * 0.2);
+      ctx.lineTo(c.r * 0.2, -c.r * 0.4);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
 
     ctx.restore();
@@ -2525,6 +2783,38 @@
     ctx.fillStyle = game.crescendo.active ? '#f59e0b' : theme.color;
     const cH = barH * game.crescendo.charge;
     ctx.fillRect(W - 20, barY + (barH - cH), 4, cH);
+
+    // İlk Açılış Dokunmatik Rehber Animasyonu
+    if (!saveData.tutorialSeen && game.time < 6.0 && !game.string.pulling) {
+      const cycle = (game.time % 1.6) / 1.6;
+      const startY = getStringAnchorY() + 14;
+      const pullOffset = Math.sin(cycle * Math.PI) * 54;
+      const alpha = Math.sin(cycle * Math.PI) * 0.85;
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = '#1e202b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(W * 0.5, startY);
+      ctx.lineTo(W * 0.5, startY + pullOffset);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.beginPath();
+      ctx.arc(W * 0.5, startY + pullOffset, 13, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(217, 155, 56, 0.35)';
+      ctx.fill();
+      ctx.strokeStyle = '#1e202b';
+      ctx.stroke();
+
+      ctx.font = '700 12px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#1e202b';
+      ctx.fillText('AŞAĞI ÇEK VE BIRAK', W * 0.5, startY + 76);
+      ctx.restore();
+    }
   }
 
   // ============================================================================
@@ -2538,6 +2828,7 @@
     game.rng = mode === 'daily' ? createRNG(getTodaySeed()) : Math.random;
     game.running = true;
     game.paused = false;
+    game.time = 0;
     game.dailyTimeLeft = 60;
 
     game.score = 0;
@@ -2656,6 +2947,10 @@
     applyPalette();
     document.getElementById('menu-stars').textContent = saveData.stars;
     document.getElementById('shop-stars').textContent = saveData.stars;
+    const maxBest = Math.max(saveData.bestScore, saveData.bestDaily);
+    const rankTitle = getPlayerRank(maxBest);
+    const rankEl = document.getElementById('menu-rank');
+    if (rankEl) rankEl.textContent = `✦ ${rankTitle.toUpperCase()}`;
     document.getElementById('menu-best').textContent = `En Yüksek Skor: ${saveData.bestScore}  •  Günlük: ${saveData.bestDaily}`;
 
     // Görev Listesi
@@ -2791,6 +3086,33 @@
   document.getElementById('btn-play-daily').addEventListener('click', () => startGame('daily'));
   document.getElementById('btn-retry').addEventListener('click', () => startGame(game.mode));
 
+  document.getElementById('btn-share-score').addEventListener('click', () => {
+    const rankTitle = getPlayerRank(Math.max(saveData.bestScore, saveData.bestDaily));
+    const modeText = game.mode === 'daily' ? 'Günlük Mod' : 'Sonsuz Mod';
+    const shareText = `🎵 Lira: Kristal Yankısı (Seva Studio)\n🏆 Skor: ${game.score} (${modeText}) | ✨ Tam Akor: ${game.stats.perfectChords}\n🎖️ Rütbe: ${rankTitle}\nBeni geçebilir misin?`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Lira: Kristal Yankısı',
+        text: shareText
+      }).catch(() => {});
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = shareText;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Skor kartı panoya kopyalandı!');
+      } catch (e) {
+        showToast('Paylaşım hazır!');
+      }
+      document.body.removeChild(ta);
+    }
+  });
+
   document.getElementById('btn-mute').addEventListener('click', toggleMuteUI);
   document.getElementById('btn-hud-mute').addEventListener('click', toggleMuteUI);
   document.getElementById('btn-hud-pause').addEventListener('click', togglePause);
@@ -2845,6 +3167,7 @@
   }
 
   window.onload = function() {
+    generateAppIcons();
     loadSave();
     refreshMenuUI();
     resizeCanvas();
