@@ -1008,6 +1008,18 @@
     if (!Array.isArray(saveData.quests) || saveData.quests.length < 3) {
       saveData.quests = [];
       refillQuests();
+    } else {
+      // Eski sürüm kayıtlarındaki eksik görev metinlerini otomatik onar
+      saveData.quests = saveData.quests.map(q => {
+        const template = QUEST_POOL.find(p => p.id === q.id) || QUEST_POOL[0];
+        return {
+          id: q.id || template.id,
+          text: q.text || q.title || q.desc || template.text,
+          target: q.target || template.target,
+          progress: typeof q.progress === 'number' ? q.progress : 0,
+          reward: q.reward || template.reward
+        };
+      });
     }
     applyCustomization();
     writeSave();
@@ -2706,12 +2718,13 @@
     const list = document.getElementById('menu-quests-list');
     list.innerHTML = '';
     saveData.quests.forEach(q => {
+      const safeText = q.text || q.title || (QUEST_POOL.find(p => p.id === q.id) || QUEST_POOL[0]).text;
       const pct = Math.min(100, Math.round((q.progress / q.target) * 100));
       const div = document.createElement('div');
       div.className = 'quest-item';
       div.innerHTML = `
         <div class="quest-top">
-          <span>${q.text} (${Math.min(q.progress, q.target)}/${q.target})</span>
+          <span>${safeText} (${Math.min(q.progress, q.target)}/${q.target})</span>
           <span class="quest-reward">+${q.reward} ★</span>
         </div>
         <div class="quest-bar-bg">
