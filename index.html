@@ -276,6 +276,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
       </div>
       <button class="btn play" id="b-play">KOŞ!</button>
       <button class="btn daily" id="b-daily"><span id="daily-t">📅 Günlük Meydan Okuma</span><small id="daily-s"></small></button>
+      <button class="btn" id="b-board" style="margin-top:8px;padding:8px;font-size:.85rem">🌍 Sıralama</button>
       <div class="row-btns">
         <button class="nav-btn" id="b-shop"><span class="ic">🛍️</span>Mağaza<span class="dot hidden" id="d-shop"></span></button>
         <button class="nav-btn" id="b-missions"><span class="ic">🎯</span>Görevler<span class="dot hidden" id="d-miss"></span></button>
@@ -2096,6 +2097,7 @@ function die() {
     SAVE.daily.runs++; SAVE.daily.best = Math.max(SAVE.daily.best, sc);
     if (SAVE.daily.bonus !== k) { SAVE.daily.bonus = k; SAVE.coins += 150; G.dailyBonus = 150; }
   }
+  onlineSubmit(sc, G.dm, G.daily);
   SAVE.hs.push({ s: sc, d: Math.floor(G.dm), c: SAVE.char, t: Date.now() }); SAVE.hs.sort((a, b) => b.s - a.s); SAVE.hs = SAVE.hs.slice(0, 8);
   checkAch(); writeSave();
   SND.duck(0.1); SND.setRain(0);
@@ -2494,6 +2496,46 @@ function updatePets(dt, mode) {
   if (id === 'gull') { const f = Math.sin(G.t * (mode === 'menu' ? 8 : 14)) * 0.7; p.userData.wl.rotation.z = f; p.userData.wr.rotation.z = -f; }
   else { p.userData.legs.forEach((l, i) => l.rotation.x = run ? Math.sin(G.anim * 1.5 + i * 1.6) * 0.8 : 0); if (p.userData.tail) p.userData.tail.rotation.z = Math.sin(G.t * 6) * 0.4; }
 }
+/* ---------- Online skor tablosu (Supabase REST) ---------- */
+// Supabase kurulumu: SUPABASE_SETUP.sql dosyasını SQL Editor'de çalıştır, sonra aşağıya URL ve anon key'i yaz.
+const ONLINE = { url: '', key: '' };
+const onlineOn = () => !!(ONLINE.url && ONLINE.key);
+const oHead = () => ({ apikey: ONLINE.key, Authorization: 'Bearer ' + ONLINE.key, 'Content-Type': 'application/json' });
+const cleanName = s => String(s || '').replace(/[<>&"']/g, '').trim().slice(0, 14);
+
+async function onlineSubmit(score, dist, daily) {
+  if (!onlineOn()) return;
+  try {
+    if (!SAVE.name) {
+      const n = cleanName(window.prompt('Sıralama için takma adın:', ''));
+      SAVE.name = n || 'Koşucu'; writeSave();
+    }
+    const key = daily ? dailyKey() : 'all';
+    SAVE.ob = SAVE.ob || {};
+    if ((SAVE.ob[key] || 0) >= score) return;
+    SAVE.ob[key] = score; writeSave();
+    await fetch(ONLINE.url + '/rest/v1/rs_scores', { method: 'POST', headers: Object.assign(oHead(), { Prefer: 'return=minimal' }),
+      body: JSON.stringify({ name: SAVE.name, score: Math.floor(score), dist: Math.floor(dist), char: SAVE.char, board: key }) });
+  } catch (e) { /* çevrimdışı: sessizce geç */ }
+}
+async function onlineTop(board) {
+  const r = await fetch(`${ONLINE.url}/rest/v1/rs_scores?board=eq.${encodeURIComponent(board)}&select=name,score,dist,char&order=score.desc&limit=20`, { headers: oHead() });
+  if (!r.ok) throw new Error('http');
+  return r.json();
+}
+async function openBoard(board) {
+  board = board || 'all';
+  const tabs = `<div class="tabs" style="margin-bottom:8px"><button class="tab ${board === 'all' ? 'on' : ''}" id="lb-all">Genel</button><button class="tab ${board !== 'all' ? 'on' : ''}" id="lb-day">Bugün</button></div>`;
+  const body = h => modal(`<h3>🌍 Sıralama</h3>${tabs}<div class="hs" style="max-height:48vh;overflow:auto">${h}</div><button class="btn" id="m-ok" style="margin-top:10px">Kapat</button>`);
+  const wire = () => { $('m-ok').onclick = closeModal; $('lb-all').onclick = () => openBoard('all'); $('lb-day').onclick = () => openBoard(dailyKey()); };
+  if (!onlineOn()) { body('<div style="padding:12px;text-align:center;font-size:.85rem">Online sıralama henüz bağlı değil.<br>Supabase bilgilerini <b>06b_online.js</b> içine ekleyince açılır.</div>'); wire(); return; }
+  body('<div style="padding:12px;text-align:center">Yükleniyor…</div>'); wire();
+  try {
+    const rows = await onlineTop(board);
+    body(rows.length ? rows.map((r, i) => `<div class="${r.name === SAVE.name ? 'me' : ''}"><span>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'} ${cleanName(r.name)}</span><span>${fmt(r.score)} • ${fmt(r.dist)} m</span></div>`).join('') : '<div style="padding:12px;text-align:center">Henüz skor yok, ilk sen ol!</div>');
+  } catch (e) { body('<div style="padding:12px;text-align:center">Bağlanılamadı. İnterneti kontrol et.</div>'); }
+  wire();
+}
 /* ==========================================================
    07 · ARAYÜZ — HUD, menüler, mağaza, görevler, ayarlar
    ========================================================== */
@@ -2834,6 +2876,7 @@ function bindUI() {
   const on = (id, fn) => $(id).addEventListener('click', e => { SND.ensure(); SND.fx.click(); fn(e); });
   on('b-play', () => startRun());
   on('b-daily', () => startRun(true));
+  on('b-board', () => openBoard('all'));
   on('b-shop', () => { shopTab = 'chars'; renderShop(); UI.show('shop'); });
   on('shop-back', () => { UI.show('menu'); });
   document.querySelectorAll('#shop-tabs .tab').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.t; SND.fx.click(); renderShop(); }));
