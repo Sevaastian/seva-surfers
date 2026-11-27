@@ -136,6 +136,10 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
 .card .lv{display:flex;gap:3px;justify-content:center}
 .card .lv i{width:14px;height:6px;border-radius:3px;background:rgba(255,255,255,.18)}
 .card .lv i.f{background:var(--gold)}
+.ghost-hud{position:absolute;top:92px;left:50%;transform:translateX(-50%);padding:4px 12px;border-radius:14px;background:rgba(10,30,50,.65);border:1px solid rgba(127,232,255,.5);color:#bfefff;font-size:.78rem;white-space:nowrap;pointer-events:none}
+.ghost-hud b{color:#ff9d9d}.ghost-hud.ahead b{color:#ff9d9d}.ghost-hud:not(.ahead) b{color:#8dffb0}
+.bossbar{position:absolute;top:128px;left:50%;transform:translateX(-50%);width:210px;text-align:center;font-weight:800;font-size:.8rem;color:#ff8a8a;text-shadow:0 2px 4px #000;pointer-events:none}
+.bossbar div{height:7px;border-radius:4px;background:rgba(255,255,255,.2);margin-top:3px;overflow:hidden}.bossbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff3b3b,#ffb43b);transition:width .3s}
 .combo{position:absolute;top:30%;left:50%;transform:translate(-50%,0) scale(.6);opacity:0;pointer-events:none;text-align:center;font-weight:900;font-size:2rem;color:#ffd34d;text-shadow:0 3px 0 #b8741a,0 0 18px rgba(255,211,77,.6);z-index:6;transition:transform .18s,opacity .25s;white-space:nowrap}
 .combo small{display:block;font-size:.85rem;color:#fff;text-shadow:0 2px 4px #000}
 .combo.on{opacity:1;transform:translate(-50%,0) scale(1)}
@@ -233,6 +237,8 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
   <!-- HUD -->
   <div id="hud" class="hidden">
     <div id="combo" class="combo"></div>
+    <div id="ghost-hud" class="ghost-hud hidden"></div>
+    <div id="bossbar" class="bossbar hidden"><span>🚁 POLİS HELİKOPTERİ</span><div><i id="bossfill"></i></div></div>
     <div class="hud-top">
       <div class="pill score-box">
         <div class="lbl">SKOR</div>
@@ -346,6 +352,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
         <div class="setrow"><span>🔊 Ses efektleri</span><div class="sw" id="sw-sfx"></div></div>
         <div class="setrow"><span>🎵 Müzik</span><div class="sw" id="sw-music"></div></div>
         <div class="setrow"><span>📳 Titreşim</span><div class="sw" id="sw-vib"></div></div>
+        <div class="setrow"><span>👻 Hayalet</span><div class="seg" id="seg-g"><button data-g="self">Ben</button><button data-g="top">Lider</button><button data-g="off">Kapalı</button></div></div>
         <div class="setrow"><span>🎮 Zorluk</span><div class="seg" id="seg-m"><button data-m="easy">Rahat</button><button data-m="normal">Normal</button><button data-m="crazy">Çılgın</button></div></div>
         <div class="setrow"><span>📉 Otomatik kalite</span><div class="sw" id="sw-auto"></div></div>
         <div class="setrow"><span>🖼️ Grafik kalitesi</span><div class="seg" id="seg-q"><button data-q="0">Düşük</button><button data-q="1">Orta</button><button data-q="2">Yüksek</button></div></div>
@@ -556,6 +563,8 @@ const ACHS = [
   { id: 'daily1', ic: '📅', n: 'Günün Meydan Okuması', d: 'Günlük meydan okumayı bir kez oyna', r: 150, test: () => SAVE.daily.runs >= 1 },
   { id: 'daily7', ic: '🗓️', n: 'Sadık Koşucu', d: 'Günlük meydan okumayı 7 kez oyna', r: 600, test: () => SAVE.daily.runs >= 7 },
   { id: 'pet1', ic: '🐾', n: 'Yeni Dost', d: 'Bir evcil dost edin', r: 150, test: () => SAVE.pets.length >= 1 },
+  { id: 'boss1', ic: '🚁', n: 'Polise Yakalanmadı', d: 'Polis helikopterini atlat', r: 200, test: () => (SAVE.life.boss || 0) >= 1 },
+  { id: 'boss5', ic: '🛰️', n: 'Gece Hayaleti', d: 'Helikopteri toplam 5 kez atlat', r: 600, test: () => (SAVE.life.boss || 0) >= 5 },
   { id: 'revive', ic: '💫', n: 'İkinci Şans', d: 'Bir kez canlan', r: 100, test: () => SAVE.life.revives >= 1 }
 ];
 
@@ -2097,7 +2106,8 @@ function die() {
     SAVE.daily.runs++; SAVE.daily.best = Math.max(SAVE.daily.best, sc);
     if (SAVE.daily.bonus !== k) { SAVE.daily.bonus = k; SAVE.coins += 150; G.dailyBonus = 150; }
   }
-  onlineSubmit(sc, G.dm, G.daily);
+  BOSS.active && BOSS.reset(); $('ghost-hud').classList.add('hidden'); if (GH.mesh) GH.mesh.root.visible = false;
+  onlineSubmit(sc, G.dm, G.daily, GH.finish(sc));
   SAVE.hs.push({ s: sc, d: Math.floor(G.dm), c: SAVE.char, t: Date.now() }); SAVE.hs.sort((a, b) => b.s - a.s); SAVE.hs = SAVE.hs.slice(0, 8);
   checkAch(); writeSave();
   SND.duck(0.1); SND.setRain(0);
@@ -2110,7 +2120,7 @@ function creditCoins() { SAVE.coins += (G.runCoins - G.credited); G.credited = G
 function startRun(daily) {
   G.daily = !!daily;
   if (G.daily) { G.dailyRng = mulberry32(dailySeed()); G.dailyMod = dailyMod().id; }
-  clearEntities();
+  clearEntities(); BOSS.reset();
   Object.assign(G, {
     mode: 'count', speed: modeCfg().speed0, dist: 0, dm: 0, score: 0, runCoins: 0, credited: 0,
     lane: 1, prevLane: 1, targetX: 0, px: 0, py: 0, vy: 0, onGround: true, coyote: 0, prevPy: 0, roll: 0, rollQ: 0, jumpBuf: 0,
@@ -2127,6 +2137,7 @@ function startRun(daily) {
   writeSave();
   player.root.rotation.set(0, Math.PI, 0); player.root.visible = true;
   chaser.root.visible = false; dog.visible = false;
+  GH.start();
   UI.hideAll(); UI.showHud(); UI.refreshMiniMissions();
   SND.startMusic(); SND.duck(0.3); SND.setIntensity(0);
   beginCountdown(true);
@@ -2158,6 +2169,7 @@ function revive(cost) {
   UI.hideAll(); UI.showHud(); beginCountdown(false); SND.duck(0.3);
 }
 function toMenu() {
+  BOSS.reset(); if (GH.mesh) GH.mesh.root.visible = false; $('ghost-hud').classList.add('hidden');
   G.mode = 'menu'; G.speed = 0; G.dm = 0; G.dist = 0; G.invuln = 0; G.boardT = 0; G.chaseT = 0;
   clearEntities();
   player.root.rotation.set(0, 0.4, 0); player.root.visible = true; boardMesh.visible = false; player.jet.visible = false; player.ring.visible = false;
@@ -2213,6 +2225,7 @@ function updateRun(dt) {
   // zamanlayıcılar
   ['magnet', 'jetpack', 'sneakers', 'multi'].forEach(k => { if (G.pu[k] > 0) G.pu[k] = Math.max(0, G.pu[k] - dt); });
   if (G.boardT > 0) { G.boardT -= dt; if (G.boardT <= 0) { G.boardT = 0; emit(G.px, G.py + 0.3, 0, 14, '#9ca3af', 1.2, 2, 0.6, 1, 0); } }
+  GH.update(dt); BOSS.update(dt);
   if (G.nmT > 0) G.nmT -= dt;
   if (G.invuln > 0) G.invuln -= dt;
   if (G.stumbleCool > 0) G.stumbleCool -= dt;
@@ -2503,7 +2516,7 @@ const onlineOn = () => !!(ONLINE.url && ONLINE.key);
 const oHead = () => ({ apikey: ONLINE.key, 'Content-Type': 'application/json' });
 const cleanName = s => String(s || '').replace(/[<>&"']/g, '').trim().slice(0, 14);
 
-async function onlineSubmit(score, dist, daily) {
+async function onlineSubmit(score, dist, daily, ghost) {
   if (!onlineOn()) return;
   try {
     if (!SAVE.name) {
@@ -2514,8 +2527,10 @@ async function onlineSubmit(score, dist, daily) {
     SAVE.ob = SAVE.ob || {};
     if ((SAVE.ob[key] || 0) >= score) return;
     SAVE.ob[key] = score; writeSave();
-    await fetch(ONLINE.url + '/rest/v1/rs_scores', { method: 'POST', headers: Object.assign(oHead(), { Prefer: 'return=minimal' }),
-      body: JSON.stringify({ name: SAVE.name, score: Math.floor(score), dist: Math.floor(dist), char: SAVE.char, board: key }) });
+    const row = { name: SAVE.name, score: Math.floor(score), dist: Math.floor(dist), char: SAVE.char, board: key };
+    const post = b => fetch(ONLINE.url + '/rest/v1/rs_scores', { method: 'POST', headers: Object.assign(oHead(), { Prefer: 'return=minimal' }), body: JSON.stringify(b) });
+    let r = ghost ? await post(Object.assign({ ghost }, row)) : null;
+    if (!r || !r.ok) await post(row);     // ghost sütunu yoksa yine de skoru gönder
   } catch (e) { /* çevrimdışı: sessizce geç */ }
 }
 async function onlineTop(board) {
@@ -2536,6 +2551,184 @@ async function openBoard(board) {
   } catch (e) { body('<div style="padding:12px;text-align:center">Bağlanılamadı. İnterneti kontrol et.</div>'); }
   wire();
 }
+/* =====================  HAYALET YARIŞI  ===================== */
+const GH = {
+  t: 0, acc: 0, rec: [], play: null, mesh: null, label: null, passed: false, ended: false, name: '',
+  key() { return G.daily ? 'd' + dailyKey() : 'all'; },
+  async load() {                       // koşu başında rakip hayaleti hazırla
+    this.play = null; this.passed = false; this.ended = false;
+    const src = SAVE.ghostSrc || 'self';
+    if (src === 'off') return;
+    const k = this.key(), mine = (SAVE.ghosts || {})[k];
+    if (src === 'self') { if (mine) this.setPlay(mine); return; }
+    if (src === 'top' && onlineOn()) {
+      try {
+        const rows = await onlineGhost(G.daily ? dailyKey() : 'all');
+        const r = rows.find(x => x.ghost && x.name !== SAVE.name) || rows.find(x => x.ghost);
+        if (r) { this.setPlay({ s: r.score, n: r.name, c: r.char, d: r.ghost }); return; }
+      } catch (e) { /* internet yok */ }
+    }
+    if (mine) this.setPlay(mine);
+  },
+  setPlay(g) {
+    const a = String(g.d).split(',').map(Number), n = Math.floor(a.length / 3), d = [];
+    for (let i = 0; i < n; i++) d.push([a[i * 3] / 1, a[i * 3 + 1] / 10, a[i * 3 + 2] / 10]);
+    if (d.length < 5) return;
+    this.play = { d, s: g.s, n: g.n || 'Hayalet', c: g.c };
+    this.build(this.play);
+    toast(`👻 ${this.play.n} ile yarışıyorsun (${fmt(g.s)})`, '');
+  },
+  build(p) {
+    if (this.mesh) { scene.remove(this.mesh.root); }
+    const P = buildHumanoid(), ch = CHARS.find(c => c.id === p.c) || CHARS[0];
+    styleHumanoid(P, ch);
+    P.root.traverse(o => { if (o.material) [].concat(o.material).forEach(m => { m.transparent = true; m.opacity = 0.42; m.depthWrite = false; if (m.emissive) m.emissive.set('#3ad6ff'); }); });
+    P.jet.visible = false; P.ring.visible = false; P.root.visible = false; scene.add(P.root); this.mesh = P;
+    const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d');
+    g.font = '700 34px Fredoka, Arial, sans-serif'; g.textAlign = 'center'; g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(8, 8, 240, 48);
+    g.fillStyle = '#7fe8ff'; g.fillText('👻 ' + p.n.slice(0, 12), 128, 44);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+    sp.scale.set(2.6, 0.65, 1); sp.position.y = 2.7; P.root.add(sp); this.label = sp;
+  },
+  start() { this.t = 0; this.acc = 0; this.rec = []; this.passed = false; this.ended = false; if (this.mesh) this.mesh.root.visible = false; this.play = null; this.load(); },
+  update(dt) {
+    if (G.mode !== 'run') return;
+    this.t += dt; this.acc += dt;
+    while (this.acc >= 0.2) { this.acc -= 0.2; if (this.rec.length < 1500 * 3) this.rec.push(Math.round(G.dm), Math.round(G.px * 10), Math.round(G.py * 10)); }
+    const p = this.play, M_ = this.mesh;
+    if (!p || !M_) { $('ghost-hud').classList.add('hidden'); return; }
+    const f = this.t / 0.2, i = Math.floor(f);
+    if (i >= p.d.length - 1) {
+      M_.root.visible = false;
+      if (!this.ended) { this.ended = true; toast(`👻 ${p.n} koşusunu bitirdi`, ''); }
+      $('ghost-hud').classList.add('hidden'); return;
+    }
+    const a = p.d[i], b = p.d[i + 1], u = f - i;
+    const gdm = a[0] + (b[0] - a[0]) * u, gx = a[1] + (b[1] - a[1]) * u, gy = a[2] + (b[2] - a[2]) * u;
+    const diff = gdm - G.dm, z = -diff * 2;
+    const H = $('ghost-hud'); H.classList.remove('hidden');
+    H.innerHTML = `👻 ${p.n} <b>${diff > 0 ? '+' + Math.round(diff) + ' m önde' : Math.round(-diff) + ' m geride'}</b>`;
+    H.classList.toggle('ahead', diff > 0);
+    if (!this.passed && diff < -5 && this.t > 4) { this.passed = true; toast(`🏁 ${p.n} geçildi!`, 'good'); G.score += 250; SND.fx.mission(); }
+    M_.root.visible = z > -90 && z < 14;
+    M_.root.position.set(gx, gy, z); M_.root.rotation.y = Math.PI;
+    if (gy > 0.4) poseJump(M_); else poseRun(M_, G.anim, 1, false);
+  },
+  finish(sc) {                          // koşu bitince en iyiyse kaydet
+    const k = this.key();
+    SAVE.ghosts = SAVE.ghosts || {};
+    const cur = SAVE.ghosts[k];
+    let data = null;
+    if (this.rec.length >= 15 && (!cur || sc > cur.s)) {
+      data = this.rec.join(',');
+      SAVE.ghosts[k] = { s: sc, n: SAVE.name || 'Ben', c: SAVE.char, d: data };
+      Object.keys(SAVE.ghosts).forEach(x => { if (x[0] === 'd' && x !== k) delete SAVE.ghosts[x]; });
+    }
+    return data;
+  }
+};
+async function onlineGhost(board) {
+  const r = await fetch(`${ONLINE.url}/rest/v1/rs_scores?board=eq.${encodeURIComponent(board)}&ghost=not.is.null&select=name,score,char,ghost&order=score.desc&limit=5`, { headers: oHead() });
+  if (!r.ok) throw new Error('http'); return r.json();
+}
+
+/* =====================  POLİS HELİKOPTERİ (BOSS)  ===================== */
+const BOSS = {
+  next: 650, n: 0, active: false, ph: '', t: 0, sweep: 0, total: 0, danger: [], heli: null, spots: [], rings: [], lastLane: 1, locked: false, hitDone: false,
+  reset() { this.next = 650; this.n = 0; this.active = false; if (this.heli) this.heli.visible = false; this.hideFx(); $('bossbar').classList.add('hidden'); },
+  build() {
+    const g = new THREE.Group(), body = M('#1d2a44'), dark = M('#0d1424'), glass = M('#7fd0ff', { emissive: new THREE.Color('#1a4a66') });
+    const hull = new THREE.Mesh(new THREE.SphereGeometry(1.5, 14, 10), body); hull.scale.set(1, 0.85, 1.6); g.add(hull);
+    const cab = new THREE.Mesh(new THREE.SphereGeometry(1.0, 12, 8), glass); cab.position.set(0, 0.2, -1.1); cab.scale.set(1, 0.85, 1); g.add(cab);
+    const tail = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 3.6), body); tail.position.set(0, 0.2, 3.1); g.add(tail);
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.1, 0.7), body); fin.position.set(0, 0.7, 4.7); g.add(fin);
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.6, 6), dark); mast.position.y = 1.5; g.add(mast);
+    const rotor = new THREE.Group(); rotor.position.y = 1.85;
+    for (let i = 0; i < 2; i++) { const bl = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.07, 0.32), dark); bl.rotation.y = i * Math.PI / 2; rotor.add(bl); }
+    g.add(rotor); g.userData.rotor = rotor;
+    const trot = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.3, 0.14), dark); trot.position.set(0.25, 0.7, 4.7); g.add(trot); g.userData.trot = trot;
+    for (const s of [-1, 1]) { const sk = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 2.8), dark); sk.position.set(s * 1.1, -1.35, -0.2); g.add(sk);
+      const st = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.9, 0.1), dark); st.position.set(s * 1.0, -0.9, -0.2); g.add(st); }
+    g.userData.lr = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), new THREE.MeshBasicMaterial({ color: 0xff2030 })); g.userData.lr.position.set(-1.2, 1.0, 0); g.add(g.userData.lr);
+    g.userData.lb = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), new THREE.MeshBasicMaterial({ color: 0x2a7bff })); g.userData.lb.position.set(1.2, 1.0, 0); g.add(g.userData.lb);
+    g.visible = false; scene.add(g); this.heli = g;
+    for (let i = 0; i < 2; i++) {
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(1.6, 7, 20, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff1b0, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+      const ring = new THREE.Mesh(new THREE.PlaneGeometry(2.7, 46), new THREE.MeshBasicMaterial({ color: 0xff3b3b, transparent: true, opacity: 0.8, depthWrite: false, side: THREE.DoubleSide }));
+      ring.rotation.x = -Math.PI / 2; ring.position.z = -19; cone.visible = ring.visible = false; scene.add(cone); scene.add(ring); this.spots.push(cone); this.rings.push(ring);
+    }
+  },
+  hideFx() { this.spots.forEach(s => s.visible = false); this.rings.forEach(s => s.visible = false); },
+  pickDanger() {
+    const rng = G.daily ? G.dailyRng : Math.random;
+    let l = Math.round(G.px / LANES[2]) + 1; l = clamp(l, 0, 2);
+    if (rng() < 0.35) l = Math.floor(rng() * 3);
+    const two = this.n >= 1 && this.sweep >= 2 && rng() < 0.5;
+    this.danger = two ? [0, 1, 2].filter(x => x !== (rng() < 0.5 ? l : Math.floor(rng() * 3))) : [l];
+    if (this.danger.length === 3 || this.danger.length === 0) this.danger = [l];
+  },
+  start() {
+    if (!this.heli) this.build();
+    this.active = true; this.ph = 'in'; this.t = 0; this.sweep = 0; this.total = 4 + Math.min(3, this.n); this.hitDone = false;
+    this.heli.visible = true; this.heli.position.set(0, 9, -70);
+    $('bossbar').classList.remove('hidden');
+    toast('🚁 POLİS HELİKOPTERİ! Aydınlatılan şeritten çık!', 'warn'); SND.fx.horn(); vib([60, 40, 60]);
+  },
+  update(dt) {
+    if (G.mode !== 'run') return;
+    if (!this.active) {
+      if (G.dm >= this.next && G.pu.jetpack <= 0 && G.speed > 0) this.start();
+      return;
+    }
+    const h = this.heli, U = h.userData; this.t += dt;
+    U.rotor.rotation.y += dt * 38; U.trot.rotation.x += dt * 40;
+    const on = Math.floor(G.t * 6) % 2 === 0; U.lr.visible = on; U.lb.visible = !on;
+    $('bossfill').style.width = clamp(((this.sweep + (this.ph === 'lock' ? 1 : 0)) / this.total) * 100, 0, 100) + '%';
+    const hy = 8.2 + Math.sin(G.t * 3) * 0.25;
+    if (this.ph === 'in') {
+      h.position.z = damp(h.position.z, -17, 2.2, dt); h.position.y = damp(h.position.y, hy, 3, dt); h.position.x = damp(h.position.x, 0, 2, dt);
+      if (this.t > 1.8) { this.ph = 'aim'; this.t = 0; this.pickDanger(); this.locked = false; SND.fx.tick(); }
+    } else if (this.ph === 'aim' || this.ph === 'lock') {
+      const aimT = Math.max(0.85, 1.25 - this.n * 0.08);
+      const tx = this.danger.reduce((s, l) => s + LANES[l], 0) / this.danger.length;
+      h.position.x = damp(h.position.x, tx, 6, dt); h.position.y = damp(h.position.y, hy, 4, dt); h.position.z = damp(h.position.z, -17, 3, dt);
+      h.rotation.z = (tx - h.position.x) * -0.08;
+      this.hideFx();
+      this.danger.forEach((l, i) => {
+        const c = this.spots[i], r = this.rings[i], x = LANES[l];
+        c.visible = r.visible = true;
+        c.position.set(x, h.position.y / 2, h.position.z + 0.5); c.scale.set(1, h.position.y / 7, 1);
+        r.position.set(x, 0.06, -19);
+        if (this.ph === 'aim') {
+          const k = this.t / aimT; r.material.color.setHex(k > 0.7 ? 0xff3b3b : 0xffb43b);
+          r.material.opacity = 0.12 + k * 0.3 + Math.sin(this.t * 24) * 0.06; c.material.opacity = 0.14 + k * 0.12;
+        } else { r.material.color.setHex(0xffffff); r.material.opacity = 0.7; c.material.opacity = 0.65; }
+      });
+      if (this.ph === 'aim' && this.t >= aimT) {
+        this.ph = 'lock'; this.t = 0; this.hitDone = false; flashHit();
+        const pl = LANES.findIndex(x => Math.abs(G.px - x) < 1.55);
+        if (this.danger.includes(pl) && G.invuln <= 0) { this.hitDone = true; hitSolid('stumble'); }
+        SND.fx.thunder && SND.fx.thunder(); G.shake = Math.max(G.shake, 0.25);
+      } else if (this.ph === 'lock' && this.t > 0.38) {
+        this.sweep++; this.hideFx();
+        if (this.sweep >= this.total) { this.ph = 'out'; this.t = 0; }
+        else { this.ph = 'aim'; this.t = 0; this.pickDanger(); SND.fx.tick(); }
+      }
+    } else if (this.ph === 'out') {
+      h.position.z -= dt * 40; h.position.y += dt * 8; h.rotation.x = -0.25;
+      if (this.t > 1.4) this.finish();
+    }
+  },
+  finish() {
+    this.active = false; this.heli.visible = false; this.heli.rotation.set(0, 0, 0); this.hideFx(); $('bossbar').classList.add('hidden');
+    const coins = 80 + this.n * 40, pts = Math.round(1500 * (this.n + 1) * mult() * scoreK());
+    G.runCoins += coins; G.score += pts; SAVE.life.boss = (SAVE.life.boss || 0) + 1; this.n++;
+    this.next = G.dm + 900 + Math.min(600, this.n * 100);
+    toast(`🚁 Helikopteri atlattın! +${coins}🪙 +${fmt(pts)} puan`, 'good'); SND.fx.mission(); vib(50);
+    for (let i = 0; i < 4; i++) emit(G.px + (i - 1.5) * 0.8, 1.6, -1, 10, '#ffd34d', 1.4, 5, 0.6, 6, 0);
+    checkAch();
+  }
+};
 /* ==========================================================
    07 · ARAYÜZ — HUD, menüler, mağaza, görevler, ayarlar
    ========================================================== */
@@ -2791,6 +2984,7 @@ function renderSettings() {
   const s = SAVE.settings;
   $('sw-sfx').classList.toggle('on', s.sfx); $('sw-music').classList.toggle('on', s.music); $('sw-vib').classList.toggle('on', s.vib);
   $('sw-auto').classList.toggle('on', !!s.auto);
+  document.querySelectorAll('#seg-g button').forEach(b => b.classList.toggle('on', b.dataset.g === (SAVE.ghostSrc || 'self')));
   document.querySelectorAll('#seg-m button').forEach(b => b.classList.toggle('on', b.dataset.m === SAVE.mode));
   document.querySelectorAll('#seg-q button').forEach(b => b.classList.toggle('on', +b.dataset.q === s.quality));
   $('stat-grid').innerHTML = [['Rekor', fmt(SAVE.best)], ['Toplam koşu', fmt(SAVE.runs)], ['Toplam mesafe', fmt(SAVE.totalDist) + ' m'], ['Toplam altın', fmt(SAVE.totalCoins)], ['Skor çarpanı', 'x' + SAVE.multLevel], ['Karakter', SAVE.chars.length + '/' + CHARS.length]]
@@ -2903,6 +3097,7 @@ function bindUI() {
   sw('sw-sfx', 'sfx'); sw('sw-music', 'music', () => { if (SAVE.settings.music) { if (G.mode === 'run') SND.startMusic(); } else SND.stopMusic(); }); sw('sw-vib', 'vib', () => vib(40));
   sw('sw-auto', 'auto');
   document.querySelectorAll('#seg-m button').forEach(b => b.addEventListener('click', () => { SAVE.mode = b.dataset.m; writeSave(); renderSettings(); SND.fx.click(); }));
+  document.querySelectorAll('#seg-g button').forEach(b => b.addEventListener('click', () => { SAVE.ghostSrc = b.dataset.g; writeSave(); renderSettings(); SND.fx.click(); }));
   document.querySelectorAll('#seg-q button').forEach(b => b.addEventListener('click', () => { SAVE.settings.quality = +b.dataset.q; writeSave(); applyQuality(); renderSettings(); }));
   $('b-reset').addEventListener('click', () => {
     modal(`<span class="em">⚠️</span><h3>Kaydı sıfırla?</h3><p>Tüm altın, karakter ve ilerleme silinecek.</p><div class="row-btns"><button class="btn" id="m-no">Vazgeç</button><button class="btn red" id="m-yes">Sıfırla</button></div>`);
