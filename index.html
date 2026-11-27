@@ -2661,18 +2661,18 @@ function bindInput() {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(k)) e.preventDefault();
   });
   // dokunmatik / fare kaydırma
-  const app = $('app'); let sx = 0, sy = 0, down = false, lastTap = 0, moved = false, pid = -1;
+  const app = $('app'); let sx = 0, sy = 0, fired = false, down = false, lastTap = 0, moved = false, pid = -1;
   app.addEventListener('pointerdown', e => {
     if (G.mode !== 'run' || e.target.closest('button')) return;
-    down = true; moved = false; sx = e.clientX; sy = e.clientY; pid = e.pointerId;
+    down = true; moved = false; fired = false; sx = e.clientX; sy = e.clientY; pid = e.pointerId;
   });
   app.addEventListener('pointermove', e => {
-    if (!down || e.pointerId !== pid || G.mode !== 'run') return;
+    if (!down || fired || e.pointerId !== pid || G.mode !== 'run') return;
     const dx = e.clientX - sx, dy = e.clientY - sy, TH = 26;
     if (Math.abs(dx) < TH && Math.abs(dy) < TH) return;
     moved = true;
     if (Math.abs(dx) > Math.abs(dy)) laneMove(dx > 0 ? 1 : -1); else dy < 0 ? doJump() : doRoll();
-    sx = e.clientX; sy = e.clientY;
+    fired = true; // bir dokunuş = bir hareket
   });
   const up = e => {
     if (!down || e.pointerId !== pid) return; down = false;
