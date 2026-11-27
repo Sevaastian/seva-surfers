@@ -2498,9 +2498,9 @@ function updatePets(dt, mode) {
 }
 /* ---------- Online skor tablosu (Supabase REST) ---------- */
 // Supabase kurulumu: SUPABASE_SETUP.sql dosyasını SQL Editor'de çalıştır, sonra aşağıya URL ve anon key'i yaz.
-const ONLINE = { url: '', key: '' };
+const ONLINE = { url: 'https://lqnzcixebkfskzyfcwui.supabase.co', key: 'sb_publishable_rWzciHgeXQN4q-uiyLLRWw_4ATWqZCe' };
 const onlineOn = () => !!(ONLINE.url && ONLINE.key);
-const oHead = () => ({ apikey: ONLINE.key, Authorization: 'Bearer ' + ONLINE.key, 'Content-Type': 'application/json' });
+const oHead = () => ({ apikey: ONLINE.key, 'Content-Type': 'application/json' });
 const cleanName = s => String(s || '').replace(/[<>&"']/g, '').trim().slice(0, 14);
 
 async function onlineSubmit(score, dist, daily) {
