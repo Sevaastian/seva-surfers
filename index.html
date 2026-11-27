@@ -136,9 +136,10 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
 .card .lv{display:flex;gap:3px;justify-content:center}
 .card .lv i{width:14px;height:6px;border-radius:3px;background:rgba(255,255,255,.18)}
 .card .lv i.f{background:var(--gold)}
-.ghost-hud{position:absolute;top:92px;left:50%;transform:translateX(-50%);padding:4px 12px;border-radius:14px;background:rgba(10,30,50,.65);border:1px solid rgba(127,232,255,.5);color:#bfefff;font-size:.78rem;white-space:nowrap;pointer-events:none}
+.ghost-hud.chal{top:92px;background:rgba(60,30,10,.7);border-color:rgba(255,190,90,.6);color:#ffe1b0}.ghost-hud.chal.win{border-color:#7dffb0;color:#b8ffd2}
+.ghost-hud{position:absolute;top:120px;left:50%;transform:translateX(-50%);padding:4px 12px;border-radius:14px;background:rgba(10,30,50,.65);border:1px solid rgba(127,232,255,.5);color:#bfefff;font-size:.78rem;white-space:nowrap;pointer-events:none}
 .ghost-hud b{color:#ff9d9d}.ghost-hud.ahead b{color:#ff9d9d}.ghost-hud:not(.ahead) b{color:#8dffb0}
-.bossbar{position:absolute;top:128px;left:50%;transform:translateX(-50%);width:210px;text-align:center;font-weight:800;font-size:.8rem;color:#ff8a8a;text-shadow:0 2px 4px #000;pointer-events:none}
+.bossbar{position:absolute;top:150px;left:50%;transform:translateX(-50%);width:210px;text-align:center;font-weight:800;font-size:.8rem;color:#ff8a8a;text-shadow:0 2px 4px #000;pointer-events:none}
 .bossbar div{height:7px;border-radius:4px;background:rgba(255,255,255,.2);margin-top:3px;overflow:hidden}.bossbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff3b3b,#ffb43b);transition:width .3s}
 .combo{position:absolute;top:30%;left:50%;transform:translate(-50%,0) scale(.6);opacity:0;pointer-events:none;text-align:center;font-weight:900;font-size:2rem;color:#ffd34d;text-shadow:0 3px 0 #b8741a,0 0 18px rgba(255,211,77,.6);z-index:6;transition:transform .18s,opacity .25s;white-space:nowrap}
 .combo small{display:block;font-size:.85rem;color:#fff;text-shadow:0 2px 4px #000}
@@ -237,6 +238,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
   <!-- HUD -->
   <div id="hud" class="hidden">
     <div id="combo" class="combo"></div>
+    <div id="chal-hud" class="ghost-hud chal hidden"></div>
     <div id="ghost-hud" class="ghost-hud hidden"></div>
     <div id="bossbar" class="bossbar hidden"><span>🚁 POLİS HELİKOPTERİ</span><div><i id="bossfill"></i></div></div>
     <div class="hud-top">
@@ -282,7 +284,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
       </div>
       <button class="btn play" id="b-play">KOŞ!</button>
       <button class="btn daily" id="b-daily"><span id="daily-t">📅 Günlük Meydan Okuma</span><small id="daily-s"></small></button>
-      <button class="btn" id="b-board" style="margin-top:8px;padding:8px;font-size:.85rem">🌍 Sıralama</button>
+      <div class="row-btns" style="margin-top:8px"><button class="btn" id="b-board" style="padding:8px;font-size:.85rem">🌍 Sıralama</button><button class="btn" id="b-chal" style="padding:8px;font-size:.78rem">⚔️ Arkadaş Meydanı</button></div>
       <div class="row-btns">
         <button class="nav-btn" id="b-shop"><span class="ic">🛍️</span>Mağaza<span class="dot hidden" id="d-shop"></span></button>
         <button class="nav-btn" id="b-missions"><span class="ic">🎯</span>Görevler<span class="dot hidden" id="d-miss"></span></button>
@@ -387,7 +389,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
     <div class="over-btns">
       <button class="btn gold" id="b-revive">💫 Devam Et</button>
       <button class="btn green" id="b-again" style="font-size:1.25rem;padding:14px">↻ Tekrar Koş</button>
-      <div class="row-btns"><button class="btn" id="b-share">📤 Paylaş</button></div>
+      <div class="row-btns"><button class="btn" id="b-share">📤 Paylaş</button><button class="btn gold" id="b-chall">⚔️ Meydan Oku</button></div>
       <div class="row-btns"><button class="btn" id="o-shop">🛍️ Mağaza</button><button class="btn" id="o-home">🏠 Menü</button></div>
     </div>
   </div>
@@ -534,7 +536,7 @@ const MODES = {
   normal: { name: 'Normal', speed0: 24, accel: 0.26, max: 54, gap: 1.0,  score: 1.0, coin: 1.0 },
   crazy:  { name: 'Çılgın', speed0: 29, accel: 0.40, max: 66, gap: 0.86, score: 1.6, coin: 1.6 }
 };
-const modeCfg = () => (typeof G !== 'undefined' && G.daily) ? MODES.normal : (MODES[SAVE.mode] || MODES.normal);
+const modeCfg = () => (typeof G !== 'undefined' && G.chal && G.chal.m) ? MODES[G.chal.m] : (typeof G !== 'undefined' && G.daily) ? MODES.normal : (MODES[SAVE.mode] || MODES.normal);
 const perkOf = () => (CHARS.find(c => c.id === SAVE.char) || CHARS[0]).perk || {};
 
 /* ---------- Başarımlar ---------- */
@@ -566,6 +568,8 @@ const ACHS = [
   { id: 'pet1', ic: '🐾', n: 'Yeni Dost', d: 'Bir evcil dost edin', r: 150, test: () => SAVE.pets.length >= 1 },
   { id: 'boss1', ic: '🚁', n: 'Polise Yakalanmadı', d: 'Polis helikopterini atlat', r: 200, test: () => (SAVE.life.boss || 0) >= 1 },
   { id: 'boss5', ic: '🛰️', n: 'Gece Hayaleti', d: 'Helikopteri toplam 5 kez atlat', r: 600, test: () => (SAVE.life.boss || 0) >= 5 },
+  { id: 'chal1', ic: '⚔️', n: 'Düellocu', d: 'Bir arkadaşının skorunu geç', r: 150, test: () => (SAVE.life.chal || 0) >= 1 },
+  { id: 'chal5', ic: '🛡️', n: 'Şampiyon', d: '5 meydan okumayı kazan', r: 500, test: () => (SAVE.life.chal || 0) >= 5 },
   { id: 'revive', ic: '💫', n: 'İkinci Şans', d: 'Bir kez canlan', r: 100, test: () => SAVE.life.revives >= 1 }
 ];
 
@@ -578,8 +582,8 @@ const PETS = [
 ];
 /* ---------- Günlük meydan okuma ---------- */
 const dailyKey = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
-function dailySeed() { let h = 2166136261; const k = dailyKey(); for (let i = 0; i < k.length; i++) { h ^= k.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
-function dailyMod() { const r = dailySeed() % 3; return [{ id: 'normal', name: 'Dengeli gün', ic: '🌤️' }, { id: 'fast', name: 'Hızlı gün • daha hızlı başlar', ic: '💨' }, { id: 'gold', name: 'Altın günü • altınlar 2x', ic: '💰' }][r]; }
+function dailySeed(k) { let h = 2166136261; k = k || dailyKey(); for (let i = 0; i < k.length; i++) { h ^= k.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function dailyMod(k) { const r = dailySeed(k) % 3; return [{ id: 'normal', name: 'Dengeli gün', ic: '🌤️' }, { id: 'fast', name: 'Hızlı gün • daha hızlı başlar', ic: '💨' }, { id: 'gold', name: 'Altın günü • altınlar 2x', ic: '💰' }][r]; }
 
 /* ---------- Ekonomi dengesi: fiyatlar yüksek, ödüller kısık ---------- */
 CHARS.forEach(c => { c.price = Math.round(c.price * 20 / 100) * 100; });
@@ -2155,13 +2159,14 @@ function die() {
   SAVE.runs++; SAVE.totalDist += G.dm; SAVE.totalCoins += G.runCoins;
   const sc = Math.floor(G.score);
   G.newBest = sc > SAVE.best; if (G.newBest) SAVE.best = sc;
-  if (G.daily) {
+  if (G.daily && !G.chal) {
     const k = dailyKey(); if (SAVE.daily.key !== k) { SAVE.daily.key = k; SAVE.daily.best = 0; }
     SAVE.daily.runs++; SAVE.daily.best = Math.max(SAVE.daily.best, sc);
     if (SAVE.daily.bonus !== k) { SAVE.daily.bonus = k; SAVE.coins += 60; G.dailyBonus = 60; }
   }
   BOSS.active && BOSS.reset(); $('ghost-hud').classList.add('hidden'); if (GH.mesh) GH.mesh.root.visible = false;
-  onlineSubmit(sc, G.dm, G.daily, GH.finish(sc));
+  const gd = GH.finish(sc); if (!(G.chal && G.chal.k)) onlineSubmit(sc, G.dm, G.daily, gd);
+  G.chalMsg = CH.result(); $('chal-hud').classList.add('hidden');
   SAVE.hs.push({ n: SAVE.name || '', s: sc, d: Math.floor(G.dm), c: SAVE.char, t: Date.now() }); SAVE.hs.sort((a, b) => b.s - a.s); SAVE.hs = SAVE.hs.slice(0, 8);
   checkAch(); writeSave();
   SND.duck(0.1); SND.setRain(0);
@@ -2171,9 +2176,10 @@ function die() {
 function creditCoins() { SAVE.coins += (G.runCoins - G.credited); G.credited = G.runCoins; }
 
 /* ---------- Başlat / duraklat / devam / canlan ---------- */
-function startRun(daily) {
-  G.daily = !!daily;
-  if (G.daily) { G.dailyRng = mulberry32(dailySeed()); G.dailyMod = dailyMod().id; }
+function startRun(daily, chal) {
+  G.chal = chal || null; G.chalPassed = false; G.daily = !!daily || !!(chal && chal.k);
+  G.seedKey = chal && chal.k ? chal.k : dailyKey();
+  if (G.daily) { G.dailyRng = mulberry32(dailySeed(G.seedKey)); G.dailyMod = dailyMod(G.seedKey).id; }
   clearEntities(); BOSS.reset();
   Object.assign(G, {
     mode: 'count', speed: modeCfg().speed0, dist: 0, dm: 0, score: 0, runCoins: 0, credited: 0,
@@ -2223,6 +2229,7 @@ function revive(cost) {
   UI.hideAll(); UI.showHud(); beginCountdown(false); SND.duck(0.3);
 }
 function toMenu() {
+  G.chal = null; $('chal-hud').classList.add('hidden');
   BOSS.reset(); if (GH.mesh) GH.mesh.root.visible = false; $('ghost-hud').classList.add('hidden');
   G.mode = 'menu'; G.speed = 0; G.dm = 0; G.dist = 0; G.invuln = 0; G.boardT = 0; G.chaseT = 0;
   clearEntities();
@@ -2279,7 +2286,7 @@ function updateRun(dt) {
   // zamanlayıcılar
   ['magnet', 'jetpack', 'sneakers', 'multi'].forEach(k => { if (G.pu[k] > 0) G.pu[k] = Math.max(0, G.pu[k] - dt); });
   if (G.boardT > 0) { G.boardT -= dt; if (G.boardT <= 0) { G.boardT = 0; emit(G.px, G.py + 0.3, 0, 14, '#9ca3af', 1.2, 2, 0.6, 1, 0); } }
-  GH.update(dt); BOSS.update(dt);
+  GH.update(dt); BOSS.update(dt); CH.update(dt);
   if (G.nmT > 0) G.nmT -= dt;
   if (G.invuln > 0) G.invuln -= dt;
   if (G.stumbleCool > 0) G.stumbleCool -= dt;
@@ -2610,7 +2617,7 @@ async function openBoard(board) {
 /* =====================  HAYALET YARIŞI  ===================== */
 const GH = {
   t: 0, acc: 0, rec: [], play: null, mesh: null, label: null, passed: false, ended: false, name: '',
-  key() { return G.daily ? 'd' + dailyKey() : 'all'; },
+  key() { return G.chal && G.chal.k ? 'c' + G.chal.k : G.daily ? 'd' + dailyKey() : 'all'; },
   async load() {                       // koşu başında rakip hayaleti hazırla
     this.play = null; this.passed = false; this.ended = false;
     const src = SAVE.ghostSrc || 'self';
@@ -2619,7 +2626,7 @@ const GH = {
     if (src === 'self') { if (mine) this.setPlay(mine); return; }
     if (src === 'top' && onlineOn()) {
       try {
-        const rows = await onlineGhost(G.daily ? dailyKey() : 'all');
+        if (G.chal && G.chal.k) throw new Error('chal'); const rows = await onlineGhost(G.daily ? dailyKey() : 'all');
         const r = rows.find(x => x.ghost && x.name !== SAVE.name) || rows.find(x => x.ghost);
         if (r) { this.setPlay({ s: r.score, n: r.name, c: r.char, d: r.ghost }); return; }
       } catch (e) { /* internet yok */ }
@@ -2678,7 +2685,7 @@ const GH = {
     if (this.rec.length >= 15 && (!cur || sc > cur.s)) {
       data = this.rec.join(',');
       SAVE.ghosts[k] = { s: sc, n: SAVE.name || 'Ben', c: SAVE.char, d: data };
-      Object.keys(SAVE.ghosts).forEach(x => { if (x[0] === 'd' && x !== k) delete SAVE.ghosts[x]; });
+      Object.keys(SAVE.ghosts).forEach(x => { if ((x[0] === 'd' || x[0] === 'c') && x !== k) delete SAVE.ghosts[x]; });
     }
     return data;
   }
@@ -2785,6 +2792,66 @@ const BOSS = {
     checkAch();
   }
 };
+/* =====================  ARKADAŞ MEYDAN OKUMASI  ===================== */
+const CH = {
+  code(c) { try { return btoa(unescape(encodeURIComponent(JSON.stringify(c)))).replace(/=+$/, ''); } catch (e) { return ''; } },
+  parse(txt) {
+    if (!txt) return null;
+    let t = String(txt).trim();
+    const m = t.match(/[#?&]c=([A-Za-z0-9+/_-]+)/); if (m) t = m[1]; else { const w = t.match(/[A-Za-z0-9+/_-]{16,}/g); if (w) t = w[w.length - 1]; }
+    try {
+      const o = JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g, '+').replace(/_/g, '/')))));
+      if (!o || typeof o.s !== 'number' || o.s < 0 || o.s > 5e6) return null;
+      return { n: cleanName(o.n) || 'Arkadaş', s: Math.floor(o.s), k: (typeof o.k === 'string' && /^[\d-]{6,12}$/.test(o.k)) ? o.k : null, m: MODES[o.m] ? o.m : null };
+    } catch (e) { return null; }
+  },
+  id: c => `${c.n}|${c.s}|${c.k || ''}`,
+  mine() {                              // bu koşudan meydan okuma oluştur
+    if (!SAVE.name) { SAVE.name = cleanName(window.prompt('Takma adın:', '')) || 'Koşucu'; writeSave(); }
+    const seeded = G.daily;
+    return { n: SAVE.name, s: Math.floor(G.score), k: seeded ? G.seedKey : null, m: seeded ? (G.chal && G.chal.m) || (G.daily ? 'normal' : SAVE.mode) : null };
+  },
+  base() { try { return /^https?:/.test(location.href) ? location.href.split('#')[0].split('?')[0] : ''; } catch (e) { return ''; } },
+  async share() {
+    const c = this.mine(), code = this.code(c), base = this.base(), link = base ? base + '#c=' + code : '';
+    const txt = `⚔️ Rain Surfers'da ${fmt(c.s)} puan yaptım${c.k ? ' (aynı parkurda)' : ''}! Beni geçebilir misin?` + (link ? '\n' + link : '\nMeydan okuma kodum: ' + code);
+    try { if (navigator.share) { await navigator.share({ text: txt }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    let ok = false; try { await navigator.clipboard.writeText(txt); ok = true; } catch (e) {}
+    modal(`<span class="em">⚔️</span><h3>Meydan okuma hazır</h3><p>${ok ? 'Panoya kopyalandı, arkadaşına yapıştır.' : 'Aşağıdaki metni kopyalayıp arkadaşına gönder.'}</p><textarea id="ch-txt" readonly style="width:100%;height:92px;font-size:.72rem;border-radius:10px;padding:8px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.2)">${txt.replace(/</g, '')}</textarea><button class="btn gold" id="m-ok" style="margin-top:8px">Tamam</button>`);
+    $('m-ok').onclick = closeModal; const ta = $('ch-txt'); if (ta) { ta.onclick = () => ta.select(); }
+  },
+  accept(c) { SAVE.chal = c; writeSave(); UI.refreshMenu(); },
+  open(fromLink) {
+    const c = SAVE.chal;
+    const md = c && c.m ? MODES[c.m].name : '';
+    modal(`<span class="em">⚔️</span><h3>Meydan Okuma</h3>` + (c
+      ? `<p><b>${c.n}</b> seni <b>${fmt(c.s)}</b> puanla meydan okuyor!${c.k ? '<br>Aynı parkur' + (md ? ' • ' + md + ' modu' : '') : '<br>Serbest koşu'}</p><button class="btn green" id="ch-go">⚔️ Kabul Et</button>`
+      : `<p>Arkadaşından aldığın linki ya da kodu yapıştır.</p>`)
+      + `<input id="ch-in" placeholder="Link veya kod yapıştır" style="width:100%;margin:8px 0;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.35);color:#fff;font-size:.8rem"><div class="row-btns"><button class="btn" id="ch-add">Ekle</button><button class="btn" id="m-ok">Kapat</button></div>`);
+    $('m-ok').onclick = closeModal;
+    if (c) $('ch-go').onclick = () => { closeModal(); UI.hideAll(); startRun(false, SAVE.chal); };
+    $('ch-add').onclick = () => { const n = CH.parse($('ch-in').value); if (!n) { SND.fx.error(); toast('Kod geçersiz'); return; } CH.accept(n); SND.fx.mission(); CH.open(); };
+  },
+  fromUrl() { try { const c = CH.parse(location.hash || location.search); if (c && (!SAVE.chal || CH.id(SAVE.chal) !== CH.id(c))) { CH.accept(c); setTimeout(() => CH.open(true), 900); } } catch (e) {} },
+  update(dt) {
+    const c = G.chal, h = $('chal-hud'); if (!c || G.mode !== 'run') { h.classList.add('hidden'); return; }
+    h.classList.remove('hidden'); const left = c.s - G.score;
+    h.innerHTML = `⚔️ ${c.n} <b>${fmt(c.s)}</b>` + (left > 0 ? ` • kalan ${fmt(Math.ceil(left))}` : ' • geçtin! 🔥');
+    h.classList.toggle('win', left <= 0);
+    if (!G.chalPassed && left <= 0) { G.chalPassed = true; toast(`⚔️ ${c.n} geçildi!`, 'good'); SND.fx.mission(); }
+  },
+  result() {                            // koşu sonu: sonucu hesapla
+    const c = G.chal; if (!c) return '';
+    SAVE.chalDone = SAVE.chalDone || [];
+    if (G.score > c.s) {
+      const id = CH.id(c); let bonus = 0;
+      if (!SAVE.chalDone.includes(id)) { SAVE.chalDone.push(id); SAVE.chalDone = SAVE.chalDone.slice(-50); bonus = 100; SAVE.coins += bonus; }
+      SAVE.life.chal = (SAVE.life.chal || 0) + 1; writeSave();
+      return `⚔️ <b>${c.n}</b> yenildi! ${fmt(Math.floor(G.score))} vs ${fmt(c.s)}` + (bonus ? `<br>🎉 +${bonus}🪙 zafer bonusu` : '');
+    }
+    return `⚔️ <b>${c.n}</b> kazandı: ${fmt(c.s)}<br>Sen: ${fmt(Math.floor(G.score))} • ${fmt(Math.ceil(c.s - G.score) + 1)} puan eksik`;
+  }
+};
 /* ==========================================================
    07 · ARAYÜZ — HUD, menüler, mağaza, görevler, ayarlar
    ========================================================== */
@@ -2857,6 +2924,7 @@ const UI = {
     $('bo-boost').classList.toggle('on', G.useBoost && SAVE.stock.boost > 0);
     const dm = dailyMod(), dk = dailyKey(), db = SAVE.daily.key === dk ? SAVE.daily.best : 0;
     $('daily-s').textContent = `${dm.ic} ${dm.name}` + (db ? ` • Bugünkü en iyi: ${fmt(db)}` : SAVE.daily.bonus === dk ? '' : ' • İlk koşu +150🪙');
+    $('b-chal').innerHTML = SAVE.chal ? `⚔️ Meydan: ${SAVE.chal.n} • ${fmt(SAVE.chal.s)}` : '⚔️ Arkadaş Meydanı';
     $('d-gift').classList.toggle('hidden', !giftReady());
     $('d-miss').classList.toggle('hidden', !SAVE.missions.some(m => m.done));
     const canBuy = CHARS.some(x => !SAVE.chars.includes(x.id) && SAVE.coins >= x.price) || BOARDS.some(x => !SAVE.boards.includes(x.id) && SAVE.coins >= x.price);
@@ -2870,8 +2938,9 @@ const UI = {
     $('o-miss').innerHTML = SAVE.missions.map(m => { const d = missionDef(m); return `<div class="mission ${m.done ? 'done' : ''}" style="padding:7px 12px;margin-bottom:6px"><div class="t" style="font-size:.76rem"><span>${m.done ? '✓ ' : ''}${d.text(m.target)}</span><span>${fmt(m.progress)}/${fmt(m.target)}</span></div></div>`; }).join('');
     const sc = Math.floor(G.score);
     $('o-hs').innerHTML = `<div class="hs"><h4>EN İYİ KOŞULAR</h4>${SAVE.hs.slice(0, 5).map((h, i) => `<div class="${h.s === sc && i < 5 && h.t === SAVE.hs.find(x => x.s === sc).t ? 'me' : ''}"><span>${i + 1}. ${h.n ? cleanName(h.n) + ' <small style="opacity:.6">' + (CHARS.find(c => c.id === h.c) || CHARS[0]).name + '</small>' : (CHARS.find(c => c.id === h.c) || CHARS[0]).name}</span><span>${fmt(h.s)} • ${fmt(h.d)} m</span></div>`).join('')}</div>`;
-    const dt = $('o-daily'); dt.classList.toggle('hidden', !G.daily);
-    if (G.daily) dt.innerHTML = `📅 Günlük meydan okuma • bugünkü en iyi <b>${fmt(SAVE.daily.best)}</b>` + (G.dailyBonus ? `<br>🎉 İlk koşu bonusu +${G.dailyBonus}🪙` : '') + (G.maxCombo > 1 ? `<br>🔥 En yüksek kombo x${G.maxCombo}` : '');
+    const dt = $('o-daily'); dt.classList.toggle('hidden', !G.daily && !G.chal);
+    if (G.chal) dt.innerHTML = G.chalMsg || '';
+    else if (G.daily) dt.innerHTML = `📅 Günlük meydan okuma • bugünkü en iyi <b>${fmt(SAVE.daily.best)}</b>` + (G.dailyBonus ? `<br>🎉 İlk koşu bonusu +${G.dailyBonus}🪙` : '') + (G.maxCombo > 1 ? `<br>🔥 En yüksek kombo x${G.maxCombo}` : '');
     const cost = 400 * Math.pow(2, G.revives);
     const rb = $('b-revive');
     rb.classList.toggle('hidden', G.revives >= 3);
@@ -3127,6 +3196,8 @@ function bindUI() {
   on('b-play', () => startRun());
   on('b-daily', () => startRun(true));
   on('b-board', () => openBoard('all'));
+  on('b-chal', () => CH.open());
+  on('b-chall', () => CH.share());
   on('b-shop', () => { shopTab = 'chars'; renderShop(); UI.show('shop'); });
   on('shop-back', () => { UI.show('menu'); });
   document.querySelectorAll('#shop-tabs .tab').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.t; SND.fx.click(); renderShop(); }));
@@ -3143,7 +3214,7 @@ function bindUI() {
   on('b-pause', () => pauseGame());
   on('b-resume', () => resumeGame());
   on('b-quit', () => { SND.stopMusic(); toMenu(); });
-  on('b-again', () => { UI.hideAll(); startRun(G.daily); });
+  on('b-again', () => { UI.hideAll(); startRun(G.daily && !G.chal, G.chal); });
   on('o-home', () => { SND.stopMusic(); toMenu(); });
   on('o-shop', () => { SND.stopMusic(); G.mode = 'menu'; toMenu(); shopTab = 'chars'; renderShop(); UI.show('shop'); });
   on('b-revive', e => { const c = +$('b-revive').dataset.cost; if (SAVE.coins >= c) revive(c); else SND.fx.error(); });
@@ -3170,7 +3241,7 @@ function boot() {
     initSpeedLines();
     initCharacters();
     bindInput(); bindUI();
-    UI.show('menu'); UI.hideHud(); checkAch();
+    UI.show('menu'); UI.hideHud(); checkAch(); CH.fromUrl();
     try { if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) {}
     G.camLook.set(0, 0.5, 0);
     camera.position.set(2.1, 2.2, 6.6);
