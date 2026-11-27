@@ -492,7 +492,7 @@ const UPGRADES = [
   { id: 'multi', name: '2x Skor', icon: '⚡', base: 7, step: 1.6, col: '#a78bfa', desc: 'Puanlar iki katı' }
 ];
 const UP_MAX = 6;
-const upCost = lv => [0, 1000, 2200, 3800, 6000, 9000][lv] || 99999; // lv -> lv+1 maliyeti
+const upCost = lv => [0, 2000, 4500, 7500, 12000, 18000][lv] || 99999; // lv -> lv+1 maliyeti
 const upDur = id => { const u = UPGRADES.find(x => x.id === id); return u.base + u.step * (SAVE.up[id] - 1); };
 
 /* ---------- Bölgeler (gün döngüsü) ---------- */
@@ -573,6 +573,7 @@ const ACHS = [
 const PETS = [
   { id: 'cat', name: 'Boncuk', ic: '🐱', price: 500, desc: 'Sokak kedisi', perk: 'Yakındaki altınları kendine çeker' },
   { id: 'gull', name: 'Pamuk', ic: '🕊️', price: 800, desc: 'Boğaz martısı', perk: 'Güçlendirici süreleri +%10' },
+  { id: 'squirrel', name: 'Fındık', ic: '🐿️', price: 800, desc: 'Parktan kaçan sincap', perk: 'Altın kazancı +%15' },
   { id: 'dog', name: 'Karabaş', ic: '🐶', price: 1200, desc: 'Mahalle köpeği', perk: 'Yakın geçiş puanı iki katı' }
 ];
 /* ---------- Günlük meydan okuma ---------- */
@@ -581,9 +582,9 @@ function dailySeed() { let h = 2166136261; const k = dailyKey(); for (let i = 0;
 function dailyMod() { const r = dailySeed() % 3; return [{ id: 'normal', name: 'Dengeli gün', ic: '🌤️' }, { id: 'fast', name: 'Hızlı gün • daha hızlı başlar', ic: '💨' }, { id: 'gold', name: 'Altın günü • altınlar 2x', ic: '💰' }][r]; }
 
 /* ---------- Ekonomi dengesi: fiyatlar yüksek, ödüller kısık ---------- */
-CHARS.forEach(c => { c.price = Math.round(c.price * 4 / 50) * 50; });
-BOARDS.forEach(b => { b.price = Math.round(b.price * 4 / 50) * 50; });
-PETS.forEach(p => { p.price = Math.round(p.price * 4 / 50) * 50; });
+CHARS.forEach(c => { c.price = Math.round(c.price * 20 / 100) * 100; });
+BOARDS.forEach(b => { b.price = Math.round(b.price * 8 / 50) * 50; });
+PETS.forEach(p => { p.price = Math.round(p.price * 8 / 50) * 50; });
 ACHS.forEach(a => { a.r = Math.max(30, Math.round(a.r * 0.5 / 10) * 10); });
 /* ==========================================================
    02 · SES MOTORU — efektler + prosedürel Hicaz müzik
@@ -1267,7 +1268,7 @@ function applyZone(distM, dt) {
   updateLightning(dt || 0.016);
   const fl = LT.flash * LT.flash;
   scene.fog.color.copy(z.fog).lerp(FL_A, fl * 0.5);
-  scene.fog.density = 0.0112 + z.rain * 0.0065;
+  scene.fog.density = 0.0112 + z.rain * 0.0042;
   matRoad.specular.setScalar(0.1 + z.rain * 0.55); matRoad.shininess = 40 + z.rain * 40;
   skyMat.uniforms.top.value.copy(z.skyTop).lerp(FL_B, fl * 0.55); skyMat.uniforms.bot.value.copy(z.skyBot).lerp(FL_C, fl * 0.5);
   hemi.color.copy(z.hemiSky); hemi.groundColor.copy(z.hemiGnd); hemi.intensity = z.hemiI + fl * 1.6;
@@ -1545,6 +1546,19 @@ function buildGullPet() {
   g.scale.setScalar(1.25);
   return g;
 }
+function buildSquirrel() {
+  const g = new THREE.Group(), fur = M('#b5622a'), belly = M('#f3dcb8'), dark = M('#5a2f14');
+  bx(g, fur, 0.24, 0.24, 0.42, 0, 0.26, 0); bx(g, belly, 0.18, 0.1, 0.3, 0, 0.17, 0.04);
+  bx(g, fur, 0.2, 0.2, 0.2, 0, 0.42, 0.26); bx(g, belly, 0.12, 0.08, 0.06, 0, 0.38, 0.38); bx(g, dark, 0.04, 0.04, 0.03, 0, 0.42, 0.41);
+  bx(g, fur, 0.05, 0.09, 0.05, -0.07, 0.56, 0.24); bx(g, fur, 0.05, 0.09, 0.05, 0.07, 0.56, 0.24);
+  bx(g, dark, 0.03, 0.03, 0.02, -0.06, 0.46, 0.365); bx(g, dark, 0.03, 0.03, 0.02, 0.06, 0.46, 0.365);
+  const tail = new THREE.Group(); tail.position.set(0, 0.28, -0.24);
+  const t1 = bx(tail, fur, 0.2, 0.38, 0.16, 0, 0.18, -0.06), t2 = bx(tail, belly, 0.14, 0.2, 0.1, 0, 0.5, -0.12); t1.rotation.x = -0.25; t2.rotation.x = -0.5;
+  bx(tail, fur, 0.18, 0.2, 0.14, 0, 0.62, -0.16); g.add(tail);
+  g.userData.legs = [[-.08, -.14], [.08, -.14], [-.08, .12], [.08, .12]].map(p => bx(g, dark, 0.06, 0.16, 0.06, p[0], 0.08, p[1]));
+  g.userData.tail = tail; g.scale.setScalar(1.7);
+  return g;
+}
 /* ---------- Oyuncu ---------- */
 let player, chaser, dog, boardMesh, shadowBlob;
 const petObj = {}; let petX = 1.3, petY = 0;
@@ -1561,7 +1575,7 @@ function initCharacters() {
   dog = buildDog();   dog.visible = false; scene.add(dog);
   petObj.cat = buildCat(); petObj.cat.scale.setScalar(1.45);
   petObj.dog = buildDog('#d6b98c', '#6b4a2a'); petObj.dog.scale.setScalar(0.85);
-  petObj.gull = buildGullPet();
+  petObj.gull = buildGullPet(); petObj.squirrel = buildSquirrel();
   Object.keys(petObj).forEach(k => { petObj[k].visible = false; scene.add(petObj[k]); });
   applyLoadout();
 }
@@ -1711,7 +1725,27 @@ function initEntities() {
 }
 
 /* ---------- Engeller ---------- */
-function addObstacle(o) { o.group.position.set(o.x, 0, o.z); scene.add(o.group); obstacles.push(o); return o; }
+/* Yağmurda sisten sıyrılan uyarı ışıkları (sis tarafından yutulmaz, yakınlaşınca yanar) */
+function addBeacon(o, x, y, z, size, color) {
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.glow, color, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, opacity: 0, fog: false }));
+  sp.scale.setScalar(size); sp.position.set(x, y, z); sp.renderOrder = 5; o.group.add(sp); (o.bc = o.bc || []).push(sp);
+}
+function attachBeacons(o) {
+  const half = o.len / 2;
+  if (o.kind === 'low') { addBeacon(o, -1.0, 1.0, 0.3, 2.3, 0xff4a38); addBeacon(o, 1.0, 1.0, 0.3, 2.3, 0xff4a38); }
+  else if (o.kind === 'gate') { addBeacon(o, 0, o.bottom, 0.3, 3.4, 0xffb030); addBeacon(o, -1.15, 0.9, 0.3, 1.8, 0xff4a38); addBeacon(o, 1.15, 0.9, 0.3, 1.8, 0xff4a38); }
+  else if (o.kind === 'train') { addBeacon(o, -0.8, 1.4, half + 0.5, 2.8, 0xfff0c0); addBeacon(o, 0.8, 1.4, half + 0.5, 2.8, 0xfff0c0); addBeacon(o, 0, 3.3, half + 0.4, 2.2, 0xff3a30); }
+  else if (o.kind === 'ramp') { addBeacon(o, -1.0, 0.5, half, 2.2, 0x3affb0); addBeacon(o, 1.0, 0.5, half, 2.2, 0x3affb0); }
+}
+function updateBeacon(o) {
+  if (!o.bc) return;
+  const rain = typeof curZone !== 'undefined' ? curZone.rain : 0;
+  const d = -(o.z + o.len / 2);                          // oyuncuya kalan mesafe
+  const k = rain * clamp((82 - d) / 40, 0, 1) * (d > -4 ? 1 : 0);
+  const pulse = 0.82 + 0.18 * Math.sin(G.t * 7 + o.x);
+  for (let i = 0; i < o.bc.length; i++) o.bc[i].material.opacity = 0.62 * k * pulse;
+}
+function addObstacle(o) { o.group.position.set(o.x, 0, o.z); scene.add(o.group); obstacles.push(o); attachBeacons(o); return o; }
 
 function addLow(lane, zLead) {
   const x = LANES[lane], z = zLead - 0.4, g = new THREE.Group();
@@ -2272,7 +2306,7 @@ function updateRun(dt) {
   // engelleri ilerlet
   for (let i = obstacles.length - 1; i >= 0; i--) {
     const o = obstacles[i];
-    o.z += (dz + o.vz * dt); o.group.position.z = o.z;
+    o.z += (dz + o.vz * dt); o.group.position.z = o.z; updateBeacon(o);
     if (o.z - o.len / 2 > 28) { scene.remove(o.group); obstacles.splice(i, 1); }
   }
   // destek & çarpışma
@@ -2323,7 +2357,7 @@ function updateRun(dt) {
     if (Math.abs(c.x - G.px) < 1.0 && Math.abs(c.z) < 1.2 && Math.abs(c.y - pcy) < 1.4) {
       scene.remove(m); coinList.splice(i, 1);
       const add = ((perkOf().coin5 && (G.runCoins + 1) % 5 === 0) ? 2 : 1) * ((G.daily && G.dailyMod === 'gold') ? 2 : 1);
-      G.coinAcc += add * modeCfg().coin; const got = Math.floor(G.coinAcc); G.coinAcc -= got;
+      G.coinAcc += add * modeCfg().coin * (activePet() === 'squirrel' ? 1.15 : 1); const got = Math.floor(G.coinAcc); G.coinAcc -= got;
       G.runCoins += got; G.score += 10 * mult() * scoreK(); bumpStat('coins', got); SND.fx.coin();
       emit(c.x, c.y, c.z, 4, '#ffd34d', 0.8, 2.5, 0.35, 4, 0);
       continue;
@@ -2517,14 +2551,14 @@ function updatePets(dt, mode) {
   if (mode === 'menu') {
     petX = damp(petX, -1.0, 6, dt); petY = damp(petY, id === 'gull' ? 0.9 + Math.sin(G.t * 3) * 0.12 : 0, 8, dt);
     p.position.set(petX, petY, 0.8);
-    p.rotation.y = id === 'cat' ? 0.5 : Math.PI - 0.5;
+    p.rotation.y = (id === 'cat' || id === 'squirrel') ? 0.5 : Math.PI - 0.5;
   } else {
     const side = G.px > 0.8 ? -1 : 1;
     petX = damp(petX, G.px + side * 1.4, 5, dt);
     const gy = id === 'gull' ? G.py + 3.1 + Math.sin(G.t * 3) * 0.3 : G.py;
     petY = damp(petY, gy, 9, dt);
     p.position.set(petX, petY, id === 'gull' ? -1.2 : 1.7);
-    p.rotation.y = id === 'cat' ? Math.PI : 0;
+    p.rotation.y = (id === 'cat' || id === 'squirrel') ? Math.PI : 0;
     p.rotation.z = id === 'gull' ? (G.targetX - G.px) * 0.08 : 0;
   }
   const run = (mode === 'run' || mode === 'count') && G.onGround;
@@ -2838,7 +2872,7 @@ const UI = {
     $('o-hs').innerHTML = `<div class="hs"><h4>EN İYİ KOŞULAR</h4>${SAVE.hs.slice(0, 5).map((h, i) => `<div class="${h.s === sc && i < 5 && h.t === SAVE.hs.find(x => x.s === sc).t ? 'me' : ''}"><span>${i + 1}. ${h.n ? cleanName(h.n) + ' <small style="opacity:.6">' + (CHARS.find(c => c.id === h.c) || CHARS[0]).name + '</small>' : (CHARS.find(c => c.id === h.c) || CHARS[0]).name}</span><span>${fmt(h.s)} • ${fmt(h.d)} m</span></div>`).join('')}</div>`;
     const dt = $('o-daily'); dt.classList.toggle('hidden', !G.daily);
     if (G.daily) dt.innerHTML = `📅 Günlük meydan okuma • bugünkü en iyi <b>${fmt(SAVE.daily.best)}</b>` + (G.dailyBonus ? `<br>🎉 İlk koşu bonusu +${G.dailyBonus}🪙` : '') + (G.maxCombo > 1 ? `<br>🔥 En yüksek kombo x${G.maxCombo}` : '');
-    const cost = 300 * Math.pow(2, G.revives);
+    const cost = 400 * Math.pow(2, G.revives);
     const rb = $('b-revive');
     rb.classList.toggle('hidden', G.revives >= 3);
     rb.innerHTML = `💫 Devam Et &nbsp;<span class="coin-ic" style="display:inline-block;vertical-align:-4px;width:16px;height:16px"></span> ${cost}`;
@@ -2939,10 +2973,10 @@ function renderShop() {
     });
   } else {
     const items = [
-      { ic: '🛹', n: 'Kaykay ×3', d: `Elinde: ${SAVE.stock.board}`, price: 450, give: () => SAVE.stock.board += 3 },
-      { ic: '🚀', n: 'Hızlı Başlangıç', d: `Elinde: ${SAVE.stock.head}`, price: 400, give: () => SAVE.stock.head += 1 },
-      { ic: '⚡', n: 'Skor Güçlendirici', d: `Elinde: ${SAVE.stock.boost}`, price: 400, give: () => SAVE.stock.boost += 1 },
-      { ic: '🎁', n: 'Gizem Kutusu', d: 'Altın, eşya veya sürpriz!', price: 800, box: true }
+      { ic: '🛹', n: 'Kaykay ×3', d: `Elinde: ${SAVE.stock.board}`, price: 900, give: () => SAVE.stock.board += 3 },
+      { ic: '🚀', n: 'Hızlı Başlangıç', d: `Elinde: ${SAVE.stock.head}`, price: 800, give: () => SAVE.stock.head += 1 },
+      { ic: '⚡', n: 'Skor Güçlendirici', d: `Elinde: ${SAVE.stock.boost}`, price: 800, give: () => SAVE.stock.boost += 1 },
+      { ic: '🎁', n: 'Gizem Kutusu', d: 'Altın, eşya veya sürpriz!', price: 1500, box: true }
     ];
     items.forEach(it => {
       const el = card('', `<div class="big">${it.ic}</div><h3>${it.n}</h3><p>${it.d}</p><button class="btn sm gold">🪙 ${fmt(it.price)}</button>`);
