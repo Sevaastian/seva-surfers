@@ -492,7 +492,7 @@ const UPGRADES = [
   { id: 'multi', name: '2x Skor', icon: '⚡', base: 7, step: 1.6, col: '#a78bfa', desc: 'Puanlar iki katı' }
 ];
 const UP_MAX = 6;
-const upCost = lv => [0, 300, 650, 1100, 1800, 2800][lv] || 9999; // lv -> lv+1 maliyeti
+const upCost = lv => [0, 1000, 2200, 3800, 6000, 9000][lv] || 99999; // lv -> lv+1 maliyeti
 const upDur = id => { const u = UPGRADES.find(x => x.id === id); return u.base + u.step * (SAVE.up[id] - 1); };
 
 /* ---------- Bölgeler (gün döngüsü) ---------- */
@@ -511,7 +511,7 @@ const MISSION_DEFS = [
   { id: 'coins_run', scope: 'run', stat: 'coins', base: 50, step: 25, text: t => `Tek koşuda ${t} altın topla` },
   { id: 'score_run', scope: 'run', stat: 'score', base: 2500, step: 1500, text: t => `Tek koşuda ${fmt(t)} puan yap` },
   { id: 'dist_run', scope: 'run', stat: 'dist', base: 350, step: 150, text: t => `Tek koşuda ${t} metre koş` },
-  { id: 'roof_run', scope: 'run', stat: 'roof', base: 6, step: 3, text: t => `Tek koşuda tramvay çatısında ${t} sn kal` },
+  { id: 'roof_run', scope: 'run', stat: 'roof', base: 4, step: 1, cap: 10, text: t => `Tek koşuda tramvay çatısında ${t} sn kal` },
   { id: 'jump_tot', scope: 'total', stat: 'jumps', base: 20, step: 12, text: t => `Toplam ${t} kez zıpla` },
   { id: 'roll_tot', scope: 'total', stat: 'rolls', base: 15, step: 10, text: t => `Toplam ${t} kez yuvarlan` },
   { id: 'lane_tot', scope: 'total', stat: 'lanes', base: 50, step: 30, text: t => `Toplam ${t} kez şerit değiştir` },
@@ -523,15 +523,16 @@ const MISSION_DEFS = [
 function newMissionSet() {
   const lvl = SAVE.missionSet;
   const defs = MISSION_DEFS.slice().sort(() => Math.random() - 0.5).slice(0, 3);
-  SAVE.missions = defs.map(d => ({ id: d.id, target: Math.round((d.base + d.step * (lvl - 1)) / (d.base > 100 ? 10 : 1)) * (d.base > 100 ? 10 : 1), progress: 0, done: false }));
+  SAVE.missions = defs.map(d => ({ id: d.id, target: Math.min(d.cap || 1e9, Math.round((d.base + d.step * (lvl - 1)) / (d.base > 100 ? 10 : 1)) * (d.base > 100 ? 10 : 1)), progress: 0, done: false }));
 }
 if (!SAVE.missions) newMissionSet();
+SAVE.missions.forEach(m => { if (m.id === 'roof_run') m.target = Math.min(m.target, 10); });
 
 /* ---------- Zorluk ---------- */
 const MODES = {
-  easy:   { name: 'Rahat',  speed0: 21, accel: 0.20, max: 46, gap: 1.12, score: 0.8 },
-  normal: { name: 'Normal', speed0: 24, accel: 0.26, max: 54, gap: 1.0,  score: 1.0 },
-  crazy:  { name: 'Çılgın', speed0: 29, accel: 0.40, max: 66, gap: 0.86, score: 1.6 }
+  easy:   { name: 'Rahat',  speed0: 21, accel: 0.20, max: 46, gap: 1.12, score: 0.8, coin: 0.6 },
+  normal: { name: 'Normal', speed0: 24, accel: 0.26, max: 54, gap: 1.0,  score: 1.0, coin: 1.0 },
+  crazy:  { name: 'Çılgın', speed0: 29, accel: 0.40, max: 66, gap: 0.86, score: 1.6, coin: 1.6 }
 };
 const modeCfg = () => (typeof G !== 'undefined' && G.daily) ? MODES.normal : (MODES[SAVE.mode] || MODES.normal);
 const perkOf = () => (CHARS.find(c => c.id === SAVE.char) || CHARS[0]).perk || {};
@@ -578,6 +579,12 @@ const PETS = [
 const dailyKey = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
 function dailySeed() { let h = 2166136261; const k = dailyKey(); for (let i = 0; i < k.length; i++) { h ^= k.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function dailyMod() { const r = dailySeed() % 3; return [{ id: 'normal', name: 'Dengeli gün', ic: '🌤️' }, { id: 'fast', name: 'Hızlı gün • daha hızlı başlar', ic: '💨' }, { id: 'gold', name: 'Altın günü • altınlar 2x', ic: '💰' }][r]; }
+
+/* ---------- Ekonomi dengesi: fiyatlar yüksek, ödüller kısık ---------- */
+CHARS.forEach(c => { c.price = Math.round(c.price * 4 / 50) * 50; });
+BOARDS.forEach(b => { b.price = Math.round(b.price * 4 / 50) * 50; });
+PETS.forEach(p => { p.price = Math.round(p.price * 4 / 50) * 50; });
+ACHS.forEach(a => { a.r = Math.max(30, Math.round(a.r * 0.5 / 10) * 10); });
 /* ==========================================================
    02 · SES MOTORU — efektler + prosedürel Hicaz müzik
    ========================================================== */
@@ -1842,6 +1849,17 @@ function patTrainRamp(z, dm) {
   if (RND() < 0.5) addGate(lanes[2], z - 10); else coinLine(lanes[2], z, 6, 2.5);
   return len + 14;
 }
+function patTrainChain(z) {
+  const lanes = laneOrder(), L = [randi(16, 20), randi(14, 20), randi(14, 20)];
+  addRamp(lanes[0], z); let lead = z - 9;                    // rampadan çıkıp zincire bin
+  const roofCoins = (l, zl, len) => coinLine(l, zl - 1.5, Math.max(2, Math.floor((len - 3) / 2.3)), 2.3, 4.1);
+  for (let i = 0; i < 3; i++) { addTrain(lanes[0], lead, L[i], null, 0); roofCoins(lanes[0], lead, L[i]); lead -= L[i] + 2; }
+  let lead2 = z - 15;                                         // yan şerit: çatıdan çatıya geçiş
+  const L2 = [randi(14, 18), randi(14, 20)];
+  for (let i = 0; i < 2; i++) { addTrain(lanes[1], lead2, L2[i], null, 0); roofCoins(lanes[1], lead2, L2[i]); lead2 -= L2[i] + 2; }
+  if (RND() < 0.5) { addLow(lanes[2], z - 10); coinLine(lanes[2], z - 16, 8, 2.4); } else coinLine(lanes[2], z, 14, 2.5);
+  return (z - lead) + 6;
+}
 function patOncoming(z) {
   const lanes = laneOrder(), l = lanes[0];
   addTrain(l, z - 70, 14, null, 16);
@@ -1868,6 +1886,7 @@ function spawnChunk(z, dm, jet) {
   if (dm > 90) w.push([patGateRow, 3]);
   if (dm > 130) w.push([patMixed, 3]);
   if (dm > 160) w.push([patTrainRamp, 4], [patPower, 2]);
+  if (dm > 140) w.push([patTrainChain, 4]);
   if (dm > 110) w.push([patDolmus, 3]);
   if (dm > 220) w.push([patTrainWall, 3], [patZig, 2]);
   if (dm > 380) w.push([patOncoming, 2]);
@@ -2006,7 +2025,7 @@ function setRunStat(stat, v) {
 function checkMission(m) {
   if (m.done || m.progress < m.target) return;
   m.done = true; m.progress = m.target;
-  const reward = 40 + 20 * SAVE.missionSet;
+  const reward = 25 + 10 * SAVE.missionSet;
   SAVE.coins += reward;
   toast(`🎯 Görev tamamlandı! +${reward} altın`, 'good'); SND.fx.mission(); vib(30);
   if (SAVE.missions.every(x => x.done)) {
@@ -2061,10 +2080,11 @@ function doJump() {
 }
 function doRoll() {
   if (G.mode !== 'run' || G.pu.jetpack > 0) return;
-  if (!G.onGround) { G.vy = Math.min(G.vy, -34); G.rollQ = 0.3; return; }
+  if (!G.onGround) { G.vy = Math.min(G.vy, -34); if (G.rollCd <= 0.25) G.rollQ = 0.3; return; }
+  if (G.rollCd > 0 || G.roll > 0) return;
   startRoll();
 }
-function startRoll() { G.roll = ROLL_DUR; G.rollQ = 0; bumpStat('rolls', 1); SND.fx.roll(); }
+function startRoll() { G.rollCd = 1.1; G.roll = ROLL_DUR; G.rollQ = 0; bumpStat('rolls', 1); SND.fx.roll(); }
 function activateBoard() {
   if (G.mode !== 'run' || G.boardT > 0) return;
   if (SAVE.stock.board <= 0) { SND.fx.error(); toast('Kaykayın kalmadı! Mağazadan al 🛹'); return; }
@@ -2104,11 +2124,11 @@ function die() {
   if (G.daily) {
     const k = dailyKey(); if (SAVE.daily.key !== k) { SAVE.daily.key = k; SAVE.daily.best = 0; }
     SAVE.daily.runs++; SAVE.daily.best = Math.max(SAVE.daily.best, sc);
-    if (SAVE.daily.bonus !== k) { SAVE.daily.bonus = k; SAVE.coins += 150; G.dailyBonus = 150; }
+    if (SAVE.daily.bonus !== k) { SAVE.daily.bonus = k; SAVE.coins += 60; G.dailyBonus = 60; }
   }
   BOSS.active && BOSS.reset(); $('ghost-hud').classList.add('hidden'); if (GH.mesh) GH.mesh.root.visible = false;
   onlineSubmit(sc, G.dm, G.daily, GH.finish(sc));
-  SAVE.hs.push({ s: sc, d: Math.floor(G.dm), c: SAVE.char, t: Date.now() }); SAVE.hs.sort((a, b) => b.s - a.s); SAVE.hs = SAVE.hs.slice(0, 8);
+  SAVE.hs.push({ n: SAVE.name || '', s: sc, d: Math.floor(G.dm), c: SAVE.char, t: Date.now() }); SAVE.hs.sort((a, b) => b.s - a.s); SAVE.hs = SAVE.hs.slice(0, 8);
   checkAch(); writeSave();
   SND.duck(0.1); SND.setRain(0);
   if (G.chaseT > 0) { G.chaseT = 0; chaser.root.visible = true; dog.visible = true; }
@@ -2123,7 +2143,7 @@ function startRun(daily) {
   clearEntities(); BOSS.reset();
   Object.assign(G, {
     mode: 'count', speed: modeCfg().speed0, dist: 0, dm: 0, score: 0, runCoins: 0, credited: 0,
-    lane: 1, prevLane: 1, targetX: 0, px: 0, py: 0, vy: 0, onGround: true, coyote: 0, prevPy: 0, roll: 0, rollQ: 0, jumpBuf: 0,
+    lane: 1, prevLane: 1, targetX: 0, px: 0, py: 0, vy: 0, onGround: true, coyote: 0, prevPy: 0, roll: 0, rollQ: 0, rollCd: 0, coinAcc: 0, jumpBuf: 0,
     boardT: 0, invuln: 0, stumbleCool: 0, slowT: 0, chaseT: 0, afterJet: false, travelled: 0, nextSpawn: 0, zoneIdx: 0,
     roofT: 0, revives: 0, deadT: 0, shake: 0, newBest: false, missionsReset: false, jetDone: false, combo: 0, nmT: 0, maxCombo: 0, dailyBonus: 0
   });
@@ -2232,6 +2252,7 @@ function updateRun(dt) {
   if (G.chaseT > 0) G.chaseT -= dt;
   if (G.jumpBuf > 0) G.jumpBuf -= dt;
   if (G.rollQ > 0) G.rollQ -= dt;
+  if (G.rollCd > 0) G.rollCd -= dt;
   if (G.coyote > 0) G.coyote -= dt;
   if (G.afterJet && !jet && G.pu.jetpack <= 0 && G.py > 0.5 && !G.jetDone) { G.jetDone = true; G.invuln = Math.max(G.invuln, 2.0); }
   if (jet) G.jetDone = false;
@@ -2260,7 +2281,7 @@ function updateRun(dt) {
     if (G.py <= cs.sup + 0.001) {
       if (!G.onGround && G.vy < -9) { SND.fx.land(); emit(G.px, cs.sup + 0.05, 0, 8, '#cbd5e1', 1.3, 2.4, 0.35, 8, 0); }
       G.py = cs.sup; G.vy = 0; G.onGround = true; G.coyote = 0.1;
-      if (G.rollQ > 0) { startRoll(); }
+      if (G.rollQ > 0 && G.rollCd <= 0) { startRoll(); }
       if (G.jumpBuf > 0) { G.jumpBuf = 0; doJump(); }
     } else G.onGround = false;
   }
@@ -2284,7 +2305,7 @@ function updateRun(dt) {
     let len, nomSp = G.speed;
     if (G.daily) { nomSp = Math.min(54, 24 + G.dm / 60); len = withSeed(G.dailyRng, () => spawnChunk(zl, G.dm, false)); }
     else len = spawnChunk(zl, G.dm, jet);
-    G.nextSpawn += len + clamp(nomSp * 0.78 * modeCfg().gap, 18, 44);
+    G.nextSpawn += len + clamp(nomSp * 0.78 * modeCfg().gap, 15, 38);
     if (len <= 0) break;
   }
 
@@ -2302,7 +2323,8 @@ function updateRun(dt) {
     if (Math.abs(c.x - G.px) < 1.0 && Math.abs(c.z) < 1.2 && Math.abs(c.y - pcy) < 1.4) {
       scene.remove(m); coinList.splice(i, 1);
       const add = ((perkOf().coin5 && (G.runCoins + 1) % 5 === 0) ? 2 : 1) * ((G.daily && G.dailyMod === 'gold') ? 2 : 1);
-      G.runCoins += add; G.score += 10 * mult() * scoreK(); bumpStat('coins', add); SND.fx.coin();
+      G.coinAcc += add * modeCfg().coin; const got = Math.floor(G.coinAcc); G.coinAcc -= got;
+      G.runCoins += got; G.score += 10 * mult() * scoreK(); bumpStat('coins', got); SND.fx.coin();
       emit(c.x, c.y, c.z, 4, '#ffd34d', 0.8, 2.5, 0.35, 4, 0);
       continue;
     }
@@ -2401,7 +2423,7 @@ function updateVisuals(dt, spdForAnim) {
     _camTarget.set(G.px * 0.35, 1.9 + G.py * 0.3, -16);
   }
   const rate = (mode === 'menu') ? 2.2 : 7;
-  camera.position.x = damp(camera.position.x, _camPos.x, rate, dt);
+  camera.position.x = damp(camera.position.x, _camPos.x, mode === 'run' ? 4.5 : rate, dt);
   camera.position.y = damp(camera.position.y, _camPos.y, rate, dt);
   camera.position.z = damp(camera.position.z, _camPos.z, rate, dt);
   G.camLook.x = damp(G.camLook.x, _camTarget.x, rate, dt); G.camLook.y = damp(G.camLook.y, _camTarget.y, rate, dt); G.camLook.z = damp(G.camLook.z, _camTarget.z, rate, dt);
@@ -2410,7 +2432,7 @@ function updateVisuals(dt, spdForAnim) {
   const fov = (camera.userData.baseFov || 60) + (mode === 'run' ? k * 7 + (jet ? 4 : 0) : 0);
   if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = damp(camera.fov, fov, 4, dt); camera.updateProjectionMatrix(); }
   updatePets(dt, mode);
-  camera.rotation.z += (mode === 'run' ? (G.px - G.targetX) * 0.012 : 0);
+  camera.rotation.z += (mode === 'run' ? (G.px - G.targetX) * 0.005 : 0);
 }
 function getGroundBelow() {
   // havadayken gölge için altındaki en yüksek destek
@@ -2547,7 +2569,7 @@ async function openBoard(board) {
   body('<div style="padding:12px;text-align:center">Yükleniyor…</div>'); wire();
   try {
     const rows = await onlineTop(board);
-    body(rows.length ? rows.map((r, i) => `<div class="${r.name === SAVE.name ? 'me' : ''}"><span>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'} ${cleanName(r.name)}</span><span>${fmt(r.score)} • ${fmt(r.dist)} m</span></div>`).join('') : '<div style="padding:12px;text-align:center">Henüz skor yok, ilk sen ol!</div>');
+    body(rows.length ? rows.map((r, i) => `<div class="${r.name === SAVE.name ? 'me' : ''}"><span>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'} ${cleanName(r.name)} <small style="opacity:.55">${(CHARS.find(c => c.id === r.char) || {}).name || ''}</small></span><span>${fmt(r.score)} • ${fmt(r.dist)} m</span></div>`).join('') : '<div style="padding:12px;text-align:center">Henüz skor yok, ilk sen ol!</div>');
   } catch (e) { body('<div style="padding:12px;text-align:center">Bağlanılamadı. İnterneti kontrol et.</div>'); }
   wire();
 }
@@ -2721,7 +2743,7 @@ const BOSS = {
   },
   finish() {
     this.active = false; this.heli.visible = false; this.heli.rotation.set(0, 0, 0); this.hideFx(); $('bossbar').classList.add('hidden');
-    const coins = 80 + this.n * 40, pts = Math.round(1500 * (this.n + 1) * mult() * scoreK());
+    const coins = 40 + this.n * 20, pts = Math.round(1500 * (this.n + 1) * mult() * scoreK());
     G.runCoins += coins; G.score += pts; SAVE.life.boss = (SAVE.life.boss || 0) + 1; this.n++;
     this.next = G.dm + 900 + Math.min(600, this.n * 100);
     toast(`🚁 Helikopteri atlattın! +${coins}🪙 +${fmt(pts)} puan`, 'good'); SND.fx.mission(); vib(50);
@@ -2813,10 +2835,10 @@ const UI = {
     $('o-new').classList.toggle('hidden', !G.newBest);
     $('o-miss').innerHTML = SAVE.missions.map(m => { const d = missionDef(m); return `<div class="mission ${m.done ? 'done' : ''}" style="padding:7px 12px;margin-bottom:6px"><div class="t" style="font-size:.76rem"><span>${m.done ? '✓ ' : ''}${d.text(m.target)}</span><span>${fmt(m.progress)}/${fmt(m.target)}</span></div></div>`; }).join('');
     const sc = Math.floor(G.score);
-    $('o-hs').innerHTML = `<div class="hs"><h4>EN İYİ KOŞULAR</h4>${SAVE.hs.slice(0, 5).map((h, i) => `<div class="${h.s === sc && i < 5 && h.t === SAVE.hs.find(x => x.s === sc).t ? 'me' : ''}"><span>${i + 1}. ${(CHARS.find(c => c.id === h.c) || CHARS[0]).name}</span><span>${fmt(h.s)} • ${fmt(h.d)} m</span></div>`).join('')}</div>`;
+    $('o-hs').innerHTML = `<div class="hs"><h4>EN İYİ KOŞULAR</h4>${SAVE.hs.slice(0, 5).map((h, i) => `<div class="${h.s === sc && i < 5 && h.t === SAVE.hs.find(x => x.s === sc).t ? 'me' : ''}"><span>${i + 1}. ${h.n ? cleanName(h.n) + ' <small style="opacity:.6">' + (CHARS.find(c => c.id === h.c) || CHARS[0]).name + '</small>' : (CHARS.find(c => c.id === h.c) || CHARS[0]).name}</span><span>${fmt(h.s)} • ${fmt(h.d)} m</span></div>`).join('')}</div>`;
     const dt = $('o-daily'); dt.classList.toggle('hidden', !G.daily);
     if (G.daily) dt.innerHTML = `📅 Günlük meydan okuma • bugünkü en iyi <b>${fmt(SAVE.daily.best)}</b>` + (G.dailyBonus ? `<br>🎉 İlk koşu bonusu +${G.dailyBonus}🪙` : '') + (G.maxCombo > 1 ? `<br>🔥 En yüksek kombo x${G.maxCombo}` : '');
-    const cost = 150 * Math.pow(2, G.revives);
+    const cost = 300 * Math.pow(2, G.revives);
     const rb = $('b-revive');
     rb.classList.toggle('hidden', G.revives >= 3);
     rb.innerHTML = `💫 Devam Et &nbsp;<span class="coin-ic" style="display:inline-block;vertical-align:-4px;width:16px;height:16px"></span> ${cost}`;
@@ -2917,10 +2939,10 @@ function renderShop() {
     });
   } else {
     const items = [
-      { ic: '🛹', n: 'Kaykay ×3', d: `Elinde: ${SAVE.stock.board}`, price: 150, give: () => SAVE.stock.board += 3 },
-      { ic: '🚀', n: 'Hızlı Başlangıç', d: `Elinde: ${SAVE.stock.head}`, price: 120, give: () => SAVE.stock.head += 1 },
-      { ic: '⚡', n: 'Skor Güçlendirici', d: `Elinde: ${SAVE.stock.boost}`, price: 120, give: () => SAVE.stock.boost += 1 },
-      { ic: '🎁', n: 'Gizem Kutusu', d: 'Altın, eşya veya sürpriz!', price: 250, box: true }
+      { ic: '🛹', n: 'Kaykay ×3', d: `Elinde: ${SAVE.stock.board}`, price: 450, give: () => SAVE.stock.board += 3 },
+      { ic: '🚀', n: 'Hızlı Başlangıç', d: `Elinde: ${SAVE.stock.head}`, price: 400, give: () => SAVE.stock.head += 1 },
+      { ic: '⚡', n: 'Skor Güçlendirici', d: `Elinde: ${SAVE.stock.boost}`, price: 400, give: () => SAVE.stock.boost += 1 },
+      { ic: '🎁', n: 'Gizem Kutusu', d: 'Altın, eşya veya sürpriz!', price: 800, box: true }
     ];
     items.forEach(it => {
       const el = card('', `<div class="big">${it.ic}</div><h3>${it.n}</h3><p>${it.d}</p><button class="btn sm gold">🪙 ${fmt(it.price)}</button>`);
@@ -2941,10 +2963,10 @@ function openBox() {
     if (r < 0.04 && (lockedC.length || lockedB.length)) {
       if (lockedC.length && (!lockedB.length || Math.random() < 0.5)) { const c = pick(lockedC); SAVE.chars.push(c.id); em = '🏃'; txt = `Karakter kazandın: <b>${c.name}</b>!`; }
       else { const b = pick(lockedB); SAVE.boards.push(b.id); em = '🛹'; txt = `Kaykay kazandın: <b>${b.name}</b>!`; }
-    } else if (r < 0.10) { SAVE.coins += 1000; txt = '<b>JACKPOT!</b> 1.000 altın'; em = '💰'; }
-    else if (r < 0.18) { SAVE.coins += 500; txt = '<b>500</b> altın'; }
-    else if (r < 0.40) { SAVE.coins += 250; txt = '<b>250</b> altın'; }
-    else if (r < 0.60) { SAVE.coins += 120; txt = '<b>120</b> altın'; }
+    } else if (r < 0.10) { SAVE.coins += 2000; txt = '<b>JACKPOT!</b> 2.000 altın'; em = '💰'; }
+    else if (r < 0.18) { SAVE.coins += 900; txt = '<b>900</b> altın'; }
+    else if (r < 0.40) { SAVE.coins += 400; txt = '<b>400</b> altın'; }
+    else if (r < 0.60) { SAVE.coins += 150; txt = '<b>150</b> altın'; }
     else if (r < 0.74) { SAVE.stock.board += 3; txt = '<b>3 kaykay</b>'; em = '🛹'; }
     else if (r < 0.87) { SAVE.stock.head += 2; txt = '<b>2 Hızlı Başlangıç</b>'; em = '🚀'; }
     else { SAVE.stock.boost += 2; txt = '<b>2 Skor Güçlendirici</b>'; em = '⚡'; }
@@ -2971,7 +2993,7 @@ function claimGift() {
   const y = new Date(); y.setDate(y.getDate() - 1);
   SAVE.giftStreak = SAVE.lastGift === dayKey(y) ? SAVE.giftStreak + 1 : 1;
   SAVE.lastGift = dayKey(new Date());
-  const coins = 100 + 50 * Math.min(SAVE.giftStreak, 7);
+  const coins = 40 + 20 * Math.min(SAVE.giftStreak, 7);
   SAVE.coins += coins; let extra = '';
   if (SAVE.giftStreak % 3 === 0) { SAVE.stock.board += 2; extra = '<br>+ 2 kaykay 🛹'; }
   writeSave(); SND.fx.mission();
