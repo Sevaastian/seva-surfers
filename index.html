@@ -136,6 +136,13 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
 .card .lv{display:flex;gap:3px;justify-content:center}
 .card .lv i{width:14px;height:6px;border-radius:3px;background:rgba(255,255,255,.18)}
 .card .lv i.f{background:var(--gold)}
+.combo{position:absolute;top:30%;left:50%;transform:translate(-50%,0) scale(.6);opacity:0;pointer-events:none;text-align:center;font-weight:900;font-size:2rem;color:#ffd34d;text-shadow:0 3px 0 #b8741a,0 0 18px rgba(255,211,77,.6);z-index:6;transition:transform .18s,opacity .25s;white-space:nowrap}
+.combo small{display:block;font-size:.85rem;color:#fff;text-shadow:0 2px 4px #000}
+.combo.on{opacity:1;transform:translate(-50%,0) scale(1)}
+.combo.pop{transform:translate(-50%,-6px) scale(1.18)}
+.btn.daily{background:linear-gradient(135deg,#7b5cff,#3d6bff);color:#fff;margin-top:8px;font-size:.95rem;padding:10px;display:flex;flex-direction:column;gap:2px;align-items:center}
+.btn.daily small{font-size:.68rem;font-weight:600;opacity:.85}
+.daily-tag{width:100%;max-width:340px;margin-top:8px;padding:8px 12px;border-radius:14px;background:rgba(123,92,255,.22);border:1px solid rgba(123,92,255,.5);font-size:.8rem;text-align:center}
 .card .big{font-size:2.4rem;line-height:1;margin-top:4px}
 .badge{position:absolute;top:8px;left:8px;background:var(--teal);color:#022c27;border-radius:8px;font-size:.62rem;font-weight:700;padding:2px 7px}
 .mission{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:16px;padding:10px 12px;margin-bottom:8px}
@@ -225,6 +232,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
 
   <!-- HUD -->
   <div id="hud" class="hidden">
+    <div id="combo" class="combo"></div>
     <div class="hud-top">
       <div class="pill score-box">
         <div class="lbl">SKOR</div>
@@ -267,6 +275,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
         <button class="boost" id="bo-boost"><span class="ic">⚡</span><span>Skor Güçlendirici<small>Çarpan ile başla</small></span><span class="n" id="bo-boost-n">0</span></button>
       </div>
       <button class="btn play" id="b-play">KOŞ!</button>
+      <button class="btn daily" id="b-daily"><span id="daily-t">📅 Günlük Meydan Okuma</span><small id="daily-s"></small></button>
       <div class="row-btns">
         <button class="nav-btn" id="b-shop"><span class="ic">🛍️</span>Mağaza<span class="dot hidden" id="d-shop"></span></button>
         <button class="nav-btn" id="b-missions"><span class="ic">🎯</span>Görevler<span class="dot hidden" id="d-miss"></span></button>
@@ -290,6 +299,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
         <button class="tab on" data-t="chars">Karakterler</button>
         <button class="tab" data-t="boards">Kaykaylar</button>
         <button class="tab" data-t="ups">Yükseltmeler</button>
+        <button class="tab" data-t="pets">Dostlar</button>
         <button class="tab" data-t="items">Eşyalar</button>
       </div>
       <div class="scroll"><div class="grid" id="shop-grid"></div></div>
@@ -363,6 +373,7 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
       <div><span>Bu koşuda altın</span><b id="o-coins">0</b></div>
       <div><span>Kasa</span><b id="o-bank">0</b></div>
     </div>
+    <div id="o-daily" class="daily-tag hidden"></div>
     <div id="o-miss" style="width:100%;max-width:340px"></div>
     <div id="o-hs" style="width:100%;max-width:340px;margin-top:8px"></div>
     <div class="over-btns">
@@ -386,9 +397,12 @@ button{font-family:inherit;color:inherit;border:none;cursor:pointer;touch-action
 const $ = id => document.getElementById(id);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
-const rand = (a, b) => a + Math.random() * (b - a);
+let RND = Math.random;                      // günlük meydan okumada seed'li üretici ile değişir
+const rand = (a, b) => a + RND() * (b - a);
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function withSeed(rng, fn) { const old = RND; RND = rng; try { return fn(); } finally { RND = old; } }
 const randi = (a, b) => Math.floor(rand(a, b + 1));
-const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const pick = arr => arr[Math.floor(RND() * arr.length)];
 const fmt = n => Math.floor(n).toLocaleString('tr-TR');
 const damp = (cur, target, rate, dt) => lerp(cur, target, 1 - Math.exp(-rate * dt));
 
@@ -404,8 +418,9 @@ const defaultSave = () => ({
   multLevel: 1, missionSet: 1, missions: null,
   lastGift: '', giftStreak: 0, tutorial: false,
   settings: { sfx: true, music: true, vib: true, quality: 2, auto: true },
-  mode: 'normal', charAlt: {}, ach: {}, hs: [],
-  life: { jumps: 0, rolls: 0, boards: 0, powerups: 0, roof: 0, stumbles: 0, revives: 0, boxes: 0, storm: 0, dolmus: 0 }
+  mode: 'normal', charAlt: {}, ach: {}, hs: [], pets: [], pet: null,
+  daily: { key: '', best: 0, runs: 0, bonus: '' },
+  life: { near: 0, jumps: 0, rolls: 0, boards: 0, powerups: 0, roof: 0, stumbles: 0, revives: 0, boxes: 0, storm: 0, dolmus: 0 }
 });
 let SAVE = defaultSave();
 let storageOK = true;
@@ -419,6 +434,7 @@ function loadSave() {
       SAVE.stock = Object.assign(d.stock, p.stock || {});
       SAVE.settings = Object.assign(d.settings, p.settings || {});
       SAVE.life = Object.assign(d.life, p.life || {});
+      SAVE.daily = Object.assign(d.daily, p.daily || {}); SAVE.pets = p.pets || []; SAVE.pet = p.pet || null;
       SAVE.charAlt = p.charAlt || {}; SAVE.ach = p.ach || {}; SAVE.hs = p.hs || [];
     }
   } catch (e) { storageOK = false; }
@@ -493,6 +509,7 @@ const MISSION_DEFS = [
   { id: 'lane_tot', scope: 'total', stat: 'lanes', base: 50, step: 30, text: t => `Toplam ${t} kez şerit değiştir` },
   { id: 'pu_tot', scope: 'total', stat: 'powerups', base: 4, step: 3, text: t => `Toplam ${t} güçlendirici topla` },
   { id: 'board_tot', scope: 'total', stat: 'boards', base: 2, step: 1, text: t => `Kaykayı ${t} kez kullan` },
+  { id: 'near_tot', scope: 'total', stat: 'near', base: 6, step: 4, text: t => `Toplam ${t} yakın geçiş yap` },
   { id: 'coin_tot', scope: 'total', stat: 'coinsTot', base: 150, step: 80, text: t => `Toplam ${t} altın topla` }
 ];
 function newMissionSet() {
@@ -508,7 +525,7 @@ const MODES = {
   normal: { name: 'Normal', speed0: 24, accel: 0.26, max: 54, gap: 1.0,  score: 1.0 },
   crazy:  { name: 'Çılgın', speed0: 29, accel: 0.40, max: 66, gap: 0.86, score: 1.6 }
 };
-const modeCfg = () => MODES[SAVE.mode] || MODES.normal;
+const modeCfg = () => (typeof G !== 'undefined' && G.daily) ? MODES.normal : (MODES[SAVE.mode] || MODES.normal);
 const perkOf = () => (CHARS.find(c => c.id === SAVE.char) || CHARS[0]).perk || {};
 
 /* ---------- Başarımlar ---------- */
@@ -532,8 +549,25 @@ const ACHS = [
   { id: 'chars3', ic: '👥', n: 'Koleksiyoncu', d: '3 karakter sahip ol', r: 200, test: () => SAVE.chars.length >= 3 },
   { id: 'chars9', ic: '👑', n: 'Hepsini Topla', d: 'Tüm karakterlere sahip ol', r: 1500, test: () => SAVE.chars.length >= CHARS.length },
   { id: 'mult5', ic: '✖️', n: 'Çarpan x5', d: 'Skor çarpanını 5 yap', r: 300, test: () => SAVE.multLevel >= 5 },
+  { id: 'near10', ic: '😮‍💨', n: 'Ucu Ucuna', d: '10 yakın geçiş yap', r: 150, test: () => SAVE.life.near >= 10 },
+  { id: 'near100', ic: '🎯', n: 'Neredeyse Dokundu', d: '100 yakın geçiş yap', r: 500, test: () => SAVE.life.near >= 100 },
+  { id: 'combo5', ic: '🔥', n: 'Kombo Ustası', d: 'Tek seferde x5 kombo yap', r: 300, test: () => (typeof G !== 'undefined' ? G.maxCombo : 0) >= 5 },
+  { id: 'daily1', ic: '📅', n: 'Günün Meydan Okuması', d: 'Günlük meydan okumayı bir kez oyna', r: 150, test: () => SAVE.daily.runs >= 1 },
+  { id: 'daily7', ic: '🗓️', n: 'Sadık Koşucu', d: 'Günlük meydan okumayı 7 kez oyna', r: 600, test: () => SAVE.daily.runs >= 7 },
+  { id: 'pet1', ic: '🐾', n: 'Yeni Dost', d: 'Bir evcil dost edin', r: 150, test: () => SAVE.pets.length >= 1 },
   { id: 'revive', ic: '💫', n: 'İkinci Şans', d: 'Bir kez canlan', r: 100, test: () => SAVE.life.revives >= 1 }
 ];
+
+/* ---------- Evcil dostlar ---------- */
+const PETS = [
+  { id: 'cat', name: 'Boncuk', ic: '🐱', price: 500, desc: 'Sokak kedisi', perk: 'Yakındaki altınları kendine çeker' },
+  { id: 'gull', name: 'Pamuk', ic: '🕊️', price: 800, desc: 'Boğaz martısı', perk: 'Güçlendirici süreleri +%10' },
+  { id: 'dog', name: 'Karabaş', ic: '🐶', price: 1200, desc: 'Mahalle köpeği', perk: 'Yakın geçiş puanı iki katı' }
+];
+/* ---------- Günlük meydan okuma ---------- */
+const dailyKey = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
+function dailySeed() { let h = 2166136261; const k = dailyKey(); for (let i = 0; i < k.length; i++) { h ^= k.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function dailyMod() { const r = dailySeed() % 3; return [{ id: 'normal', name: 'Dengeli gün', ic: '🌤️' }, { id: 'fast', name: 'Hızlı gün • daha hızlı başlar', ic: '💨' }, { id: 'gold', name: 'Altın günü • altınlar 2x', ic: '💰' }][r]; }
 /* ==========================================================
    02 · SES MOTORU — efektler + prosedürel Hicaz müzik
    ========================================================== */
@@ -613,6 +647,8 @@ const SND = (() => {
     zone() { if (sfxOK()) [392, 523, 659, 784].forEach((f, i) => tone(f, 'sine', 0.35, 0.13, 0, i * 0.09)); },
     mission() { if (sfxOK()) [784, 988, 1175, 1568].forEach((f, i) => tone(f, 'triangle', 0.2, 0.16, 0, i * 0.08)); },
     box() { if (sfxOK()) { for (let i = 0; i < 6; i++) tone(200 + i * 40, 'square', 0.06, 0.1, 0, i * 0.09); } },
+    near(n) { if (sfxOK()) { const f = 520 * Math.pow(2, Math.min(n, 9) / 12 * 2); tone(f, 'triangle', 0.14, 0.17, f * 1.5); tone(f * 2, 'sine', 0.2, 0.1, 0, 0.06); } },
+    pet() { if (sfxOK()) { tone(900, 'sine', 0.1, 0.1, 1400); tone(1300, 'sine', 0.12, 0.08, 900, 0.1); } },
     thunder() { if (sfxOK()) { noise(1.8, 0.9, 260, 50, 0, sfxG, 0.5); tone(55, 'sawtooth', 1.2, 0.2, 30, 0.1); } },
     horn() { if (sfxOK()) { tone(110, 'sawtooth', 1.4, 0.16, 104); tone(165, 'sawtooth', 1.3, 0.1, 156, 0.02); } },
     gull() { if (sfxOK()) { tone(1500, 'sine', 0.18, 0.07, 2300); tone(2200, 'sine', 0.25, 0.06, 1500, 0.2); } },
@@ -1077,6 +1113,8 @@ function buildCat() {
   bx(g, c, 0.28, 0.26, 0.6, 0, 0.3, 0); bx(g, c, 0.22, 0.2, 0.2, 0, 0.42, 0.34);
   bx(g, c, 0.05, 0.1, 0.05, -0.08, 0.57, 0.34); bx(g, c, 0.05, 0.1, 0.05, 0.08, 0.57, 0.34);
   const tail = bx(g, c, 0.06, 0.06, 0.4, 0, 0.5, -0.4); tail.rotation.x = 0.7;
+  g.userData.legs = [[-.09, -.2], [.09, -.2], [-.09, .2], [.09, .2]].map(p => bx(g, c, 0.07, 0.2, 0.07, p[0], 0.1, p[1]));
+  g.userData.tail = tail;
   g.scale.setScalar(1.6);
   return g;
 }
@@ -1468,8 +1506,31 @@ function styleBoard(bg, b) {
   bg.userData.glowM.color.set(b.glow);
 }
 
+function buildDog(col1, col2) {
+  const g = new THREE.Group();
+  const dm = M(col1 || '#8a5a2b'), dd = M(col2 || '#3b2412');
+  bx(g, dm, 0.5, 0.45, 1.1, 0, 0.55, 0);
+  bx(g, dm, 0.42, 0.4, 0.45, 0, 0.8, -0.7);
+  bx(g, dd, 0.2, 0.15, 0.22, 0, 0.74, -1.0);
+  bx(g, dd, 0.12, 0.28, 0.08, -0.15, 1.05, -0.62); bx(g, dd, 0.12, 0.28, 0.08, 0.15, 1.05, -0.62);
+  bx(g, dd, 0.1, 0.1, 0.4, 0, 0.7, 0.7).rotation.x = -0.6;
+  g.userData.legs = [[-.18, -.4], [.18, -.4], [-.18, .4], [.18, .4]].map(p => bx(g, dd, 0.14, 0.4, 0.14, p[0], 0.2, p[1]));
+  return g;
+}
+function buildGullPet() {
+  const g = new THREE.Group(), wm = new THREE.MeshLambertMaterial({ color: 0xffffff, side: THREE.DoubleSide }), gm = M('#9ca3af'), om = M('#f59e0b');
+  const body = new THREE.Mesh(sharedGeo.sph, wm); body.scale.set(0.3, 0.26, 0.6); g.add(body);
+  const head = new THREE.Mesh(sharedGeo.sph, wm); head.scale.setScalar(0.18); head.position.set(0, 0.18, -0.5); g.add(head);
+  bx(g, om, 0.07, 0.07, 0.22, 0, 0.16, -0.72);
+  bx(g, gm, 0.3, 0.05, 0.3, 0, 0.0, 0.62);
+  const mk = s => { const p = new THREE.Group(); p.position.set(s * 0.22, 0.05, 0); const w = bx(p, wm, 0.9, 0.04, 0.45, s * 0.45, 0, 0); g.add(p); return p; };
+  g.userData.wl = mk(-1); g.userData.wr = mk(1);
+  g.scale.setScalar(1.25);
+  return g;
+}
 /* ---------- Oyuncu ---------- */
 let player, chaser, dog, boardMesh, shadowBlob;
+const petObj = {}; let petX = 1.3, petY = 0;
 let ptex = null;
 function initCharacters() {
   player = buildHumanoid();
@@ -1480,18 +1541,14 @@ function initCharacters() {
   shadowBlob = new THREE.Mesh(new THREE.CircleGeometry(0.75, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, depthWrite: false }));
   shadowBlob.rotation.x = -Math.PI / 2; shadowBlob.position.y = 0.02; scene.add(shadowBlob);
   chaser = buildHumanoid(); styleHumanoid(chaser, GUARD); chaser.root.visible = false; chaser.root.rotation.y = Math.PI; chaser.root.scale.setScalar(0.85); scene.add(chaser.root);
-  // köpek
-  dog = new THREE.Group();
-  const dm = M('#8a5a2b'), dd = M('#3b2412');
-  bx(dog, dm, 0.5, 0.45, 1.1, 0, 0.55, 0);
-  bx(dog, dm, 0.42, 0.4, 0.45, 0, 0.8, -0.7);
-  bx(dog, dd, 0.2, 0.15, 0.22, 0, 0.74, -1.0);
-  bx(dog, dd, 0.12, 0.28, 0.08, -0.15, 1.05, -0.62); bx(dog, dd, 0.12, 0.28, 0.08, 0.15, 1.05, -0.62);
-  bx(dog, dd, 0.1, 0.1, 0.4, 0, 0.7, 0.7).rotation.x = -0.6;
-  dog.userData.legs = [[-.18, -.4], [.18, -.4], [-.18, .4], [.18, .4]].map(p => { const l = bx(dog, dd, 0.14, 0.4, 0.14, p[0], 0.2, p[1]); return l; });
-  dog.visible = false; scene.add(dog);
+  dog = buildDog();   dog.visible = false; scene.add(dog);
+  petObj.cat = buildCat(); petObj.cat.scale.setScalar(1.45);
+  petObj.dog = buildDog('#d6b98c', '#6b4a2a'); petObj.dog.scale.setScalar(0.85);
+  petObj.gull = buildGullPet();
+  Object.keys(petObj).forEach(k => { petObj[k].visible = false; scene.add(petObj[k]); });
   applyLoadout();
 }
+function activePet() { return SAVE.pet && SAVE.pets.includes(SAVE.pet) ? SAVE.pet : null; }
 function applyLoadout() {
   const d = CHARS.find(c => c.id === SAVE.char) || CHARS[0];
   styleHumanoid(player, SAVE.charAlt[d.id] && d.alt ? Object.assign({}, d, d.alt) : d);
@@ -1641,7 +1698,7 @@ function addObstacle(o) { o.group.position.set(o.x, 0, o.z); scene.add(o.group);
 
 function addLow(lane, zLead) {
   const x = LANES[lane], z = zLead - 0.4, g = new THREE.Group();
-  if (Math.random() < 0.55) {
+  if (RND() < 0.55) {
     // yol bariyeri
     [-1, 1].forEach(s => bx(g, ET.stripe, 0.2, 1.2, 0.2, s * 1.1, 0.6, 0));
     bx(g, ET.stripe, 2.6, 0.38, 0.14, 0, 0.35, 0); bx(g, ET.stripe, 2.6, 0.38, 0.14, 0, 0.9, 0);
@@ -1715,23 +1772,23 @@ function addPower(lane, z, kind) {
   const g = new THREE.Group();
   const s = new THREE.Sprite(ET.pu[k]); s.scale.setScalar(2.1); g.add(s);
   g.position.set(LANES[lane], 1.6, z); scene.add(g);
-  pupList.push({ m: g, kind: k, x: LANES[lane], z, t: Math.random() * 6 });
+  pupList.push({ m: g, kind: k, x: LANES[lane], z, t: RND() * 6 });
 }
 
 /* ---------- Kalıplar ---------- */
-const laneOrder = () => [0, 1, 2].sort(() => Math.random() - 0.5);
+const laneOrder = () => [0, 1, 2].sort(() => RND() - 0.5);
 
 function patCoinLine(z) { const l = randi(0, 2), n = randi(7, 11); coinLine(l, z, n, 2.6); return n * 2.6 + 4; }
 function patZig(z) {
   let l = randi(0, 2), zz = z;
-  for (let s = 0; s < 4; s++) { coinLine(l, zz, 4, 2.4); zz -= 4 * 2.4; const nl = l === 1 ? (Math.random() < .5 ? 0 : 2) : 1; coinLine(nl, zz + 1, 1, 0); l = nl; zz -= 2; }
+  for (let s = 0; s < 4; s++) { coinLine(l, zz, 4, 2.4); zz -= 4 * 2.4; const nl = l === 1 ? (RND() < .5 ? 0 : 2) : 1; coinLine(nl, zz + 1, 1, 0); l = nl; zz -= 2; }
   return z - zz + 4;
 }
 function patArc(z) { const l = randi(0, 2); addLow(l, z); coinArc(l, z + 6, 7, 2.1, 1.9); return 18; }
 function patLowRow(z, dm) {
-  const lanes = laneOrder(), c = dm > 300 && Math.random() < 0.25 ? 3 : randi(1, 2);
+  const lanes = laneOrder(), c = dm > 300 && RND() < 0.25 ? 3 : randi(1, 2);
   lanes.forEach((l, i) => {
-    if (i < c) { addLow(l, z); if (Math.random() < 0.5) coinArc(l, z + 5, 5, 2.1, 1.8); }
+    if (i < c) { addLow(l, z); if (RND() < 0.5) coinArc(l, z + 5, 5, 2.1, 1.8); }
     else coinLine(l, z + 3, 5, 2.3);
   });
   return 10;
@@ -1740,7 +1797,7 @@ function patGateRow(z) {
   const lanes = laneOrder(), c = randi(1, 2);
   lanes.forEach((l, i) => {
     if (i < c) { addGate(l, z); coinLine(l, z + 3, 4, 1.8, 0.7); }
-    else if (Math.random() < 0.4) addLow(l, z); else coinLine(l, z + 3, 5, 2.3);
+    else if (RND() < 0.4) addLow(l, z); else coinLine(l, z + 3, 5, 2.3);
   });
   return 10;
 }
@@ -1750,7 +1807,7 @@ function patMixed(z, dm) {
     const free = randi(0, 2);
     for (let l = 0; l < 3; l++) {
       if (l === free) { coinLine(l, zz + 2, 3, 2.2); continue; }
-      const q = Math.random();
+      const q = RND();
       if (q < 0.45) addLow(l, zz); else if (q < 0.85) addGate(l, zz); else coinLine(l, zz, 2, 2);
     }
     zz -= 16;
@@ -1761,29 +1818,29 @@ function patTrainWall(z) {
   const lanes = laneOrder(), len = randi(16, 24);
   addTrain(lanes[0], z, len, null, 0); addTrain(lanes[1], z, len + randi(-2, 4), null, 0);
   coinLine(lanes[2], z + 2, Math.floor(len / 2.4), 2.4);
-  if (Math.random() < 0.35) addPower(lanes[2], z - len * 0.6);
+  if (RND() < 0.35) addPower(lanes[2], z - len * 0.6);
   return len + 6;
 }
 function patTrainRamp(z, dm) {
   const lanes = laneOrder(), len = randi(18, 30);
   addRampTrain(lanes[0], z, len);
   coinLine(lanes[0], z - 9 - 1, Math.floor(len / 2.2), 2.2, 4.1);
-  const q = Math.random();
+  const q = RND();
   if (q < 0.4) addTrain(lanes[1], z - 6, len + 6, null, 0);
   else if (q < 0.7) { addLow(lanes[1], z - 4); coinLine(lanes[1], z - 12, 6, 2.4); }
   else coinLine(lanes[1], z, 8, 2.5);
-  if (Math.random() < 0.5) addGate(lanes[2], z - 10); else coinLine(lanes[2], z, 6, 2.5);
+  if (RND() < 0.5) addGate(lanes[2], z - 10); else coinLine(lanes[2], z, 6, 2.5);
   return len + 14;
 }
 function patOncoming(z) {
   const lanes = laneOrder(), l = lanes[0];
   addTrain(l, z - 70, 14, null, 16);
-  coinLine(lanes[1], z, 9, 2.5); if (Math.random() < 0.5) coinLine(lanes[2], z, 9, 2.5);
+  coinLine(lanes[1], z, 9, 2.5); if (RND() < 0.5) coinLine(lanes[2], z, 9, 2.5);
   return 30;
 }
 function patDolmus(z) {
   const lanes = laneOrder();
-  addDolmus(lanes[0], z); if (Math.random() < 0.6) addDolmus(lanes[1], z - 3);
+  addDolmus(lanes[0], z); if (RND() < 0.6) addDolmus(lanes[1], z - 3);
   coinLine(lanes[2], z, 7, 2.4);
   coinArc(lanes[0], z + 0, 5, 1.6, 1.2);
   return 22;
@@ -1791,7 +1848,7 @@ function patDolmus(z) {
 function patPower(z) { const l = randi(0, 2); coinLine(l, z, 6, 2.4); addPower(l, z - 6 * 2.4 - 3); return 6 * 2.4 + 8; }
 function patSky(z) {
   let zz = z, l = randi(0, 2);
-  for (let i = 0; i < 3; i++) { coinLine(l, zz, 6, 2.6, 6.4 + Math.sin(i) * 0.8); zz -= 6 * 2.6; l = clamp(l + (Math.random() < .5 ? -1 : 1), 0, 2); }
+  for (let i = 0; i < 3; i++) { coinLine(l, zz, 6, 2.6, 6.4 + Math.sin(i) * 0.8); zz -= 6 * 2.6; l = clamp(l + (RND() < .5 ? -1 : 1), 0, 2); }
   return z - zz + 4;
 }
 function spawnChunk(z, dm, jet) {
@@ -1805,7 +1862,7 @@ function spawnChunk(z, dm, jet) {
   if (dm > 220) w.push([patTrainWall, 3], [patZig, 2]);
   if (dm > 380) w.push([patOncoming, 2]);
   let tot = 0; w.forEach(a => tot += a[1]);
-  let r = Math.random() * tot, f = w[0][0];
+  let r = RND() * tot, f = w[0][0];
   for (const a of w) { r -= a[1]; if (r <= 0) { f = a[0]; break; } }
   return f(z, dm);
 }
@@ -1871,7 +1928,7 @@ function initSpeedLines() {
   speedLines.frustumCulled = false; scene.add(speedLines);
 }
 function resetLine(i, init) {
-  const side = Math.random() < 0.5 ? -1 : 1;
+  const side = RND() < 0.5 ? -1 : 1;
   const x = side * rand(3.5, 11), y = rand(0.3, 9), z = init ? -rand(0, 90) : -rand(70, 100);
   slPos[i * 6] = x; slPos[i * 6 + 1] = y; slPos[i * 6 + 2] = z;
   slPos[i * 6 + 3] = x; slPos[i * 6 + 4] = y; slPos[i * 6 + 5] = z - 2;
@@ -1899,7 +1956,8 @@ const G = {
   travelled: 0, nextSpawn: 0, zoneIdx: 0, anim: 0,
   stats: { coins: 0, jumps: 0, rolls: 0, lanes: 0, powerups: 0, boards: 0, roof: 0 }, roofT: 0,
   revives: 0, deadT: 0, shake: 0, dustT: 0, newBest: false, useHead: false, useBoost: false,
-  countT: 0, countN: 0, camLook: new THREE.Vector3(0, 1, 0), uiT: 0
+  countT: 0, countN: 0, camLook: new THREE.Vector3(0, 1, 0), uiT: 0,
+  daily: false, dailyRng: null, dailyMod: 'normal', dailyBonus: 0, combo: 0, nmT: 0, maxCombo: 0
 };
 const GRAV = 58, PW = 0.3, STAND_H = 1.85, ROLL_H = 0.8, ROLL_DUR = 0.62;
 
@@ -1947,6 +2005,32 @@ function checkMission(m) {
     popMult();
   }
   writeSave();
+}
+
+/* ---------- Yakın geçiş kombosu ---------- */
+function nearMiss() {
+  G.combo = (G.nmT > 0 ? G.combo : 0) + 1; G.nmT = 4.5; G.maxCombo = Math.max(G.maxCombo, G.combo);
+  const pts = Math.round(40 * Math.min(G.combo, 10) * mult() * scoreK() * (activePet() === 'dog' ? 2 : 1));
+  G.score += pts; SAVE.life.near++; bumpStat('near', 1);
+  UI.showCombo(G.combo, pts); SND.fx.near(G.combo); vib(10);
+  emit(G.px, G.py + 1.2, 0, 14, '#ffd34d', 1.2, 4, 0.5, 4, 0);
+}
+function trackNear() {
+  const ph = G.roll > 0 ? ROLL_H : STAND_H;
+  for (let i = 0; i < obstacles.length; i++) {
+    const o = obstacles[i];
+    if (o.kind !== 'low' && o.kind !== 'gate') continue;
+    const zMin = o.z - o.len / 2, zMax = o.z + o.len / 2;
+    const inX = Math.abs(G.px - o.x) < o.hw + PW - 0.08, inZ = zMin < 0.45 && zMax > -0.45;
+    if (inX && inZ) {
+      const c = o.kind === 'low' ? G.py - o.h : (G.py + ph <= o.bottom ? o.bottom - (G.py + ph) : G.py - o.top);
+      if (c < -0.2 || G.invuln > 0 || G.pu.jetpack > 0) o.bad = true;
+      o.mc = Math.min(o.mc === undefined ? 9 : o.mc, c);
+    } else if (o.mc !== undefined && !o.done && zMin > 0.45) {
+      o.done = true;
+      if (!o.bad && o.mc >= -0.2 && o.mc < (o.kind === 'gate' ? 0.65 : 0.55)) nearMiss();
+    }
+  }
 }
 
 /* ---------- Giriş eylemleri ---------- */
@@ -2007,6 +2091,11 @@ function die() {
   SAVE.runs++; SAVE.totalDist += G.dm; SAVE.totalCoins += G.runCoins;
   const sc = Math.floor(G.score);
   G.newBest = sc > SAVE.best; if (G.newBest) SAVE.best = sc;
+  if (G.daily) {
+    const k = dailyKey(); if (SAVE.daily.key !== k) { SAVE.daily.key = k; SAVE.daily.best = 0; }
+    SAVE.daily.runs++; SAVE.daily.best = Math.max(SAVE.daily.best, sc);
+    if (SAVE.daily.bonus !== k) { SAVE.daily.bonus = k; SAVE.coins += 150; G.dailyBonus = 150; }
+  }
   SAVE.hs.push({ s: sc, d: Math.floor(G.dm), c: SAVE.char, t: Date.now() }); SAVE.hs.sort((a, b) => b.s - a.s); SAVE.hs = SAVE.hs.slice(0, 8);
   checkAch(); writeSave();
   SND.duck(0.1); SND.setRain(0);
@@ -2016,14 +2105,17 @@ function die() {
 function creditCoins() { SAVE.coins += (G.runCoins - G.credited); G.credited = G.runCoins; }
 
 /* ---------- Başlat / duraklat / devam / canlan ---------- */
-function startRun() {
+function startRun(daily) {
+  G.daily = !!daily;
+  if (G.daily) { G.dailyRng = mulberry32(dailySeed()); G.dailyMod = dailyMod().id; }
   clearEntities();
   Object.assign(G, {
     mode: 'count', speed: modeCfg().speed0, dist: 0, dm: 0, score: 0, runCoins: 0, credited: 0,
     lane: 1, prevLane: 1, targetX: 0, px: 0, py: 0, vy: 0, onGround: true, coyote: 0, prevPy: 0, roll: 0, rollQ: 0, jumpBuf: 0,
     boardT: 0, invuln: 0, stumbleCool: 0, slowT: 0, chaseT: 0, afterJet: false, travelled: 0, nextSpawn: 0, zoneIdx: 0,
-    roofT: 0, revives: 0, deadT: 0, shake: 0, newBest: false, missionsReset: false, jetDone: false
+    roofT: 0, revives: 0, deadT: 0, shake: 0, newBest: false, missionsReset: false, jetDone: false, combo: 0, nmT: 0, maxCombo: 0, dailyBonus: 0
   });
+  G.speed += (G.daily && G.dailyMod === 'fast') ? 4 : 0;
   G.pu = { magnet: 0, jetpack: 0, sneakers: 0, multi: 0 };
   G.stats = { coins: 0, jumps: 0, rolls: 0, lanes: 0, powerups: 0, boards: 0, roof: 0 };
   // sarf malzemeleri
@@ -2074,7 +2166,7 @@ function toMenu() {
 
 /* ---------- Güçlendirici ---------- */
 function grabPower(kind) {
-  const d = upDur(kind) * pkFor(kind);
+  const d = upDur(kind) * pkFor(kind) * (activePet() === 'gull' ? 1.1 : 1);
   G.pu[kind] = d; G.puMax[kind] = d;
   bumpStat('powerups', 1); SND.fx.power(); vib(15);
   toast(`${PU_TYPES[kind].icon} ${PU_TYPES[kind].label}!`, 'good');
@@ -2119,6 +2211,7 @@ function updateRun(dt) {
   // zamanlayıcılar
   ['magnet', 'jetpack', 'sneakers', 'multi'].forEach(k => { if (G.pu[k] > 0) G.pu[k] = Math.max(0, G.pu[k] - dt); });
   if (G.boardT > 0) { G.boardT -= dt; if (G.boardT <= 0) { G.boardT = 0; emit(G.px, G.py + 0.3, 0, 14, '#9ca3af', 1.2, 2, 0.6, 1, 0); } }
+  if (G.nmT > 0) G.nmT -= dt;
   if (G.invuln > 0) G.invuln -= dt;
   if (G.stumbleCool > 0) G.stumbleCool -= dt;
   if (G.chaseT > 0) G.chaseT -= dt;
@@ -2156,6 +2249,7 @@ function updateRun(dt) {
       if (G.jumpBuf > 0) { G.jumpBuf = 0; doJump(); }
     } else G.onGround = false;
   }
+  trackNear();
   if (cs.hit) hitSolid(cs.hit[0], cs.hit[1]);
   if (cs.supObs && cs.supObs.dolmus && !cs.supObs.cnt && G.onGround && G.py > 2) { cs.supObs.cnt = true; SAVE.life.dolmus++; }
   if (G.mode !== 'run') return;
@@ -2172,8 +2266,10 @@ function updateRun(dt) {
   G.travelled += dz;
   while (G.travelled >= G.nextSpawn) {
     const zl = SPAWN_Z + (G.travelled - G.nextSpawn);
-    const len = spawnChunk(zl, G.dm, jet);
-    G.nextSpawn += len + clamp(G.speed * 0.78 * modeCfg().gap, 18, 44);
+    let len, nomSp = G.speed;
+    if (G.daily) { nomSp = Math.min(54, 24 + G.dm / 60); len = withSeed(G.dailyRng, () => spawnChunk(zl, G.dm, false)); }
+    else len = spawnChunk(zl, G.dm, jet);
+    G.nextSpawn += len + clamp(nomSp * 0.78 * modeCfg().gap, 18, 44);
     if (len <= 0) break;
   }
 
@@ -2182,14 +2278,15 @@ function updateRun(dt) {
   for (let i = coinList.length - 1; i >= 0; i--) {
     const c = coinList[i], m = c.m;
     c.z += dz; m.position.z = c.z; m.rotation.y += 5 * dt;
-    if (G.pu.magnet > 0 && c.z > -42 && c.z < 3 && Math.abs(c.x - G.px) < 8) {
+    const mini = G.pu.magnet <= 0 && activePet() === 'cat' && c.z > -9 && c.z < 2 && Math.abs(c.x - G.px) < 3.4;
+    if (mini || (G.pu.magnet > 0 && c.z > -42 && c.z < 3 && Math.abs(c.x - G.px) < 8)) {
       const k = 1 - Math.exp(-10 * dt);
       c.x = lerp(c.x, G.px, k); c.y = lerp(c.y, pcy, k); c.z = lerp(c.z, 0, k * 0.8);
       m.position.x = c.x; m.position.y = c.y; m.position.z = c.z;
     }
     if (Math.abs(c.x - G.px) < 1.0 && Math.abs(c.z) < 1.2 && Math.abs(c.y - pcy) < 1.4) {
       scene.remove(m); coinList.splice(i, 1);
-      const add = (perkOf().coin5 && (G.runCoins + 1) % 5 === 0) ? 2 : 1;
+      const add = ((perkOf().coin5 && (G.runCoins + 1) % 5 === 0) ? 2 : 1) * ((G.daily && G.dailyMod === 'gold') ? 2 : 1);
       G.runCoins += add; G.score += 10 * mult() * scoreK(); bumpStat('coins', add); SND.fx.coin();
       emit(c.x, c.y, c.z, 4, '#ffd34d', 0.8, 2.5, 0.35, 4, 0);
       continue;
@@ -2297,6 +2394,7 @@ function updateVisuals(dt, spdForAnim) {
   camera.lookAt(G.camLook);
   const fov = (camera.userData.baseFov || 60) + (mode === 'run' ? k * 7 + (jet ? 4 : 0) : 0);
   if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = damp(camera.fov, fov, 4, dt); camera.updateProjectionMatrix(); }
+  updatePets(dt, mode);
   camera.rotation.z += (mode === 'run' ? (G.px - G.targetX) * 0.012 : 0);
 }
 function getGroundBelow() {
@@ -2372,6 +2470,30 @@ function autoQuality(dt) {
     }
   }
 }
+
+/* ---------- Evcil dostlar ---------- */
+function updatePets(dt, mode) {
+  const id = activePet();
+  Object.keys(petObj).forEach(k => petObj[k].visible = (k === id));
+  if (!id) return;
+  const p = petObj[id];
+  if (mode === 'menu') {
+    petX = damp(petX, -1.0, 6, dt); petY = damp(petY, id === 'gull' ? 0.9 + Math.sin(G.t * 3) * 0.12 : 0, 8, dt);
+    p.position.set(petX, petY, 0.8);
+    p.rotation.y = id === 'cat' ? 0.5 : Math.PI - 0.5;
+  } else {
+    const side = G.px > 0.8 ? -1 : 1;
+    petX = damp(petX, G.px + side * 1.4, 5, dt);
+    const gy = id === 'gull' ? G.py + 3.1 + Math.sin(G.t * 3) * 0.3 : G.py;
+    petY = damp(petY, gy, 9, dt);
+    p.position.set(petX, petY, id === 'gull' ? -1.2 : 1.7);
+    p.rotation.y = id === 'cat' ? Math.PI : 0;
+    p.rotation.z = id === 'gull' ? (G.targetX - G.px) * 0.08 : 0;
+  }
+  const run = (mode === 'run' || mode === 'count') && G.onGround;
+  if (id === 'gull') { const f = Math.sin(G.t * (mode === 'menu' ? 8 : 14)) * 0.7; p.userData.wl.rotation.z = f; p.userData.wr.rotation.z = -f; }
+  else { p.userData.legs.forEach((l, i) => l.rotation.x = run ? Math.sin(G.anim * 1.5 + i * 1.6) * 0.8 : 0); if (p.userData.tail) p.userData.tail.rotation.z = Math.sin(G.t * 6) * 0.4; }
+}
 /* ==========================================================
    07 · ARAYÜZ — HUD, menüler, mağaza, görevler, ayarlar
    ========================================================== */
@@ -2421,6 +2543,11 @@ const UI = {
       if ((H.mm += 1) % 5 === 0) this.refreshMiniMissions();
     }
   },
+  showCombo(n, pts) {
+    const el = $('combo'); el.innerHTML = `YAKIN GEÇİŞ${n > 1 ? ' x' + n : ''}<small>+${fmt(pts)}</small>`;
+    el.classList.add('on', 'pop'); clearTimeout(this._ct); setTimeout(() => el.classList.remove('pop'), 120);
+    this._ct = setTimeout(() => el.classList.remove('on'), 1100);
+  },
   refreshMiniMissions() {
     $('missions-mini').innerHTML = SAVE.missions.map(m => {
       const d = missionDef(m);
@@ -2437,6 +2564,8 @@ const UI = {
     $('bo-head-n').textContent = SAVE.stock.head; $('bo-boost-n').textContent = SAVE.stock.boost;
     $('bo-head').classList.toggle('on', G.useHead && SAVE.stock.head > 0);
     $('bo-boost').classList.toggle('on', G.useBoost && SAVE.stock.boost > 0);
+    const dm = dailyMod(), dk = dailyKey(), db = SAVE.daily.key === dk ? SAVE.daily.best : 0;
+    $('daily-s').textContent = `${dm.ic} ${dm.name}` + (db ? ` • Bugünkü en iyi: ${fmt(db)}` : SAVE.daily.bonus === dk ? '' : ' • İlk koşu +150🪙');
     $('d-gift').classList.toggle('hidden', !giftReady());
     $('d-miss').classList.toggle('hidden', !SAVE.missions.some(m => m.done));
     const canBuy = CHARS.some(x => !SAVE.chars.includes(x.id) && SAVE.coins >= x.price) || BOARDS.some(x => !SAVE.boards.includes(x.id) && SAVE.coins >= x.price);
@@ -2450,6 +2579,8 @@ const UI = {
     $('o-miss').innerHTML = SAVE.missions.map(m => { const d = missionDef(m); return `<div class="mission ${m.done ? 'done' : ''}" style="padding:7px 12px;margin-bottom:6px"><div class="t" style="font-size:.76rem"><span>${m.done ? '✓ ' : ''}${d.text(m.target)}</span><span>${fmt(m.progress)}/${fmt(m.target)}</span></div></div>`; }).join('');
     const sc = Math.floor(G.score);
     $('o-hs').innerHTML = `<div class="hs"><h4>EN İYİ KOŞULAR</h4>${SAVE.hs.slice(0, 5).map((h, i) => `<div class="${h.s === sc && i < 5 && h.t === SAVE.hs.find(x => x.s === sc).t ? 'me' : ''}"><span>${i + 1}. ${(CHARS.find(c => c.id === h.c) || CHARS[0]).name}</span><span>${fmt(h.s)} • ${fmt(h.d)} m</span></div>`).join('')}</div>`;
+    const dt = $('o-daily'); dt.classList.toggle('hidden', !G.daily);
+    if (G.daily) dt.innerHTML = `📅 Günlük meydan okuma • bugünkü en iyi <b>${fmt(SAVE.daily.best)}</b>` + (G.dailyBonus ? `<br>🎉 İlk koşu bonusu +${G.dailyBonus}🪙` : '') + (G.maxCombo > 1 ? `<br>🔥 En yüksek kombo x${G.maxCombo}` : '');
     const cost = 150 * Math.pow(2, G.revives);
     const rb = $('b-revive');
     rb.classList.toggle('hidden', G.revives >= 3);
@@ -2510,6 +2641,18 @@ function renderShop() {
         if (eq) return;
         if (owned) { SAVE.char = ch.id; applyLoadout(); SND.fx.click(); }
         else if (SAVE.coins >= ch.price) { SAVE.coins -= ch.price; SAVE.chars.push(ch.id); SAVE.char = ch.id; applyLoadout(); SND.fx.buy(); toast(`${ch.name} artık senin!`, 'good'); }
+        else { SND.fx.error(); toast('Yeterli altının yok'); return; }
+        writeSave(); renderShop();
+      };
+    });
+  } else if (shopTab === 'pets') {
+    PETS.forEach(p => {
+      const owned = SAVE.pets.includes(p.id), eq = SAVE.pet === p.id;
+      const el = card(eq ? 'eq' : '', `<div class="big">${p.ic}</div><h3>${p.name}</h3><p>${p.desc}</p><div class="perk">✨ ${p.perk}</div><button class="btn sm ${eq ? 'green' : owned ? '' : 'gold'}">${eq ? '✓ Yanında' : owned ? 'Yanına al' : '🪙 ' + fmt(p.price)}</button>`);
+      el.querySelector('button').onclick = () => {
+        if (eq) { SAVE.pet = null; SND.fx.click(); }
+        else if (owned) { SAVE.pet = p.id; SND.fx.pet(); }
+        else if (SAVE.coins >= p.price) { SAVE.coins -= p.price; SAVE.pets.push(p.id); SAVE.pet = p.id; SND.fx.buy(); SND.fx.pet(); toast(`${p.name} artık senin dostun!`, 'good'); checkAch(); }
         else { SND.fx.error(); toast('Yeterli altının yok'); return; }
         writeSave(); renderShop();
       };
@@ -2690,6 +2833,7 @@ function bindInput() {
 function bindUI() {
   const on = (id, fn) => $(id).addEventListener('click', e => { SND.ensure(); SND.fx.click(); fn(e); });
   on('b-play', () => startRun());
+  on('b-daily', () => startRun(true));
   on('b-shop', () => { shopTab = 'chars'; renderShop(); UI.show('shop'); });
   on('shop-back', () => { UI.show('menu'); });
   document.querySelectorAll('#shop-tabs .tab').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.t; SND.fx.click(); renderShop(); }));
@@ -2706,7 +2850,7 @@ function bindUI() {
   on('b-pause', () => pauseGame());
   on('b-resume', () => resumeGame());
   on('b-quit', () => { SND.stopMusic(); toMenu(); });
-  on('b-again', () => { UI.hideAll(); startRun(); });
+  on('b-again', () => { UI.hideAll(); startRun(G.daily); });
   on('o-home', () => { SND.stopMusic(); toMenu(); });
   on('o-shop', () => { SND.stopMusic(); G.mode = 'menu'; toMenu(); shopTab = 'chars'; renderShop(); UI.show('shop'); });
   on('b-revive', e => { const c = +$('b-revive').dataset.cost; if (SAVE.coins >= c) revive(c); else SND.fx.error(); });
