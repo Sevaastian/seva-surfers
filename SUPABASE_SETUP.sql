@@ -10,3 +10,6 @@ create index on rs_scores (board, score desc);
 alter table rs_scores enable row level security;
 create policy "herkes okuyabilir" on rs_scores for select using (true);
 create policy "herkes ekleyebilir" on rs_scores for insert with check (true);
+
+-- Hayalet yarışı için (zaten tablo varsa bunu da çalıştır):
+alter table rs_scores add column if not exists ghost text;
